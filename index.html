@@ -3,4 +3,28 @@
 <head>
     <title>Ethereum Light</title>
 </head>
+<body>
+    <h1>Nim interop test</h1>
+
+    <input id="aInput" type="text" value="10" /> +
+    <input id="bInput" type="text" value="20" />
+    <button id="fetchButton">Add</button>
+    <input id="output" type="text" readonly="readonly" />
+
+    <script>
+        fetch("main.wasm")
+            .then(response => response.arrayBuffer())
+            .then(buffer => WebAssembly.instantiate(buffer, {}))
+            .then(obj => {
+                document.getElementById('fetchButton').addEventListener('click', function() {
+                    let a = parseInt(document.getElementById('aInput').value, 10);
+                    let b = parseInt(document.getElementById('bInput').value, 10);
+
+                    let result = obj.instance.exports.add(a, b);
+                    document.getElementById('output').value = result;
+                });
+            })
+            .catch(console.error);
+    </script>
+</body>
 </html>

@@ -1,0 +1,41 @@
+#!/usr/bin/env zsh
+set -eu -o pipefail
+
+cd "$(dirname "$0")"
+
+rm -rf nimbus-eth2
+git clone "https://github.com/status-im/nimbus-eth2"
+cd nimbus-eth2
+
+ulimit -n 1024
+export USE_SYSTEM_NIM=0
+make -j deps
+source env.sh
+
+cd -
+nim --version
+
+rm -rf nimcache
+nim c \
+    -d:emscripten \
+    -d:release \
+    --nimcache:nimcache \
+    --os:linux \
+    --cpu:wasm32 \
+    --cc:clang \
+    --clang.exe:emcc \
+    --clang.linkerexe:emcc \
+    --gc:arc \
+    --exceptions:goto \
+    --define:noSignalHandler \
+    --define:danger \
+    --panics:on \
+    --passC:-fpic \
+    --passL:-Os \
+    --passL:-fPIC \
+    --passL:'-s STANDALONE_WASM' \
+    --passL:'-s EXPORTED_FUNCTIONS=[_add]' \
+    --passL:'-Wl,--no-entry' \
+    --noMain:on \
+    --passL:'-o main.wasm' \
+    main.nim
