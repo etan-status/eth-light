@@ -5,29 +5,57 @@
 </head>
 <body>
     <h1>Mainnet config</h1>
-    CAPELLA_FORK_EPOCH: <b><span id="capellaForkEpoch"></span></b><br /><br />
+    CAPELLA_FORK_EPOCH: <b><span id="capellaForkEpoch"></span></b><br />
+    GENESIS_TIME: <b><span id="genesisTime"></span></b><br />
+    <br />
     <pre id="configOutput"></pre>
 
     <script>
+        const networkMetadataPath = 'https://raw.githubusercontent.com/eth-clients/eth2-networks/master/shared/mainnet';
+
         async function loadCfg() {
-            let response = await fetch('https://raw.githubusercontent.com/eth-clients/eth2-networks/master/shared/mainnet/config.yaml');
+            let response = await fetch(networkMetadataPath + '/config.yaml');
+            assert(response.ok);
             let data = await response.text();
             document.getElementById('configOutput').innerText = data;
 
             let fileContent = Module.stringToNewUTF8(data);
-            let cfg = Module._ETHRuntimeConfigCreate(fileContent);
+            let cfg = Module._ETHRuntimeConfigCreateFromYaml(fileContent);
             assert(cfg);
             Module._free(fileContent);
 
             let CAPELLA_FORK_EPOCH = Module._ETHRuntimeConfigGetCapellaForkEpoch(cfg);
             document.getElementById('capellaForkEpoch').innerText = CAPELLA_FORK_EPOCH;
 
-            Module._ETHRuntimeConfigDestroy(cfg);
+            return cfg;
+        }
+
+        async function loadGenesis(cfg) {
+            let consensusFork = Module._ETHRuntimeConfigGetConsensusForkAtEpoch(cfg, /* epoch: */ 0);
+            assert(consensusFork);
+
+            let response = await fetch(networkMetadataPath + '/genesis.ssz');
+            assert(response.ok);
+            let data = await response.arrayBuffer();
+            let sszBytes = new Uint8Array(data)
+
+            let sszBytesPtr = Module._malloc(sszBytes.length);
+            Module.HEAPU8.set(sszBytes, sszBytesPtr);
+            let state = Module._ETHBeaconStateCreateFromSsz(consensusFork, sszBytesPtr, sszBytes.length);
+            assert(state);
+            Module._free(sszBytesPtr);
+
+            let genesisTime = Module._ETHBeaconStateGetGenesisTime(state);
+            document.getElementById('genesisTime').innerText = genesisTime;
+
+            Module._ETHBeaconStateDestroy(state);
         }
 
         var Module = {
-            onRuntimeInitialized: function() {
-                loadCfg();
+            onRuntimeInitialized: async function() {
+                let cfg = await loadCfg();
+                await loadGenesis(cfg);
+                Module._ETHRuntimeConfigDestroy(cfg);
             }
         };
     </script>

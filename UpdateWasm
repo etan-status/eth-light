@@ -15,9 +15,31 @@ source env.sh
 cd -
 nim --version
 
+git -C nimbus-eth2/vendor/nimbus-build-system/vendor/Nim apply <<EOF
+diff --git a/lib/system/threads.nim b/lib/system/threads.nim
+index 4e27ba24e..bf154e874 100644
+--- a/lib/system/threads.nim
++++ b/lib/system/threads.nim
+@@ -383,6 +383,13 @@ when defined(windows):
+       threadId = int(getCurrentThreadId())
+     result = threadId
+
++elif defined(emscripten):
++  proc getThreadId*(): int =
++    ## Gets the ID of the currently running thread.
++    if threadId == 0:
++      threadId = cast[int](addr threadId)
++    result = threadId
++
+ elif defined(linux):
+   proc syscall(arg: clong): clong {.varargs, importc: "syscall", header: "<unistd.h>".}
+   when defined(amd64):
+EOF
+
 rm -rf light_client_wasm.js light_client_wasm.wasm light_client_wasm.worker.js nimcache
 nim c \
     -d:disable_libbacktrace \
+    -d:disableLTO \
     -d:emscripten \
     -d:release \
     --debuginfo:off \
@@ -34,10 +56,19 @@ nim c \
     --panics:on \
     --passC:-fpic \
     --passL:-Os \
-    --passL:-fPIC \
-    --passL:'-s STANDALONE_WASM' \
-    --passL:'-s EXPORTED_FUNCTIONS="[_free, _malloc, _ETHRuntimeConfigCreate, _ETHRuntimeConfigDestroy, _ETHRuntimeConfigGetCapellaForkEpoch]"' \
-    --passL:'-s EXPORTED_RUNTIME_METHODS="[stringToNewUTF8]"' \
+    --passL:-fpic \
+    --passC:'-pthread' \
+    --passL:'-pthread' \
+    --passC:'-sASSERTIONS' \
+    --passL:'-sASSERTIONS' \
+    --passC:'-sINITIAL_MEMORY=256MB' \
+    --passL:'-sINITIAL_MEMORY=256MB' \
+    --passC:'-sSTACK_SIZE=128MB' \
+    --passL:'-sSTACK_SIZE=128MB' \
+    --passC:'-sUSE_PTHREADS=1' \
+    --passL:'-sUSE_PTHREADS=1' \
+    --passL:'-sEXPORTED_FUNCTIONS="[_free, _malloc, _ETHRuntimeConfigCreateFromYaml, _ETHRuntimeConfigDestroy, _ETHRuntimeConfigGetCapellaForkEpoch, _ETHRuntimeConfigGetConsensusForkAtEpoch, _ETHBeaconStateCreateFromSsz, _ETHBeaconStateDestroy, _ETHBeaconStateGetGenesisTime]"' \
+    --passL:'-sEXPORTED_RUNTIME_METHODS="[stringToNewUTF8]"' \
     --passL:'-Wl,--no-entry' \
     --noMain:on \
     --passL:'-o light_client_wasm.js' \
