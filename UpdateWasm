@@ -4,7 +4,7 @@ set -eu -o pipefail
 cd "$(dirname "$0")"
 
 rm -rf nimbus-eth2
-git clone "https://github.com/status-im/nimbus-eth2"
+git clone -b "dev/etan/lc-wasm" "https://github.com/status-im/nimbus-eth2"
 cd nimbus-eth2
 
 ulimit -n 1024
@@ -15,10 +15,12 @@ source env.sh
 cd -
 nim --version
 
-rm -rf nimcache
+rm -rf light_client_wasm.js light_client_wasm.wasm light_client_wasm.worker.js nimcache
 nim c \
+    -d:disable_libbacktrace \
     -d:emscripten \
     -d:release \
+    --debuginfo:off \
     --nimcache:nimcache \
     --os:linux \
     --cpu:wasm32 \
@@ -34,8 +36,9 @@ nim c \
     --passL:-Os \
     --passL:-fPIC \
     --passL:'-s STANDALONE_WASM' \
-    --passL:'-s EXPORTED_FUNCTIONS="[_createFoo, _getA, _destroyFoo]"' \
+    --passL:'-s EXPORTED_FUNCTIONS="[_free, _malloc, _ETHRuntimeConfigCreate, _ETHRuntimeConfigDestroy, _ETHRuntimeConfigGetCapellaForkEpoch]"' \
+    --passL:'-s EXPORTED_RUNTIME_METHODS="[stringToNewUTF8]"' \
     --passL:'-Wl,--no-entry' \
     --noMain:on \
-    --passL:'-o main.js' \
-    main.nim
+    --passL:'-o light_client_wasm.js' \
+    nimbus-eth2/beacon_chain/light_client_wasm.nim

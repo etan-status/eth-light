@@ -4,39 +4,33 @@
     <title>Ethereum Light</title>
 </head>
 <body>
-    <h1>Nim interop test</h1>
-
-    <input id="aInput" type="text" value="10" />
-    <button id="setButton">Save</button>
-    <br />
-    <input id="getOutput" type="text" readonly="readonly" />
-    <button id="getButton">Load</button>
+    <h1>Mainnet config</h1>
+    CAPELLA_FORK_EPOCH: <b><span id="capellaForkEpoch"></span></b><br /><br />
+    <pre id="configOutput"></pre>
 
     <script>
-        var foo = undefined;
+        async function loadCfg() {
+            let response = await fetch('https://raw.githubusercontent.com/eth-clients/eth2-networks/master/shared/mainnet/config.yaml');
+            let data = await response.text();
+            document.getElementById('configOutput').innerText = data;
+
+            let fileContent = Module.stringToNewUTF8(data);
+            let cfg = Module._ETHRuntimeConfigCreate(fileContent);
+            assert(cfg);
+            Module._free(fileContent);
+
+            let CAPELLA_FORK_EPOCH = Module._ETHRuntimeConfigGetCapellaForkEpoch(cfg);
+            document.getElementById('capellaForkEpoch').innerText = CAPELLA_FORK_EPOCH;
+
+            Module._ETHRuntimeConfigDestroy(cfg);
+        }
 
         var Module = {
             onRuntimeInitialized: function() {
-                document.getElementById('setButton').addEventListener('click', function() {
-                    if (foo !== undefined) {
-                        Module['_destroyFoo'](foo);
-                    }
-
-                    let a = parseInt(document.getElementById('aInput').value, 10);
-                    foo = Module['_createFoo'](a);
-
-                    Module['_destroyFoo'](foo);
-                });
-                document.getElementById('getButton').addEventListener('click', function() {
-                    if (foo === undefined) {
-                        return;
-                    }
-                    let result = Module['_getA'](foo);
-                    document.getElementById('getOutput').value = result;
-                });
+                loadCfg();
             }
         };
     </script>
-    <script async src="main.js"></script>
+    <script async src="light_client_wasm.js"></script>
 </body>
 </html>
