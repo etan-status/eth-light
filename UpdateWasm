@@ -34,8 +34,8 @@ nim c \
     --passL:-Os \
     --passL:-fPIC \
     --passL:'-s STANDALONE_WASM' \
-    --passL:'-s EXPORTED_FUNCTIONS=[_add]' \
+    --passL:'-s EXPORTED_FUNCTIONS="[_createFoo, _getA, _destroyFoo]"' \
     --passL:'-Wl,--no-entry' \
     --noMain:on \
-    --passL:'-o main.wasm' \
+    --passL:'-o main.js' \
     main.nim
