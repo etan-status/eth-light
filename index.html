@@ -7,6 +7,7 @@
     <h1>Mainnet config</h1>
     CAPELLA_FORK_EPOCH: <b><span id="capellaForkEpoch"></span></b><br />
     GENESIS_TIME: <b><span id="genesisTime"></span></b><br />
+    SLOT: <b><span id="slot"></span></b><br />
     <br />
     <pre id="configOutput"></pre>
 
@@ -48,14 +49,26 @@
             let genesisTime = Module._ETHBeaconStateGetGenesisTime(state);
             document.getElementById('genesisTime').innerText = genesisTime;
 
-            Module._ETHBeaconStateDestroy(state);
+            return state;
+        }
+
+        function setupBeaconClock(state) {
+            let beaconClock = Module._ETHBeaconClockCreateFromState(state);
+            function onTick() {
+                let slot = Module._ETHBeaconClockGetSlot(beaconClock);
+                document.getElementById('slot').innerText = slot;
+                setTimeout(onTick, /* timeout: */ 100);
+            }
+            setTimeout(onTick, /* timeout: */ 100);
         }
 
         var Module = {
             onRuntimeInitialized: async function() {
                 let cfg = await loadCfg();
-                await loadGenesis(cfg);
+                let genesisState = await loadGenesis(cfg);
                 Module._ETHRuntimeConfigDestroy(cfg);
+                setupBeaconClock(genesisState);
+                Module._ETHBeaconStateDestroy(genesisState);
             }
         };
     </script>
