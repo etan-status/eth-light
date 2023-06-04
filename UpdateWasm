@@ -67,7 +67,7 @@ nim c \
     --passL:'-sSTACK_SIZE=128MB' \
     --passC:'-sUSE_PTHREADS=1' \
     --passL:'-sUSE_PTHREADS=1' \
-    --passL:'-sEXPORTED_FUNCTIONS="[_free, _malloc, _ETHRuntimeConfigCreateFromYaml, _ETHRuntimeConfigDestroy, _ETHRuntimeConfigGetCapellaForkEpoch, _ETHRuntimeConfigGetConsensusForkAtEpoch, _ETHBeaconStateCreateFromSsz, _ETHBeaconStateDestroy, _ETHBeaconStateGetGenesisTime, _ETHBeaconClockCreateFromState, _ETHBeaconClockDestroy, _ETHBeaconClockGetSlot]"' \
+    --passL:'-sEXPORTED_FUNCTIONS="[_free, _malloc, _ETHRuntimeConfigCreateFromYaml, _ETHRuntimeConfigGetConsensusForkAtEpoch, _ETHBeaconStateCreateFromSsz, _ETHBeaconStateDestroy, _ETHBeaconClockCreateFromState, _ETHBeaconClockGetSlot, _ETHLightClientStoreCreateFromBootstrap, _ETHLightClientStoreDestroy, _ETHLightClientStoreGetFinalizedHeader, _ETHLightClientHeaderGetBeacon, _ETHBeaconBlockHeaderGetRoot, _ETHBeaconBlockHeaderGetSlot, _ETHBeaconBlockHeaderGetProposerIndex, _ETHBeaconBlockHeaderGetParentRoot, _ETHBeaconBlockHeaderGetStateRoot, _ETHBeaconBlockHeaderGetBodyRoot]"' \
     --passL:'-sEXPORTED_RUNTIME_METHODS="[stringToNewUTF8]"' \
     --passL:'-Wl,--no-entry' \
     --noMain:on \

@@ -2,61 +2,79 @@
 <html lang="en">
 <head>
     <title>Ethereum Light</title>
+    <style>
+        #beaconApiBase, #trustedBlockRoot {
+            width: 500px;
+        }
+        pre {
+            display: inline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Mainnet config</h1>
-    CAPELLA_FORK_EPOCH: <b><span id="capellaForkEpoch"></span></b><br />
-    GENESIS_TIME: <b><span id="genesisTime"></span></b><br />
-    SLOT: <b><span id="slot"></span></b><br />
+    <h1>Checkpoint block lookup</h1>
+    Current slot: <b><span id="wallSlot"></span></b><br />
     <br />
-    <pre id="configOutput"></pre>
+    Beacon-API base:<br /><input id="beaconApiBase" value="https://beacon-api.eth-light.xyz" /><br />
+    <br />
+    Checkpoint block root:<br /><input id="trustedBlockRoot" value="0x6796a6abceb2510235f3736b0f371ebe38eaef254917b5b26cc8cebe0937cb7f" /><input type="button" id="initButton" value="Init" disabled /><br />
+    <br />
+
+    <h1>Checkpoint header</h1>
+    <ul>
+        <li>
+            <pre>finalized_header</pre>
+            <ul>
+                <li>
+                    <pre>beacon</pre>: <b><pre id="finalizedBeaconRoot"></pre></b>
+                    <ul>
+                        <li><pre>slot</pre>: <b><pre id="finalizedBeaconSlot"></pre></b></li>
+                        <li><pre>proposer_index</pre>: <b><pre id="finalizedBeaconProposerIndex"></pre></b></li>
+                        <li><pre>parent_root</pre>: <b><pre id="finalizedBeaconParentRoot"></pre></b></li>
+                        <li><pre>state_root</pre>: <b><pre id="finalizedBeaconStateRoot"></pre></b></li>
+                        <li><pre>body_root</pre>: <b><pre id="finalizedBeaconBodyRoot"></pre></b></li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
 
     <script>
         const networkMetadataPath = 'https://raw.githubusercontent.com/eth-clients/eth2-networks/master/shared/mainnet';
 
         async function loadCfg() {
-            let response = await fetch(networkMetadataPath + '/config.yaml');
+            const response = await fetch(networkMetadataPath + '/config.yaml');
             assert(response.ok);
-            let data = await response.text();
-            document.getElementById('configOutput').innerText = data;
+            const data = await response.text();
 
-            let fileContent = Module.stringToNewUTF8(data);
-            let cfg = Module._ETHRuntimeConfigCreateFromYaml(fileContent);
+            const fileContent = Module.stringToNewUTF8(data);
+            const cfg = Module._ETHRuntimeConfigCreateFromYaml(fileContent);
             assert(cfg);
             Module._free(fileContent);
-
-            let CAPELLA_FORK_EPOCH = Module._ETHRuntimeConfigGetCapellaForkEpoch(cfg);
-            document.getElementById('capellaForkEpoch').innerText = CAPELLA_FORK_EPOCH;
 
             return cfg;
         }
 
         async function loadGenesis(cfg) {
-            let consensusFork = Module._ETHRuntimeConfigGetConsensusForkAtEpoch(cfg, /* epoch: */ 0);
-            assert(consensusFork);
-
-            let response = await fetch(networkMetadataPath + '/genesis.ssz');
+            const consensusFork = Module._ETHRuntimeConfigGetConsensusForkAtEpoch(cfg, /* epoch: */ 0);
+            const response = await fetch(networkMetadataPath + '/genesis.ssz');
             assert(response.ok);
-            let data = await response.arrayBuffer();
-            let sszBytes = new Uint8Array(data)
+            const data = await response.arrayBuffer();
+            const sszBytes = new Uint8Array(data)
 
-            let sszBytesPtr = Module._malloc(sszBytes.length);
+            const sszBytesPtr = Module._malloc(sszBytes.length);
             Module.HEAPU8.set(sszBytes, sszBytesPtr);
-            let state = Module._ETHBeaconStateCreateFromSsz(consensusFork, sszBytesPtr, sszBytes.length);
+            const state = Module._ETHBeaconStateCreateFromSsz(cfg, consensusFork, sszBytesPtr, sszBytes.length);
             assert(state);
             Module._free(sszBytesPtr);
-
-            let genesisTime = Module._ETHBeaconStateGetGenesisTime(state);
-            document.getElementById('genesisTime').innerText = genesisTime;
 
             return state;
         }
 
-        function setupBeaconClock(state) {
-            let beaconClock = Module._ETHBeaconClockCreateFromState(state);
+        function trackWallTime(beaconClock) {
             function onTick() {
-                let slot = Module._ETHBeaconClockGetSlot(beaconClock);
-                document.getElementById('slot').innerText = slot;
+                const slot = Module._ETHBeaconClockGetSlot(beaconClock);
+                document.getElementById('wallSlot').innerText = slot;
                 setTimeout(onTick, /* timeout: */ 100);
             }
             setTimeout(onTick, /* timeout: */ 100);
@@ -64,11 +82,77 @@
 
         var Module = {
             onRuntimeInitialized: async function() {
-                let cfg = await loadCfg();
-                let genesisState = await loadGenesis(cfg);
-                Module._ETHRuntimeConfigDestroy(cfg);
-                setupBeaconClock(genesisState);
+                const cfg = await loadCfg();
+                const genesisState = await loadGenesis(cfg);
+                const beaconClock = Module._ETHBeaconClockCreateFromState(genesisState);
                 Module._ETHBeaconStateDestroy(genesisState);
+                trackWallTime(beaconClock);
+
+                document.getElementById('initButton').addEventListener('click', async function() {
+                    const trustedBlockRootString = document.getElementById('trustedBlockRoot').value;
+                    if (!/^0x[0-9a-fA-F]{64}$/.test(trustedBlockRootString)) {
+                        return;
+                    }
+                    document.getElementById('initButton').disabled = true;
+                    const beaconApiBase = document.getElementById('beaconApiBase').value;
+                    const response = await fetch(beaconApiBase + '/eth/v1/beacon/light_client/bootstrap/' + trustedBlockRootString, {
+                        headers: {
+                            'Accept': 'application/octet-stream'
+                        }
+                    });
+                    if (response.ok) {
+                        const data = await response.arrayBuffer();
+                        const bootstrapSszBytes = new Uint8Array(data);
+
+                        const trustedBlockRootBytes = new Uint8Array(32);
+                        for (let i = 0; i < trustedBlockRootBytes.length; i++) {
+                            trustedBlockRootBytes[i] = parseInt(trustedBlockRootString.substr(i * 2 + 2, 2), 16);
+                        }
+
+                        const trustedBlockRootBytesPtr = Module._malloc(trustedBlockRootBytes.length);
+                        Module.HEAPU8.set(trustedBlockRootBytes, trustedBlockRootBytesPtr);
+                        const ethConsensusVersion = Module.stringToNewUTF8(response.headers.get('Eth-Consensus-Version'));
+                        const bootstrapSszBytesPtr = Module._malloc(bootstrapSszBytes.length);
+                        Module.HEAPU8.set(bootstrapSszBytes, bootstrapSszBytesPtr);
+                        const store = Module._ETHLightClientStoreCreateFromBootstrap(
+                            cfg, trustedBlockRootBytesPtr,
+                            ethConsensusVersion, bootstrapSszBytesPtr, bootstrapSszBytes.length);
+                        Module._free(bootstrapSszBytesPtr);
+                        Module._free(ethConsensusVersion);
+                        Module._free(trustedBlockRootBytesPtr);
+
+                        function toHexString(bytes, numBytes) {
+                            let hexString = '0x';
+                            for (let i = 0; i < numBytes; i++) {
+                                let hexByte = Module.HEAPU8[bytes + i].toString(16);
+                                if (hexByte.length === 1) hexByte = '0' + hexByte;
+                                hexString += hexByte;
+                            }
+                            return hexString;
+                        }
+
+                        const finalizedHeader = Module._ETHLightClientStoreGetFinalizedHeader(store);
+                        const beacon = Module._ETHLightClientHeaderGetBeacon(finalizedHeader);
+                        const root = Module._malloc(32);
+                        Module._ETHBeaconBlockHeaderGetRoot(beacon, root);
+                        document.getElementById('finalizedBeaconRoot').innerText = toHexString(root, 32);
+                        Module._free(root);
+                        const slot = Module._ETHBeaconBlockHeaderGetSlot(beacon);
+                        document.getElementById('finalizedBeaconSlot').innerText = slot;
+                        const proposerIndex = Module._ETHBeaconBlockHeaderGetProposerIndex(beacon);
+                        document.getElementById('finalizedBeaconProposerIndex').innerText = proposerIndex;
+                        const parentRoot = Module._ETHBeaconBlockHeaderGetParentRoot(beacon);
+                        document.getElementById('finalizedBeaconParentRoot').innerText = toHexString(parentRoot, 32);
+                        const stateRoot = Module._ETHBeaconBlockHeaderGetStateRoot(beacon);
+                        document.getElementById('finalizedBeaconStateRoot').innerText = toHexString(stateRoot, 32);
+                        const bodyRoot = Module._ETHBeaconBlockHeaderGetBodyRoot(beacon);
+                        document.getElementById('finalizedBeaconBodyRoot').innerText = toHexString(bodyRoot, 32);
+
+                        Module._ETHLightClientStoreDestroy(store);
+                    }
+                    document.getElementById('initButton').disabled = false;
+                });
+                document.getElementById('initButton').disabled = false;
             }
         };
     </script>
