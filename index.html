@@ -12,15 +12,17 @@
     </style>
 </head>
 <body>
-    <h1>Checkpoint block lookup</h1>
+    <h1>Bootstrap</h1>
     Current slot: <b><span id="wallSlot"></span></b><br />
     <br />
     Beacon-API base:<br /><input id="beaconApiBase" value="https://beacon-api.eth-light.xyz" /><br />
     <br />
-    Checkpoint block root:<br /><input id="trustedBlockRoot" value="0x6796a6abceb2510235f3736b0f371ebe38eaef254917b5b26cc8cebe0937cb7f" /><input type="button" id="initButton" value="Init" disabled /><br />
+    Checkpoint block root:<br /><input id="trustedBlockRoot" value="0x15cf56ebf887ede9cf3fc10a26ec83828628932c100e42c98c84f83da710c863" /><input type="button" id="initButton" value="Init" disabled /><br />
     <br />
 
-    <h1>Checkpoint header</h1>
+    <h1>Sync progress</h1>
+    Latest sync task: <b><span id="syncTask"></span></b><br />
+    Next fetch: <b><span id="timeToNextFetch"></span></b><br />
     <ul>
         <li>
             <pre>finalized_header</pre>
@@ -37,10 +39,22 @@
                 </li>
             </ul>
         </li>
+        <li>
+            <pre>optimistic_header</pre>
+            <ul>
+                <li>
+                    <pre>beacon</pre>: <b><pre id="optimisticBeaconRoot"></pre></b>
+                    <ul>
+                        <li><pre>slot</pre>: <b><pre id="optimisticBeaconSlot"></pre></b></li>
+                        <li><pre>proposer_index</pre>: <b><pre id="optimisticBeaconProposerIndex"></pre></b></li>
+                        <li><pre>parent_root</pre>: <b><pre id="optimisticBeaconParentRoot"></pre></b></li>
+                        <li><pre>state_root</pre>: <b><pre id="optimisticBeaconStateRoot"></pre></b></li>
+                        <li><pre>body_root</pre>: <b><pre id="optimisticBeaconBodyRoot"></pre></b></li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
     </ul>
-
-    <h1>Light client</h1>
-    Next sync task: <b><span id="syncTask"></span></b><br />
 
     <h1>Secure random number demo</h1>
     <input id="rngOutput" readonly /><input type="button" id="rngButton" value="Rand" />
@@ -77,10 +91,23 @@
             return state;
         }
 
+        let nextFetchTime = undefined;
         function trackWallTime(beaconClock) {
             function onTick() {
                 const slot = Module._ETHBeaconClockGetSlot(beaconClock);
                 document.getElementById('wallSlot').innerText = slot;
+                if (nextFetchTime !== undefined) {
+                    const now = Date.now();
+                    let remainingMilliseconds = 0;
+                    if (nextFetchTime > now) {
+                        remainingMilliseconds = nextFetchTime - now;
+                    }
+                    const seconds = Math.floor((remainingMilliseconds / 1000) % 60).toString().padStart(2, '0');
+                    const minutes = Math.floor((remainingMilliseconds / (1000 * 60)) % 60).toString().padStart(2, '0');
+                    const hours = Math.floor((remainingMilliseconds / (1000 * 60 * 60)) % 24).toString().padStart(2, '0');
+                    document.getElementById('timeToNextFetch').innerText =
+                        hours + ':' + minutes + ':' + seconds;
+                }
                 setTimeout(onTick, /* timeout: */ 100);
             }
             setTimeout(onTick, /* timeout: */ 100);
@@ -99,25 +126,33 @@
                 return hexString;
             }
 
-            const finalizedHeader = Module._ETHLightClientStoreGetFinalizedHeader(store);
-            const beacon = Module._ETHLightClientHeaderGetBeacon(finalizedHeader);
-            const root = Module._malloc(32);
-            Module._ETHBeaconBlockHeaderGetRoot(beacon, root);
-            document.getElementById('finalizedBeaconRoot').innerText = toHexString(root, 32);
-            Module._free(root);
-            const slot = Module._ETHBeaconBlockHeaderGetSlot(beacon);
-            document.getElementById('finalizedBeaconSlot').innerText = slot;
-            const proposerIndex = Module._ETHBeaconBlockHeaderGetProposerIndex(beacon);
-            document.getElementById('finalizedBeaconProposerIndex').innerText = proposerIndex;
-            const parentRoot = Module._ETHBeaconBlockHeaderGetParentRoot(beacon);
-            document.getElementById('finalizedBeaconParentRoot').innerText = toHexString(parentRoot, 32);
-            const stateRoot = Module._ETHBeaconBlockHeaderGetStateRoot(beacon);
-            document.getElementById('finalizedBeaconStateRoot').innerText = toHexString(stateRoot, 32);
-            const bodyRoot = Module._ETHBeaconBlockHeaderGetBodyRoot(beacon);
-            document.getElementById('finalizedBeaconBodyRoot').innerText = toHexString(bodyRoot, 32);
+            function visualizeHeader(prefix, header) {
+                const beacon = Module._ETHLightClientHeaderGetBeacon(header);
+                const root = Module._malloc(32);
+                Module._ETHBeaconBlockHeaderGetRoot(beacon, root);
+                document.getElementById(prefix + 'BeaconRoot').innerText = toHexString(root, 32);
+                Module._free(root);
+                const slot = Module._ETHBeaconBlockHeaderGetSlot(beacon);
+                document.getElementById(prefix + 'BeaconSlot').innerText = slot;
+                const proposerIndex = Module._ETHBeaconBlockHeaderGetProposerIndex(beacon);
+                document.getElementById(prefix + 'BeaconProposerIndex').innerText = proposerIndex;
+                const parentRoot = Module._ETHBeaconBlockHeaderGetParentRoot(beacon);
+                document.getElementById(prefix + 'BeaconParentRoot').innerText = toHexString(parentRoot, 32);
+                const stateRoot = Module._ETHBeaconBlockHeaderGetStateRoot(beacon);
+                document.getElementById(prefix + 'BeaconStateRoot').innerText = toHexString(stateRoot, 32);
+                const bodyRoot = Module._ETHBeaconBlockHeaderGetBodyRoot(beacon);
+                document.getElementById(prefix + 'BeaconBodyRoot').innerText = toHexString(bodyRoot, 32);
+            }
+
+            visualizeHeader('finalized', Module._ETHLightClientStoreGetFinalizedHeader(store));
+            visualizeHeader('optimistic', Module._ETHLightClientStoreGetOptimisticHeader(store));
         }
 
         let beaconApiBase = undefined;
+        let rng = undefined;
+        let cfg = undefined;
+        let genesisValidatorsRoot = undefined;
+        let forkDigests = undefined;
         let beaconClock = undefined;
         let store = undefined;
         let storeId = 0;
@@ -125,10 +160,11 @@
         function trackStore(newStore) {
             store = newStore;
             storeId++;
-            function runOnTick(tickStoreId) {
-                (async function () {
+            function runOnTick(tickStoreId, timeout) {
+                visualizeStore(store);
+                async function onTick() {
                     trackStoreTimeout = undefined;
-                    visualizeStore(store);
+                    nextFetchTime = undefined;
 
                     const startPeriodPtr = Module._malloc(4);
                     const countPtr = Module._malloc(4);
@@ -136,9 +172,11 @@
                         store, beaconClock, startPeriodPtr, countPtr);
                     const startPeriod = Module.HEAPU32[startPeriodPtr >>> 2];
                     const count = Module.HEAPU32[countPtr >>> 2];
-                    Module._free(startPeriodPtr);
                     Module._free(countPtr);
+                    Module._free(startPeriodPtr);
 
+                    let res = 0;
+                    let didProgress = 0;
                     if (syncKind == Module.HEAPU8[Module._kETHLCSyncKind_UpdatesByRange]) {
                         document.getElementById('syncTask').innerText = 'UpdatesByRange(' + startPeriod + ", " + count + ')';
                         const response = await fetch(beaconApiBase +
@@ -147,7 +185,20 @@
                                     'Accept': 'application/octet-stream'
                                 }
                             });
+                        const data = await response.arrayBuffer();
                         if (storeId != tickStoreId) return;
+                        const updatesByRangeSszBytes = new Uint8Array(data);
+
+                        const updatesByRangeSszBytesPtr = Module._malloc(updatesByRangeSszBytes.length);
+                        Module.HEAPU8.set(updatesByRangeSszBytes, updatesByRangeSszBytesPtr);
+                        const didProgressPtr = Module._malloc(4);
+                        res = Module._ETHLightClientStoreProcessUpdatesByRange(
+                            store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
+                            startPeriod, count, updatesByRangeSszBytesPtr, updatesByRangeSszBytes.length,
+                            didProgressPtr);
+                        didProgress = Module.HEAPU32[didProgressPtr >>> 2];
+                        Module._free(didProgressPtr);
+                        Module._free(updatesByRangeSszBytesPtr);
                     } else if (syncKind == Module.HEAPU8[Module._kETHLCSyncKind_FinalityUpdate]) {
                         document.getElementById('syncTask').innerText = 'FinalityUpdate';
                         const response = await fetch(beaconApiBase +
@@ -156,6 +207,7 @@
                                     'Accept': 'application/octet-stream'
                                 }
                             });
+                        const data = await response.arrayBuffer();
                         if (storeId != tickStoreId) return;
                     } else {
                         assert(syncKind == Module.HEAPU8[Module._kETHLCSyncKind_OptimisticUpdate]);
@@ -166,16 +218,32 @@
                                     'Accept': 'application/octet-stream'
                                 }
                             });
+                        const data = await response.arrayBuffer();
                         if (storeId != tickStoreId) return;
                     }
-                })();
+
+                    let millisecondsToNextFetch = 0;
+                    if (res) {
+                        millisecondsToNextFetch = 15 * 60 * 1000;
+                    } else if (!didProgress) {
+                        millisecondsToNextFetch = 15 * 1000;
+                    } else {
+                        millisecondsToNextFetch = Module._ETHLightClientStoreGetMillisecondsToNextFetch(
+                            store, rng, beaconClock,
+                            syncKind == Module.HEAPU8[Module._kETHLCSyncKind_OptimisticUpdate]);
+                    }
+                    nextFetchTime = Date.now() + millisecondsToNextFetch;
+                    runOnTick(storeId, /* timeout: */ millisecondsToNextFetch);
+                }
+                trackStoreTimeout = setTimeout(onTick, timeout);
             }
-            trackStoreTimeout = setTimeout(runOnTick(storeId), /* timeout: */ 0);
+            runOnTick(storeId, /* timeout: */ 0);
         }
         function clearStore() {
             if (trackStoreTimeout !== undefined) {
                 clearTimeout(trackStoreTimeout);
                 trackStoreTimeout = undefined;
+                nextFetchTime = undefined;
             }
             if (store !== undefined) {
                 Module._ETHLightClientStoreDestroy(store);
@@ -184,9 +252,11 @@
         }
 
         Module.onRuntimeInitialized = async function() {
-            const rng = Module._ETHRandomNumberCreate();
-            const cfg = await loadCfg();
+            rng = Module._ETHRandomNumberCreate();
+            cfg = await loadCfg();
             const genesisState = await loadGenesis(cfg);
+            genesisValidatorsRoot = Module._ETHBeaconStateCopyGenesisValidatorsRoot(genesisState);
+            forkDigests = Module._ETHForkDigestsCreateFromState(cfg, genesisState);
             beaconClock = Module._ETHBeaconClockCreateFromState(genesisState);
             Module._ETHBeaconStateDestroy(genesisState);
             trackWallTime(beaconClock);
