@@ -209,6 +209,20 @@
                             });
                         const data = await response.arrayBuffer();
                         if (storeId != tickStoreId) return;
+                        const finalityUpdateSszBytes = new Uint8Array(data);
+
+                        const ethConsensusVersion = Module.stringToNewUTF8(response.headers.get('Eth-Consensus-Version'));
+                        const finalityUpdateSszBytesPtr = Module._malloc(finalityUpdateSszBytes.length);
+                        Module.HEAPU8.set(finalityUpdateSszBytes, finalityUpdateSszBytesPtr);
+                        const didProgressPtr = Module._malloc(4);
+                        res = Module._ETHLightClientStoreProcessFinalityUpdate(
+                            store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
+                            ethConsensusVersion, finalityUpdateSszBytesPtr, finalityUpdateSszBytes.length,
+                            didProgressPtr);
+                        didProgress = Module.HEAPU32[didProgressPtr >>> 2];
+                        Module._free(didProgressPtr);
+                        Module._free(finalityUpdateSszBytesPtr);
+                        Module._free(ethConsensusVersion);
                     } else {
                         assert(syncKind == Module.HEAPU8[Module._kETHLCSyncKind_OptimisticUpdate]);
                         document.getElementById('syncTask').innerText = 'OptimisticUpdate';
@@ -220,6 +234,20 @@
                             });
                         const data = await response.arrayBuffer();
                         if (storeId != tickStoreId) return;
+                        const optimisticUpdateSszBytes = new Uint8Array(data);
+
+                        const ethConsensusVersion = Module.stringToNewUTF8(response.headers.get('Eth-Consensus-Version'));
+                        const optimisticUpdateSszBytesPtr = Module._malloc(optimisticUpdateSszBytes.length);
+                        Module.HEAPU8.set(optimisticUpdateSszBytes, optimisticUpdateSszBytesPtr);
+                        const didProgressPtr = Module._malloc(4);
+                        res = Module._ETHLightClientStoreProcessOptimisticUpdate(
+                            store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
+                            ethConsensusVersion, optimisticUpdateSszBytesPtr, optimisticUpdateSszBytes.length,
+                            didProgressPtr);
+                        didProgress = Module.HEAPU32[didProgressPtr >>> 2];
+                        Module._free(didProgressPtr);
+                        Module._free(optimisticUpdateSszBytesPtr);
+                        Module._free(ethConsensusVersion);
                     }
 
                     let millisecondsToNextFetch = 0;
