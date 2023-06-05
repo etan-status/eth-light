@@ -56,9 +56,6 @@
         </li>
     </ul>
 
-    <h1>Secure random number demo</h1>
-    <input id="rngOutput" readonly /><input type="button" id="rngButton" value="Rand" />
-
     <script>
         const networkMetadataPath = 'https://raw.githubusercontent.com/eth-clients/eth2-networks/master/shared/mainnet';
 
@@ -288,10 +285,6 @@
             beaconClock = Module._ETHBeaconClockCreateFromState(genesisState);
             Module._ETHBeaconStateDestroy(genesisState);
             trackWallTime(beaconClock);
-
-            document.getElementById('rngButton').addEventListener('click', function() {
-                document.getElementById('rngOutput').value = Module._ETHRandomNumberGet(rng);
-            })
 
             document.getElementById('initButton').addEventListener('click', async function() {
                 const trustedBlockRootString = document.getElementById('trustedBlockRoot').value;
