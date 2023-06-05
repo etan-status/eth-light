@@ -80,80 +80,84 @@
             setTimeout(onTick, /* timeout: */ 100);
         }
 
-        var Module = {
-            onRuntimeInitialized: async function() {
-                const cfg = await loadCfg();
-                const genesisState = await loadGenesis(cfg);
-                const beaconClock = Module._ETHBeaconClockCreateFromState(genesisState);
-                Module._ETHBeaconStateDestroy(genesisState);
-                trackWallTime(beaconClock);
+        var Module = {};
 
-                document.getElementById('initButton').addEventListener('click', async function() {
-                    const trustedBlockRootString = document.getElementById('trustedBlockRoot').value;
-                    if (!/^0x[0-9a-fA-F]{64}$/.test(trustedBlockRootString)) {
-                        return;
-                    }
-                    document.getElementById('initButton').disabled = true;
-                    const beaconApiBase = document.getElementById('beaconApiBase').value;
-                    const response = await fetch(beaconApiBase + '/eth/v1/beacon/light_client/bootstrap/' + trustedBlockRootString, {
-                        headers: {
-                            'Accept': 'application/octet-stream'
-                        }
-                    });
-                    if (response.ok) {
-                        const data = await response.arrayBuffer();
-                        const bootstrapSszBytes = new Uint8Array(data);
-
-                        const trustedBlockRootBytes = new Uint8Array(32);
-                        for (let i = 0; i < trustedBlockRootBytes.length; i++) {
-                            trustedBlockRootBytes[i] = parseInt(trustedBlockRootString.substr(i * 2 + 2, 2), 16);
-                        }
-
-                        const trustedBlockRootBytesPtr = Module._malloc(trustedBlockRootBytes.length);
-                        Module.HEAPU8.set(trustedBlockRootBytes, trustedBlockRootBytesPtr);
-                        const ethConsensusVersion = Module.stringToNewUTF8(response.headers.get('Eth-Consensus-Version'));
-                        const bootstrapSszBytesPtr = Module._malloc(bootstrapSszBytes.length);
-                        Module.HEAPU8.set(bootstrapSszBytes, bootstrapSszBytesPtr);
-                        const store = Module._ETHLightClientStoreCreateFromBootstrap(
-                            cfg, trustedBlockRootBytesPtr,
-                            ethConsensusVersion, bootstrapSszBytesPtr, bootstrapSszBytes.length);
-                        Module._free(bootstrapSszBytesPtr);
-                        Module._free(ethConsensusVersion);
-                        Module._free(trustedBlockRootBytesPtr);
-
-                        function toHexString(bytes, numBytes) {
-                            let hexString = '0x';
-                            for (let i = 0; i < numBytes; i++) {
-                                let hexByte = Module.HEAPU8[bytes + i].toString(16);
-                                if (hexByte.length === 1) hexByte = '0' + hexByte;
-                                hexString += hexByte;
-                            }
-                            return hexString;
-                        }
-
-                        const finalizedHeader = Module._ETHLightClientStoreGetFinalizedHeader(store);
-                        const beacon = Module._ETHLightClientHeaderGetBeacon(finalizedHeader);
-                        const root = Module._malloc(32);
-                        Module._ETHBeaconBlockHeaderGetRoot(beacon, root);
-                        document.getElementById('finalizedBeaconRoot').innerText = toHexString(root, 32);
-                        Module._free(root);
-                        const slot = Module._ETHBeaconBlockHeaderGetSlot(beacon);
-                        document.getElementById('finalizedBeaconSlot').innerText = slot;
-                        const proposerIndex = Module._ETHBeaconBlockHeaderGetProposerIndex(beacon);
-                        document.getElementById('finalizedBeaconProposerIndex').innerText = proposerIndex;
-                        const parentRoot = Module._ETHBeaconBlockHeaderGetParentRoot(beacon);
-                        document.getElementById('finalizedBeaconParentRoot').innerText = toHexString(parentRoot, 32);
-                        const stateRoot = Module._ETHBeaconBlockHeaderGetStateRoot(beacon);
-                        document.getElementById('finalizedBeaconStateRoot').innerText = toHexString(stateRoot, 32);
-                        const bodyRoot = Module._ETHBeaconBlockHeaderGetBodyRoot(beacon);
-                        document.getElementById('finalizedBeaconBodyRoot').innerText = toHexString(bodyRoot, 32);
-
-                        Module._ETHLightClientStoreDestroy(store);
-                    }
-                    document.getElementById('initButton').disabled = false;
-                });
-                document.getElementById('initButton').disabled = false;
+        function visualizeStore(store) {
+            function toHexString(bytes, numBytes) {
+                let hexString = '0x';
+                for (let i = 0; i < numBytes; i++) {
+                    let hexByte = Module.HEAPU8[bytes + i].toString(16);
+                    if (hexByte.length === 1) hexByte = '0' + hexByte;
+                    hexString += hexByte;
+                }
+                return hexString;
             }
+
+            const finalizedHeader = Module._ETHLightClientStoreGetFinalizedHeader(store);
+            const beacon = Module._ETHLightClientHeaderGetBeacon(finalizedHeader);
+            const root = Module._malloc(32);
+            Module._ETHBeaconBlockHeaderGetRoot(beacon, root);
+            document.getElementById('finalizedBeaconRoot').innerText = toHexString(root, 32);
+            Module._free(root);
+            const slot = Module._ETHBeaconBlockHeaderGetSlot(beacon);
+            document.getElementById('finalizedBeaconSlot').innerText = slot;
+            const proposerIndex = Module._ETHBeaconBlockHeaderGetProposerIndex(beacon);
+            document.getElementById('finalizedBeaconProposerIndex').innerText = proposerIndex;
+            const parentRoot = Module._ETHBeaconBlockHeaderGetParentRoot(beacon);
+            document.getElementById('finalizedBeaconParentRoot').innerText = toHexString(parentRoot, 32);
+            const stateRoot = Module._ETHBeaconBlockHeaderGetStateRoot(beacon);
+            document.getElementById('finalizedBeaconStateRoot').innerText = toHexString(stateRoot, 32);
+            const bodyRoot = Module._ETHBeaconBlockHeaderGetBodyRoot(beacon);
+            document.getElementById('finalizedBeaconBodyRoot').innerText = toHexString(bodyRoot, 32);
+        }
+
+        Module.onRuntimeInitialized = async function() {
+            const cfg = await loadCfg();
+            const genesisState = await loadGenesis(cfg);
+            const beaconClock = Module._ETHBeaconClockCreateFromState(genesisState);
+            Module._ETHBeaconStateDestroy(genesisState);
+            trackWallTime(beaconClock);
+
+            document.getElementById('initButton').addEventListener('click', async function() {
+                const trustedBlockRootString = document.getElementById('trustedBlockRoot').value;
+                if (!/^0x[0-9a-fA-F]{64}$/.test(trustedBlockRootString)) {
+                    return;
+                }
+                document.getElementById('initButton').disabled = true;
+                const beaconApiBase = document.getElementById('beaconApiBase').value;
+                const response = await fetch(beaconApiBase + '/eth/v1/beacon/light_client/bootstrap/' + trustedBlockRootString, {
+                    headers: {
+                        'Accept': 'application/octet-stream'
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.arrayBuffer();
+                    const bootstrapSszBytes = new Uint8Array(data);
+
+                    const trustedBlockRootBytes = new Uint8Array(32);
+                    for (let i = 0; i < trustedBlockRootBytes.length; i++) {
+                        trustedBlockRootBytes[i] = parseInt(trustedBlockRootString.substr(i * 2 + 2, 2), 16);
+                    }
+
+                    const trustedBlockRootBytesPtr = Module._malloc(trustedBlockRootBytes.length);
+                    Module.HEAPU8.set(trustedBlockRootBytes, trustedBlockRootBytesPtr);
+                    const ethConsensusVersion = Module.stringToNewUTF8(response.headers.get('Eth-Consensus-Version'));
+                    const bootstrapSszBytesPtr = Module._malloc(bootstrapSszBytes.length);
+                    Module.HEAPU8.set(bootstrapSszBytes, bootstrapSszBytesPtr);
+                    const store = Module._ETHLightClientStoreCreateFromBootstrap(
+                        cfg, trustedBlockRootBytesPtr,
+                        ethConsensusVersion, bootstrapSszBytesPtr, bootstrapSszBytes.length);
+                    Module._free(bootstrapSszBytesPtr);
+                    Module._free(ethConsensusVersion);
+                    Module._free(trustedBlockRootBytesPtr);
+
+                    visualizeStore(store);
+
+                    Module._ETHLightClientStoreDestroy(store);
+                }
+                document.getElementById('initButton').disabled = false;
+            });
+            document.getElementById('initButton').disabled = false;
         };
     </script>
     <script async src="light_client_wasm.js"></script>
