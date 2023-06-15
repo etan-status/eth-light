@@ -115,7 +115,7 @@ index 265e0a1..b70f30f 100644
      swap(a[i], a[j])
 EOF
 
-rm -rf light_client_wasm.js light_client_wasm.wasm light_client_wasm.worker.js nimcache
+rm -rf nimbus_light_client_ffi.js nimbus_light_client_ffi.wasm nimbus_light_client_ffi.worker.js nimcache
 nim c \
     -d:disable_libbacktrace \
     -d:disableLTO \
@@ -146,9 +146,9 @@ nim c \
     --passL:'-sSTACK_SIZE=128MB' \
     --passC:'-sUSE_PTHREADS=1' \
     --passL:'-sUSE_PTHREADS=1' \
-    --passL:'-sEXPORTED_FUNCTIONS="[_free, _malloc, _ETHRandomNumberCreate, _ETHRuntimeConfigCreateFromYaml, _ETHRuntimeConfigGetConsensusForkAtEpoch, _ETHBeaconStateCreateFromSsz, _ETHBeaconStateDestroy, _ETHBeaconStateCopyGenesisValidatorsRoot, _ETHForkDigestsCreateFromState, _ETHBeaconClockCreateFromState, _ETHBeaconClockGetSlot, _ETHLightClientStoreCreateFromBootstrap, _ETHLightClientStoreDestroy, _ETHLightClientStoreProcessUpdatesByRange, _ETHLightClientStoreProcessFinalityUpdate, _ETHLightClientStoreProcessOptimisticUpdate, _kETHLCSyncKind_UpdatesByRange, _kETHLCSyncKind_FinalityUpdate, _kETHLCSyncKind_OptimisticUpdate, _ETHLightClientStoreGetNextSyncTask, _ETHLightClientStoreGetMillisecondsToNextFetch, _ETHLightClientStoreGetFinalizedHeader, _ETHLightClientStoreGetOptimisticHeader, _ETHLightClientHeaderGetBeacon, _ETHBeaconBlockHeaderGetRoot, _ETHBeaconBlockHeaderGetSlot, _ETHBeaconBlockHeaderGetProposerIndex, _ETHBeaconBlockHeaderGetParentRoot, _ETHBeaconBlockHeaderGetStateRoot, _ETHBeaconBlockHeaderGetBodyRoot]"' \
+    --passL:'-sEXPORTED_FUNCTIONS="[_free, _malloc, _ECLRandomNumberCreate, _ECLNetworkConfigCreateFromYaml, _ECLNetworkConfigGetConsensusVersionAtEpoch, _ECLBeaconStateCreateFromSsz, _ECLBeaconStateDestroy, _ECLBeaconStateCopyGenesisValidatorsRoot, _ECLForkDigestsCreateFromState, _ECLBeaconClockCreateFromState, _ECLBeaconClockGetSlot, _ECLLightClientStoreCreateFromBootstrap, _ECLLightClientStoreDestroy, _ECLLightClientStoreProcessUpdatesByRange, _ECLLightClientStoreProcessFinalityUpdate, _ECLLightClientStoreProcessOptimisticUpdate, _kECLLCSyncKind_UpdatesByRange, _kECLLCSyncKind_FinalityUpdate, _kECLLCSyncKind_OptimisticUpdate, _ECLLightClientStoreGetNextSyncTask, _ECLLightClientStoreGetMillisecondsToNextFetch, _ECLLightClientStoreGetFinalizedHeader, _ECLLightClientStoreGetOptimisticHeader, _ECLLightClientHeaderGetBeacon, _ECLBeaconBlockHeaderGetRoot, _ECLBeaconBlockHeaderGetSlot, _ECLBeaconBlockHeaderGetProposerIndex, _ECLBeaconBlockHeaderGetParentRoot, _ECLBeaconBlockHeaderGetStateRoot, _ECLBeaconBlockHeaderGetBodyRoot]"' \
     --passL:'-sEXPORTED_RUNTIME_METHODS="[lengthBytesUTF8, stringToNewUTF8]"' \
     --passL:'-Wl,--no-entry' \
     --noMain:on \
-    --passL:'-o light_client_wasm.js' \
-    nimbus-eth2/beacon_chain/light_client_wasm.nim
+    --passL:'-o nimbus_light_client_ffi.js' \
+    nimbus-eth2/beacon_chain/nimbus_light_client_ffi.nim

@@ -65,7 +65,7 @@
             const data = await response.text();
 
             const fileContent = Module.stringToNewUTF8(data);
-            const cfg = Module._ETHRuntimeConfigCreateFromYaml(fileContent);
+            const cfg = Module._ECLNetworkConfigCreateFromYaml(fileContent);
             assert(cfg);
             Module._free(fileContent);
 
@@ -73,7 +73,7 @@
         }
 
         async function loadGenesis(cfg) {
-            const consensusFork = Module._ETHRuntimeConfigGetConsensusForkAtEpoch(cfg, /* epoch: */ 0);
+            const consensusFork = Module._ECLNetworkConfigGetConsensusVersionAtEpoch(cfg, /* epoch: */ 0);
             const response = await fetch(networkMetadataPath + '/genesis.ssz');
             assert(response.ok);
             const data = await response.arrayBuffer();
@@ -81,7 +81,7 @@
 
             const sszBytesPtr = Module._malloc(sszBytes.length);
             Module.HEAPU8.set(sszBytes, sszBytesPtr);
-            const state = Module._ETHBeaconStateCreateFromSsz(cfg, consensusFork, sszBytesPtr, sszBytes.length);
+            const state = Module._ECLBeaconStateCreateFromSsz(cfg, consensusFork, sszBytesPtr, sszBytes.length);
             assert(state);
             Module._free(sszBytesPtr);
 
@@ -91,7 +91,7 @@
         let nextFetchTime = undefined;
         function trackWallTime(beaconClock) {
             function onTick() {
-                const slot = Module._ETHBeaconClockGetSlot(beaconClock);
+                const slot = Module._ECLBeaconClockGetSlot(beaconClock);
                 document.getElementById('wallSlot').innerText = slot;
                 if (nextFetchTime !== undefined) {
                     const now = Date.now();
@@ -124,25 +124,25 @@
             }
 
             function visualizeHeader(prefix, header) {
-                const beacon = Module._ETHLightClientHeaderGetBeacon(header);
+                const beacon = Module._ECLLightClientHeaderGetBeacon(header);
                 const root = Module._malloc(32);
-                Module._ETHBeaconBlockHeaderGetRoot(beacon, root);
+                Module._ECLBeaconBlockHeaderGetRoot(beacon, root);
                 document.getElementById(prefix + 'BeaconRoot').innerText = toHexString(root, 32);
                 Module._free(root);
-                const slot = Module._ETHBeaconBlockHeaderGetSlot(beacon);
+                const slot = Module._ECLBeaconBlockHeaderGetSlot(beacon);
                 document.getElementById(prefix + 'BeaconSlot').innerText = slot;
-                const proposerIndex = Module._ETHBeaconBlockHeaderGetProposerIndex(beacon);
+                const proposerIndex = Module._ECLBeaconBlockHeaderGetProposerIndex(beacon);
                 document.getElementById(prefix + 'BeaconProposerIndex').innerText = proposerIndex;
-                const parentRoot = Module._ETHBeaconBlockHeaderGetParentRoot(beacon);
+                const parentRoot = Module._ECLBeaconBlockHeaderGetParentRoot(beacon);
                 document.getElementById(prefix + 'BeaconParentRoot').innerText = toHexString(parentRoot, 32);
-                const stateRoot = Module._ETHBeaconBlockHeaderGetStateRoot(beacon);
+                const stateRoot = Module._ECLBeaconBlockHeaderGetStateRoot(beacon);
                 document.getElementById(prefix + 'BeaconStateRoot').innerText = toHexString(stateRoot, 32);
-                const bodyRoot = Module._ETHBeaconBlockHeaderGetBodyRoot(beacon);
+                const bodyRoot = Module._ECLBeaconBlockHeaderGetBodyRoot(beacon);
                 document.getElementById(prefix + 'BeaconBodyRoot').innerText = toHexString(bodyRoot, 32);
             }
 
-            visualizeHeader('finalized', Module._ETHLightClientStoreGetFinalizedHeader(store));
-            visualizeHeader('optimistic', Module._ETHLightClientStoreGetOptimisticHeader(store));
+            visualizeHeader('finalized', Module._ECLLightClientStoreGetFinalizedHeader(store));
+            visualizeHeader('optimistic', Module._ECLLightClientStoreGetOptimisticHeader(store));
         }
 
         let beaconApiBase = undefined;
@@ -169,7 +169,7 @@
                     const finalityUpdateBytesPtr = Module.stringToNewUTF8(event.data);
                     const numFinalityUpdateBytes = Module.lengthBytesUTF8(event.data);
                     const didProgressPtr = Module._malloc(4);
-                    const res = Module._ETHLightClientStoreProcessFinalityUpdate(
+                    const res = Module._ECLLightClientStoreProcessFinalityUpdate(
                         store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
                         contentType, /* ethConsensusVersion: */ 0, finalityUpdateBytesPtr, numFinalityUpdateBytes,
                         didProgressPtr);
@@ -186,7 +186,7 @@
                     const optimisticUpdateBytesPtr = Module.stringToNewUTF8(event.data);
                     const numOptimisticUpdateBytes = Module.lengthBytesUTF8(event.data);
                     const didProgressPtr = Module._malloc(4);
-                    const res = Module._ETHLightClientStoreProcessOptimisticUpdate(
+                    const res = Module._ECLLightClientStoreProcessOptimisticUpdate(
                         store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
                         contentType, /* ethConsensusVersion: */ 0, optimisticUpdateBytesPtr, numOptimisticUpdateBytes,
                         didProgressPtr);
@@ -206,7 +206,7 @@
 
                     const startPeriodPtr = Module._malloc(4);
                     const countPtr = Module._malloc(4);
-                    const syncKind = Module._ETHLightClientStoreGetNextSyncTask(
+                    const syncKind = Module._ECLLightClientStoreGetNextSyncTask(
                         store, beaconClock, startPeriodPtr, countPtr);
                     const startPeriod = Module.HEAPU32[startPeriodPtr >>> 2];
                     const count = Module.HEAPU32[countPtr >>> 2];
@@ -215,7 +215,7 @@
 
                     let res = 1;
                     let didProgress = 0;
-                    if (syncKind == Module.HEAPU8[Module._kETHLCSyncKind_UpdatesByRange]) {
+                    if (syncKind == Module.HEAPU8[Module._kECLLCSyncKind_UpdatesByRange]) {
                         document.getElementById('syncTask').innerText = 'UpdatesByRange(' + startPeriod + ", " + count + ')';
                         const response = await fetch(beaconApiBase +
                             '/eth/v1/beacon/light_client/updates?start_period=' + startPeriod + '&count=' + count, {
@@ -232,7 +232,7 @@
                             const updatesByRangeBytesPtr = Module._malloc(updatesByRangeBytes.length);
                             Module.HEAPU8.set(updatesByRangeBytes, updatesByRangeBytesPtr);
                             const didProgressPtr = Module._malloc(4);
-                            res = Module._ETHLightClientStoreProcessUpdatesByRange(
+                            res = Module._ECLLightClientStoreProcessUpdatesByRange(
                                 store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
                                 startPeriod, count, contentType, updatesByRangeBytesPtr, updatesByRangeBytes.length,
                                 didProgressPtr);
@@ -241,7 +241,7 @@
                             Module._free(updatesByRangeBytesPtr);
                             Module._free(contentType);
                         }
-                    } else if (syncKind == Module.HEAPU8[Module._kETHLCSyncKind_FinalityUpdate]) {
+                    } else if (syncKind == Module.HEAPU8[Module._kECLLCSyncKind_FinalityUpdate]) {
                         document.getElementById('syncTask').innerText = 'FinalityUpdate';
                         const response = await fetch(beaconApiBase +
                             '/eth/v1/beacon/light_client/finality_update', {
@@ -259,7 +259,7 @@
                             const finalityUpdateBytesPtr = Module._malloc(finalityUpdateBytes.length);
                             Module.HEAPU8.set(finalityUpdateBytes, finalityUpdateBytesPtr);
                             const didProgressPtr = Module._malloc(4);
-                            res = Module._ETHLightClientStoreProcessFinalityUpdate(
+                            res = Module._ECLLightClientStoreProcessFinalityUpdate(
                                 store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
                                 contentType, ethConsensusVersion, finalityUpdateBytesPtr, finalityUpdateBytes.length,
                                 didProgressPtr);
@@ -270,7 +270,7 @@
                             Module._free(contentType);
                         }
                     } else {
-                        assert(syncKind == Module.HEAPU8[Module._kETHLCSyncKind_OptimisticUpdate]);
+                        assert(syncKind == Module.HEAPU8[Module._kECLLCSyncKind_OptimisticUpdate]);
                         document.getElementById('syncTask').innerText = 'OptimisticUpdate';
                         const response = await fetch(beaconApiBase +
                             '/eth/v1/beacon/light_client/optimistic_update', {
@@ -288,7 +288,7 @@
                             const optimisticUpdateBytesPtr = Module._malloc(optimisticUpdateBytes.length);
                             Module.HEAPU8.set(optimisticUpdateBytes, optimisticUpdateBytesPtr);
                             const didProgressPtr = Module._malloc(4);
-                            res = Module._ETHLightClientStoreProcessOptimisticUpdate(
+                            res = Module._ECLLightClientStoreProcessOptimisticUpdate(
                                 store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
                                 contentType, ethConsensusVersion, optimisticUpdateBytesPtr, optimisticUpdateBytes.length,
                                 didProgressPtr);
@@ -306,9 +306,9 @@
                     } else if (!didProgress) {
                         millisecondsToNextFetch = 15 * 1000;
                     } else {
-                        millisecondsToNextFetch = Module._ETHLightClientStoreGetMillisecondsToNextFetch(
+                        millisecondsToNextFetch = Module._ECLLightClientStoreGetMillisecondsToNextFetch(
                             store, rng, beaconClock,
-                            syncKind == Module.HEAPU8[Module._kETHLCSyncKind_OptimisticUpdate]);
+                            syncKind == Module.HEAPU8[Module._kECLLCSyncKind_OptimisticUpdate]);
                     }
                     nextFetchTime = Date.now() + millisecondsToNextFetch;
                     runOnTick(storeId, /* timeout: */ millisecondsToNextFetch);
@@ -331,19 +331,19 @@
                 nextFetchTime = undefined;
             }
             if (store !== undefined) {
-                Module._ETHLightClientStoreDestroy(store);
+                Module._ECLLightClientStoreDestroy(store);
                 store = undefined;
             }
         }
 
         Module.onRuntimeInitialized = async function() {
-            rng = Module._ETHRandomNumberCreate();
+            rng = Module._ECLRandomNumberCreate();
             cfg = await loadCfg();
             const genesisState = await loadGenesis(cfg);
-            genesisValidatorsRoot = Module._ETHBeaconStateCopyGenesisValidatorsRoot(genesisState);
-            forkDigests = Module._ETHForkDigestsCreateFromState(cfg, genesisState);
-            beaconClock = Module._ETHBeaconClockCreateFromState(genesisState);
-            Module._ETHBeaconStateDestroy(genesisState);
+            genesisValidatorsRoot = Module._ECLBeaconStateCopyGenesisValidatorsRoot(genesisState);
+            forkDigests = Module._ECLForkDigestsCreateFromState(cfg, genesisState);
+            beaconClock = Module._ECLBeaconClockCreateFromState(genesisState);
+            Module._ECLBeaconStateDestroy(genesisState);
             trackWallTime(beaconClock);
 
             document.getElementById('initButton').addEventListener('click', async function() {
@@ -376,7 +376,7 @@
                     const ethConsensusVersion = Module.stringToNewUTF8(response.headers.get('Eth-Consensus-Version'));
                     const bootstrapBytesPtr = Module._malloc(bootstrapBytes.length);
                     Module.HEAPU8.set(bootstrapBytes, bootstrapBytesPtr);
-                    const newStore = Module._ETHLightClientStoreCreateFromBootstrap(
+                    const newStore = Module._ECLLightClientStoreCreateFromBootstrap(
                         cfg, trustedBlockRootBytesPtr,
                         contentType, ethConsensusVersion, bootstrapBytesPtr, bootstrapBytes.length);
                     assert(newStore);
@@ -392,6 +392,6 @@
             document.getElementById('initButton').disabled = false;
         };
     </script>
-    <script async src="light_client_wasm.js"></script>
+    <script async src="nimbus_light_client_ffi.js"></script>
 </body>
 </html>
