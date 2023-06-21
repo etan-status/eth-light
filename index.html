@@ -54,7 +54,7 @@
         </li>
     </ul>
     Latest sync task: <b><span id="syncTask"></span></b><br />
-    Fetch sync committee in: <b><span id="timeToNextFetch"></span></b><br />
+    Fetch sync committee in: <b><span id="timeToNextSyncTask"></span></b><br />
 
     <script>
         const networkMetadataPath = 'https://raw.githubusercontent.com/eth-clients/eth2-networks/master/shared/mainnet';
@@ -88,21 +88,21 @@
             return state;
         }
 
-        let nextFetchTime = undefined;
+        let nextSyncTaskTime = undefined;
         function trackWallTime(beaconClock) {
             function onTick() {
                 const slot = Module._ECLBeaconClockGetSlot(beaconClock);
                 document.getElementById('wallSlot').innerText = slot;
-                if (nextFetchTime !== undefined) {
+                if (nextSyncTaskTime !== undefined) {
                     const now = Date.now();
                     let remainingMilliseconds = 0;
-                    if (nextFetchTime > now) {
-                        remainingMilliseconds = nextFetchTime - now;
+                    if (nextSyncTaskTime > now) {
+                        remainingMilliseconds = nextSyncTaskTime - now;
                     }
                     const seconds = Math.floor((remainingMilliseconds / 1000) % 60).toString().padStart(2, '0');
                     const minutes = Math.floor((remainingMilliseconds / (1000 * 60)) % 60).toString().padStart(2, '0');
                     const hours = Math.floor((remainingMilliseconds / (1000 * 60 * 60)) % 24).toString().padStart(2, '0');
-                    document.getElementById('timeToNextFetch').innerText =
+                    document.getElementById('timeToNextSyncTask').innerText =
                         hours + ':' + minutes + ':' + seconds;
                 }
                 setTimeout(onTick, /* timeout: */ 100);
@@ -202,7 +202,7 @@
                 visualizeStore(store);
                 async function onTick() {
                     trackStoreTimeout = undefined;
-                    nextFetchTime = undefined;
+                    nextSyncTaskTime = undefined;
 
                     const startPeriodPtr = Module._malloc(4);
                     const countPtr = Module._malloc(4);
@@ -215,7 +215,7 @@
 
                     let res = 1;
                     let didProgress = 0;
-                    if (syncKind == Module.HEAPU8[Module._kECLLCSyncKind_UpdatesByRange]) {
+                    if (syncKind == Module.HEAPU8[Module._kECLLcSyncKind_UpdatesByRange]) {
                         document.getElementById('syncTask').innerText = 'UpdatesByRange(' + startPeriod + ", " + count + ')';
                         const response = await fetch(beaconApiBase +
                             '/eth/v1/beacon/light_client/updates?start_period=' + startPeriod + '&count=' + count, {
@@ -241,7 +241,7 @@
                             Module._free(updatesByRangeBytesPtr);
                             Module._free(contentType);
                         }
-                    } else if (syncKind == Module.HEAPU8[Module._kECLLCSyncKind_FinalityUpdate]) {
+                    } else if (syncKind == Module.HEAPU8[Module._kECLLcSyncKind_FinalityUpdate]) {
                         document.getElementById('syncTask').innerText = 'FinalityUpdate';
                         const response = await fetch(beaconApiBase +
                             '/eth/v1/beacon/light_client/finality_update', {
@@ -270,7 +270,7 @@
                             Module._free(contentType);
                         }
                     } else {
-                        assert(syncKind == Module.HEAPU8[Module._kECLLCSyncKind_OptimisticUpdate]);
+                        assert(syncKind == Module.HEAPU8[Module._kECLLcSyncKind_OptimisticUpdate]);
                         document.getElementById('syncTask').innerText = 'OptimisticUpdate';
                         const response = await fetch(beaconApiBase +
                             '/eth/v1/beacon/light_client/optimistic_update', {
@@ -300,18 +300,10 @@
                         }
                     }
 
-                    let millisecondsToNextFetch = 0;
-                    if (res) {
-                        millisecondsToNextFetch = 15 * 60 * 1000;
-                    } else if (!didProgress) {
-                        millisecondsToNextFetch = 15 * 1000;
-                    } else {
-                        millisecondsToNextFetch = Module._ECLLightClientStoreGetMillisecondsToNextFetch(
-                            store, rng, beaconClock,
-                            syncKind == Module.HEAPU8[Module._kECLLCSyncKind_OptimisticUpdate]);
-                    }
-                    nextFetchTime = Date.now() + millisecondsToNextFetch;
-                    runOnTick(storeId, /* timeout: */ millisecondsToNextFetch);
+                    let millisecondsToNextSyncTask = Module._ECLLightClientStoreGetMillisecondsToNextSyncTask(
+                        store, rng, beaconClock, didProgress ? 0 : 1);
+                    nextSyncTaskTime = Date.now() + millisecondsToNextSyncTask;
+                    runOnTick(storeId, /* timeout: */ millisecondsToNextSyncTask);
                 }
                 trackStoreTimeout = setTimeout(onTick, timeout);
             }
@@ -328,7 +320,7 @@
             if (trackStoreTimeout !== undefined) {
                 clearTimeout(trackStoreTimeout);
                 trackStoreTimeout = undefined;
-                nextFetchTime = undefined;
+                nextSyncTaskTime = undefined;
             }
             if (store !== undefined) {
                 Module._ECLLightClientStoreDestroy(store);
