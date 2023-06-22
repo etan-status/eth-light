@@ -37,6 +37,7 @@
                 </li>
             </ul>
         </li>
+        <li><pre>next_sync_committee</pre>: <b><pre id="nextSyncCommitteeKnown"></pre></b></li>
         <li>
             <pre>optimistic_header</pre>
             <ul>
@@ -52,9 +53,10 @@
                 </li>
             </ul>
         </li>
+        <li><pre>safety_threshold</pre>: <b><pre id="safetyThreshold"></pre></b></li>
     </ul>
     Latest sync task: <b><span id="syncTask"></span></b><br />
-    Fetch sync committee in: <b><span id="timeToNextSyncTask"></span></b><br />
+    Next sync task: <b><span id="timeToNextSyncTask"></span></b><br />
 
     <script>
         const networkMetadataPath = 'https://raw.githubusercontent.com/eth-clients/eth2-networks/master/shared/mainnet';
@@ -142,7 +144,11 @@
             }
 
             visualizeHeader('finalized', Module._ECLLightClientStoreGetFinalizedHeader(store));
+            const isNextSyncCommitteeKnown = Module._ECLLightClientStoreIsNextSyncCommitteeKnown(store);
+            document.getElementById('nextSyncCommitteeKnown').innerText = (isNextSyncCommitteeKnown ? 'known' : 'unknown');
             visualizeHeader('optimistic', Module._ECLLightClientStoreGetOptimisticHeader(store));
+            const safetyThreshold = Module._ECLLightClientStoreGetSafetyThreshold(store);
+            document.getElementById('safetyThreshold').innerText = safetyThreshold;
         }
 
         let beaconApiBase = undefined;
