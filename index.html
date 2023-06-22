@@ -35,6 +35,25 @@
                         <li><pre>body_root</pre>: <b><pre id="finalizedBeaconBodyRoot"></pre></b></li>
                     </ul>
                 </li>
+                <li>
+                    <pre>execution</pre>: <b><pre id="finalizedExecutionHash"></pre></b>
+                    <ul>
+                        <li><pre>parent_hash</pre>: <b><pre id="finalizedExecutionParentHash"></pre></b></li>
+                        <li><pre>fee_recipient</pre>: <b><pre id="finalizedExecutionFeeRecipient"></pre></b></li>
+                        <li><pre>state_root</pre>: <b><pre id="finalizedExecutionStateRoot"></pre></b></li>
+                        <li><pre>receipts_root</pre>: <b><pre id="finalizedExecutionReceiptsRoot"></pre></b></li>
+                        <li><pre>logs_bloom</pre>: <b><pre id="finalizedExecutionLogsBloom"></pre></b></li>
+                        <li><pre>prev_randao</pre>: <b><pre id="finalizedExecutionPrevRandao"></pre></b></li>
+                        <li><pre>block_number</pre>: <b><pre id="finalizedExecutionBlockNumber"></pre></b></li>
+                        <li><pre>gas_limit</pre>: <b><pre id="finalizedExecutionGasLimit"></pre></b></li>
+                        <li><pre>gas_used</pre>: <b><pre id="finalizedExecutionGasUsed"></pre></b></li>
+                        <li><pre>timestamp</pre>: <b><pre id="finalizedExecutionTimestamp"></pre></b></li>
+                        <li><pre>extra_data</pre>: <b><pre id="finalizedExecutionExtraData"></pre></b></li>
+                        <li><pre>base_fee_per_gas</pre>: <b><pre id="finalizedExecutionBaseFeePerGas"></pre></b></li>
+                        <li><pre>data_gas_used</pre>: <b><pre id="finalizedExecutionDataGasUsed"></pre></b></li>
+                        <li><pre>excess_data_gas</pre>: <b><pre id="finalizedExecutionExcessDataGas"></pre></b></li>
+                    </ul>
+                </li>
             </ul>
         </li>
         <li><pre>next_sync_committee</pre>: <b><pre id="nextSyncCommitteeKnown"></pre></b></li>
@@ -49,6 +68,25 @@
                         <li><pre>parent_root</pre>: <b><pre id="optimisticBeaconParentRoot"></pre></b></li>
                         <li><pre>state_root</pre>: <b><pre id="optimisticBeaconStateRoot"></pre></b></li>
                         <li><pre>body_root</pre>: <b><pre id="optimisticBeaconBodyRoot"></pre></b></li>
+                    </ul>
+                </li>
+                <li>
+                    <pre>execution</pre>: <b><pre id="optimisticExecutionHash"></pre></b>
+                    <ul>
+                        <li><pre>parent_hash</pre>: <b><pre id="optimisticExecutionParentHash"></pre></b></li>
+                        <li><pre>fee_recipient</pre>: <b><pre id="optimisticExecutionFeeRecipient"></pre></b></li>
+                        <li><pre>state_root</pre>: <b><pre id="optimisticExecutionStateRoot"></pre></b></li>
+                        <li><pre>receipts_root</pre>: <b><pre id="optimisticExecutionReceiptsRoot"></pre></b></li>
+                        <li><pre>logs_bloom</pre>: <b><pre id="optimisticExecutionLogsBloom"></pre></b></li>
+                        <li><pre>prev_randao</pre>: <b><pre id="optimisticExecutionPrevRandao"></pre></b></li>
+                        <li><pre>block_number</pre>: <b><pre id="optimisticExecutionBlockNumber"></pre></b></li>
+                        <li><pre>gas_limit</pre>: <b><pre id="optimisticExecutionGasLimit"></pre></b></li>
+                        <li><pre>gas_used</pre>: <b><pre id="optimisticExecutionGasUsed"></pre></b></li>
+                        <li><pre>timestamp</pre>: <b><pre id="optimisticExecutionTimestamp"></pre></b></li>
+                        <li><pre>extra_data</pre>: <b><pre id="optimisticExecutionExtraData"></pre></b></li>
+                        <li><pre>base_fee_per_gas</pre>: <b><pre id="optimisticExecutionBaseFeePerGas"></pre></b></li>
+                        <li><pre>data_gas_used</pre>: <b><pre id="optimisticExecutionDataGasUsed"></pre></b></li>
+                        <li><pre>excess_data_gas</pre>: <b><pre id="optimisticExecutionExcessDataGas"></pre></b></li>
                     </ul>
                 </li>
             </ul>
@@ -114,32 +152,76 @@
 
         var Module = {};
 
-        function visualizeStore(store) {
+        function visualizeStore(store, cfg) {
             function toHexString(bytes, numBytes) {
-                let hexString = '0x';
-                for (let i = 0; i < numBytes; i++) {
-                    let hexByte = Module.HEAPU8[bytes + i].toString(16);
-                    if (hexByte.length === 1) hexByte = '0' + hexByte;
-                    hexString += hexByte;
+                const array = Array.from(Module.HEAPU8.subarray(bytes, bytes + numBytes))
+                return '0x' + array.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
+            }
+
+            function toGweiString(weiU256Bytes) {
+                const array = Array.from(Module.HEAPU8.subarray(weiU256Bytes, weiU256Bytes + 32)).reverse();
+                const wei = BigInt('0x' + array.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), ''));
+                const weiString = wei.toString();
+                const beforeDecimal = weiString.substring(0, weiString.length - 9);
+                const afterDecimal = weiString.substring(weiString.length - 9).replace(/0+$/, '');
+                let gweiString = '';
+                if (beforeDecimal === '') {
+                    gweiString = '0.' + afterDecimal;
+                } else {
+                    gweiString = beforeDecimal + '.' + afterDecimal;
                 }
-                return hexString;
+                return gweiString;
             }
 
             function visualizeHeader(prefix, header) {
-                const beaconRoot = Module._ECLLightClientHeaderCopyBeaconRoot(header);
+                const beaconRoot = Module._ECLLightClientHeaderCopyBeaconRoot(header, cfg);
                 document.getElementById(prefix + 'BeaconRoot').innerText = toHexString(beaconRoot, 32);
                 Module._ECLRootDestroy(beaconRoot);
                 const beacon = Module._ECLLightClientHeaderGetBeacon(header);
-                const slot = Module._ECLBeaconBlockHeaderGetSlot(beacon);
-                document.getElementById(prefix + 'BeaconSlot').innerText = slot;
-                const proposerIndex = Module._ECLBeaconBlockHeaderGetProposerIndex(beacon);
-                document.getElementById(prefix + 'BeaconProposerIndex').innerText = proposerIndex;
-                const parentRoot = Module._ECLBeaconBlockHeaderGetParentRoot(beacon);
-                document.getElementById(prefix + 'BeaconParentRoot').innerText = toHexString(parentRoot, 32);
-                const stateRoot = Module._ECLBeaconBlockHeaderGetStateRoot(beacon);
-                document.getElementById(prefix + 'BeaconStateRoot').innerText = toHexString(stateRoot, 32);
-                const bodyRoot = Module._ECLBeaconBlockHeaderGetBodyRoot(beacon);
-                document.getElementById(prefix + 'BeaconBodyRoot').innerText = toHexString(bodyRoot, 32);
+                const beaconSlot = Module._ECLBeaconBlockHeaderGetSlot(beacon);
+                document.getElementById(prefix + 'BeaconSlot').innerText = beaconSlot;
+                const beaconProposerIndex = Module._ECLBeaconBlockHeaderGetProposerIndex(beacon);
+                document.getElementById(prefix + 'BeaconProposerIndex').innerText = beaconProposerIndex;
+                const beaconParentRoot = Module._ECLBeaconBlockHeaderGetParentRoot(beacon);
+                document.getElementById(prefix + 'BeaconParentRoot').innerText = toHexString(beaconParentRoot, 32);
+                const beaconStateRoot = Module._ECLBeaconBlockHeaderGetStateRoot(beacon);
+                document.getElementById(prefix + 'BeaconStateRoot').innerText = toHexString(beaconStateRoot, 32);
+                const beaconBodyRoot = Module._ECLBeaconBlockHeaderGetBodyRoot(beacon);
+                document.getElementById(prefix + 'BeaconBodyRoot').innerText = toHexString(beaconBodyRoot, 32);
+
+                const executionHash = Module._ECLLightClientHeaderCopyExecutionHash(header, cfg);
+                document.getElementById(prefix + 'ExecutionHash').innerText = toHexString(executionHash, 32);
+                Module._ECLRootDestroy(executionHash);
+                const execution = Module._ECLLightClientHeaderGetExecution(header);
+                const executionParentHash = Module._ECLExecutionPayloadHeaderGetParentHash(execution);
+                document.getElementById(prefix + 'ExecutionParentHash').innerText = toHexString(executionParentHash, 32);
+                const executionFeeRecipient = Module._ECLExecutionPayloadHeaderGetFeeRecipient(execution);
+                document.getElementById(prefix + 'ExecutionFeeRecipient').innerText = toHexString(executionFeeRecipient, 20);
+                const executionStateRoot = Module._ECLExecutionPayloadHeaderGetStateRoot(execution);
+                document.getElementById(prefix + 'ExecutionStateRoot').innerText = toHexString(executionStateRoot, 32);
+                const executionReceiptsRoot = Module._ECLExecutionPayloadHeaderGetReceiptsRoot(execution);
+                document.getElementById(prefix + 'ExecutionReceiptsRoot').innerText = toHexString(executionReceiptsRoot, 32);
+                const executionLogsBloom = Module._ECLExecutionPayloadHeaderGetLogsBloom(execution);
+                document.getElementById(prefix + 'ExecutionLogsBloom').innerText = toHexString(executionLogsBloom, 256);
+                const executionPrevRandao = Module._ECLExecutionPayloadHeaderGetPrevRandao(execution);
+                document.getElementById(prefix + 'ExecutionPrevRandao').innerText = toHexString(executionPrevRandao, 32);
+                const executionBlockNumber = Module._ECLExecutionPayloadHeaderGetBlockNumber(execution);
+                document.getElementById(prefix + 'ExecutionBlockNumber').innerText = executionBlockNumber;
+                const executionGasLimit = Module._ECLExecutionPayloadHeaderGetGasLimit(execution);
+                document.getElementById(prefix + 'ExecutionGasLimit').innerText = executionGasLimit;
+                const executionGasUsed = Module._ECLExecutionPayloadHeaderGetGasUsed(execution);
+                document.getElementById(prefix + 'ExecutionGasUsed').innerText = executionGasUsed;
+                const executionTimestamp = Module._ECLExecutionPayloadHeaderGetTimestamp(execution);
+                document.getElementById(prefix + 'ExecutionTimestamp').innerText = executionTimestamp;
+                const executionExtraDataBytes = Module._ECLExecutionPayloadHeaderGetExtraDataBytes(execution);
+                const numExecutionExtraDataBytes = Module._ECLExecutionPayloadHeaderGetNumExtraDataBytes(execution);
+                document.getElementById(prefix + 'ExecutionExtraData').innerText = toHexString(executionExtraDataBytes, numExecutionExtraDataBytes);
+                const executionBaseFeePerGas = Module._ECLExecutionPayloadHeaderGetBaseFeePerGas(execution);
+                document.getElementById(prefix + 'ExecutionBaseFeePerGas').innerText = toGweiString(executionBaseFeePerGas) + ' Gwei';
+                const executionDataGasUsed = Module._ECLExecutionPayloadHeaderGetDataGasUsed(execution);
+                document.getElementById(prefix + 'ExecutionDataGasUsed').innerText = executionDataGasUsed;
+                const executionExcessDataGas = Module._ECLExecutionPayloadHeaderGetExcessDataGas(execution);
+                document.getElementById(prefix + 'ExecutionExcessDataGas').innerText = executionExcessDataGas;
             }
 
             visualizeHeader('finalized', Module._ECLLightClientStoreGetFinalizedHeader(store));
@@ -178,7 +260,7 @@
                         mediaType, /* consensusVersion: */ 0, finUpdatesBytesPtr, numFinUpdateBytes);
                     Module._free(finUpdatesBytesPtr);
                     Module._free(mediaType);
-                    visualizeStore(store);
+                    visualizeStore(store, cfg);
                 });
 
                 trackStoreSource.addEventListener('light_client_optimistic_update', function (event) {
@@ -191,12 +273,12 @@
                         mediaType, /* consensusVersion: */ 0, optUpdateBytesPtr, numOptUpdateBytes);
                     Module._free(optUpdateBytesPtr);
                     Module._free(mediaType);
-                    visualizeStore(store);
+                    visualizeStore(store, cfg);
                 });
             }
 
             function runOnTick(tickStoreId, timeout) {
-                visualizeStore(store);
+                visualizeStore(store, cfg);
                 async function onTick() {
                     trackStoreTimeout = undefined;
                     nextSyncTaskTime = undefined;
