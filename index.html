@@ -165,35 +165,27 @@
 
                 trackStoreSource.addEventListener('light_client_finality_update', function (event) {
                     if (storeId != tickStoreId) return;
-                    const contentType = Module.stringToNewUTF8("application/json");
-                    const finalityUpdateBytesPtr = Module.stringToNewUTF8(event.data);
+                    const mediaType = Module.stringToNewUTF8("application/json");
+                    const finUpdatesBytesPtr = Module.stringToNewUTF8(event.data);
                     const numFinalityUpdateBytes = Module.lengthBytesUTF8(event.data);
-                    const didProgressPtr = Module._malloc(4);
                     const res = Module._ECLLightClientStoreProcessFinalityUpdate(
                         store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
-                        contentType, /* ethConsensusVersion: */ 0, finalityUpdateBytesPtr, numFinalityUpdateBytes,
-                        didProgressPtr);
-                    const didProgress = Module.HEAPU32[didProgressPtr >>> 2];
-                    Module._free(didProgressPtr);
-                    Module._free(finalityUpdateBytesPtr);
-                    Module._free(contentType);
+                        mediaType, /* consensusVersion: */ 0, finUpdatesBytesPtr, numFinalityUpdateBytes);
+                    Module._free(finUpdatesBytesPtr);
+                    Module._free(mediaType);
                     visualizeStore(store);
                 });
 
                 trackStoreSource.addEventListener('light_client_optimistic_update', function (event) {
                     if (storeId != tickStoreId) return;
-                    const contentType = Module.stringToNewUTF8("application/json");
-                    const optimisticUpdateBytesPtr = Module.stringToNewUTF8(event.data);
+                    const mediaType = Module.stringToNewUTF8("application/json");
+                    const optUpdateBytesPtr = Module.stringToNewUTF8(event.data);
                     const numOptimisticUpdateBytes = Module.lengthBytesUTF8(event.data);
-                    const didProgressPtr = Module._malloc(4);
                     const res = Module._ECLLightClientStoreProcessOptimisticUpdate(
                         store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
-                        contentType, /* ethConsensusVersion: */ 0, optimisticUpdateBytesPtr, numOptimisticUpdateBytes,
-                        didProgressPtr);
-                    const didProgress = Module.HEAPU32[didProgressPtr >>> 2];
-                    Module._free(didProgressPtr);
-                    Module._free(optimisticUpdateBytesPtr);
-                    Module._free(contentType);
+                        mediaType, /* consensusVersion: */ 0, optUpdateBytesPtr, numOptimisticUpdateBytes);
+                    Module._free(optUpdateBytesPtr);
+                    Module._free(mediaType);
                     visualizeStore(store);
                 });
             }
@@ -214,7 +206,6 @@
                     Module._free(startPeriodPtr);
 
                     let res = 1;
-                    let didProgress = 0;
                     if (syncKind == Module.HEAPU8[Module._kECLLcSyncKind_UpdatesByRange]) {
                         document.getElementById('syncTask').innerText = 'UpdatesByRange(' + startPeriod + ", " + count + ')';
                         const response = await fetch(beaconApiBase +
@@ -223,23 +214,20 @@
                                     'Accept': 'application/octet-stream'
                                 }
                             });
+                        if (storeId != tickStoreId) return;
                         if (response.ok) {
                             const data = await response.arrayBuffer();
                             if (storeId != tickStoreId) return;
                             const updatesByRangeBytes = new Uint8Array(data);
 
-                            const contentType = Module.stringToNewUTF8(response.headers.get('Content-Type'));
+                            const mediaType = Module.stringToNewUTF8(response.headers.get('Content-Type'));
                             const updatesByRangeBytesPtr = Module._malloc(updatesByRangeBytes.length);
                             Module.HEAPU8.set(updatesByRangeBytes, updatesByRangeBytesPtr);
-                            const didProgressPtr = Module._malloc(4);
                             res = Module._ECLLightClientStoreProcessUpdatesByRange(
                                 store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
-                                startPeriod, count, contentType, updatesByRangeBytesPtr, updatesByRangeBytes.length,
-                                didProgressPtr);
-                            didProgress = Module.HEAPU32[didProgressPtr >>> 2];
-                            Module._free(didProgressPtr);
+                                startPeriod, count, mediaType, updatesByRangeBytesPtr, updatesByRangeBytes.length);
                             Module._free(updatesByRangeBytesPtr);
-                            Module._free(contentType);
+                            Module._free(mediaType);
                         }
                     } else if (syncKind == Module.HEAPU8[Module._kECLLcSyncKind_FinalityUpdate]) {
                         document.getElementById('syncTask').innerText = 'FinalityUpdate';
@@ -249,25 +237,22 @@
                                     'Accept': 'application/octet-stream'
                                 }
                             });
+                        if (storeId != tickStoreId) return;
                         if (response.ok) {
                             const data = await response.arrayBuffer();
                             if (storeId != tickStoreId) return;
-                            const finalityUpdateBytes = new Uint8Array(data);
+                            const finUpdateBytes = new Uint8Array(data);
 
-                            const contentType = Module.stringToNewUTF8(response.headers.get('Content-Type'));
-                            const ethConsensusVersion = Module.stringToNewUTF8(response.headers.get('Eth-Consensus-Version'));
-                            const finalityUpdateBytesPtr = Module._malloc(finalityUpdateBytes.length);
-                            Module.HEAPU8.set(finalityUpdateBytes, finalityUpdateBytesPtr);
-                            const didProgressPtr = Module._malloc(4);
+                            const mediaType = Module.stringToNewUTF8(response.headers.get('Content-Type'));
+                            const consensusVersion = Module.stringToNewUTF8(response.headers.get('Eth-Consensus-Version'));
+                            const finUpdatesBytesPtr = Module._malloc(finUpdateBytes.length);
+                            Module.HEAPU8.set(finUpdateBytes, finUpdatesBytesPtr);
                             res = Module._ECLLightClientStoreProcessFinalityUpdate(
                                 store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
-                                contentType, ethConsensusVersion, finalityUpdateBytesPtr, finalityUpdateBytes.length,
-                                didProgressPtr);
-                            didProgress = Module.HEAPU32[didProgressPtr >>> 2];
-                            Module._free(didProgressPtr);
-                            Module._free(finalityUpdateBytesPtr);
-                            Module._free(ethConsensusVersion);
-                            Module._free(contentType);
+                                mediaType, consensusVersion, finUpdatesBytesPtr, finUpdateBytes.length);
+                            Module._free(finUpdatesBytesPtr);
+                            Module._free(consensusVersion);
+                            Module._free(mediaType);
                         }
                     } else {
                         assert(syncKind == Module.HEAPU8[Module._kECLLcSyncKind_OptimisticUpdate]);
@@ -278,30 +263,27 @@
                                     'Accept': 'application/octet-stream'
                                 }
                             });
+                        if (storeId != tickStoreId) return;
                         if (response.ok) {
                             const data = await response.arrayBuffer();
                             if (storeId != tickStoreId) return;
-                            const optimisticUpdateBytes = new Uint8Array(data);
+                            const optUpdateBytes = new Uint8Array(data);
 
-                            const contentType = Module.stringToNewUTF8(response.headers.get('Content-Type'));
-                            const ethConsensusVersion = Module.stringToNewUTF8(response.headers.get('Eth-Consensus-Version'));
-                            const optimisticUpdateBytesPtr = Module._malloc(optimisticUpdateBytes.length);
-                            Module.HEAPU8.set(optimisticUpdateBytes, optimisticUpdateBytesPtr);
-                            const didProgressPtr = Module._malloc(4);
+                            const mediaType = Module.stringToNewUTF8(response.headers.get('Content-Type'));
+                            const consensusVersion = Module.stringToNewUTF8(response.headers.get('Eth-Consensus-Version'));
+                            const optUpdateBytesPtr = Module._malloc(optUpdateBytes.length);
+                            Module.HEAPU8.set(optUpdateBytes, optUpdateBytesPtr);
                             res = Module._ECLLightClientStoreProcessOptimisticUpdate(
                                 store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
-                                contentType, ethConsensusVersion, optimisticUpdateBytesPtr, optimisticUpdateBytes.length,
-                                didProgressPtr);
-                            didProgress = Module.HEAPU32[didProgressPtr >>> 2];
-                            Module._free(didProgressPtr);
-                            Module._free(optimisticUpdateBytesPtr);
-                            Module._free(ethConsensusVersion);
-                            Module._free(contentType);
+                                mediaType, consensusVersion, optUpdateBytesPtr, optUpdateBytes.length);
+                            Module._free(optUpdateBytesPtr);
+                            Module._free(consensusVersion);
+                            Module._free(mediaType);
                         }
                     }
 
                     let millisecondsToNextSyncTask = Module._ECLLightClientStoreGetMillisecondsToNextSyncTask(
-                        store, rng, beaconClock, didProgress ? 0 : 1);
+                        store, rng, beaconClock, res);
                     nextSyncTaskTime = Date.now() + millisecondsToNextSyncTask;
                     runOnTick(storeId, /* timeout: */ millisecondsToNextSyncTask);
                 }
@@ -364,18 +346,18 @@
 
                     const trustedBlockRootBytesPtr = Module._malloc(trustedBlockRootBytes.length);
                     Module.HEAPU8.set(trustedBlockRootBytes, trustedBlockRootBytesPtr);
-                    const contentType = Module.stringToNewUTF8(response.headers.get('Content-Type'));
-                    const ethConsensusVersion = Module.stringToNewUTF8(response.headers.get('Eth-Consensus-Version'));
+                    const mediaType = Module.stringToNewUTF8(response.headers.get('Content-Type'));
+                    const consensusVersion = Module.stringToNewUTF8(response.headers.get('Eth-Consensus-Version'));
                     const bootstrapBytesPtr = Module._malloc(bootstrapBytes.length);
                     Module.HEAPU8.set(bootstrapBytes, bootstrapBytesPtr);
                     const newStore = Module._ECLLightClientStoreCreateFromBootstrap(
                         cfg, trustedBlockRootBytesPtr,
-                        contentType, ethConsensusVersion, bootstrapBytesPtr, bootstrapBytes.length);
+                        mediaType, consensusVersion, bootstrapBytesPtr, bootstrapBytes.length);
                     assert(newStore);
                     Module._free(bootstrapBytesPtr);
-                    Module._free(ethConsensusVersion);
+                    Module._free(consensusVersion);
                     Module._free(trustedBlockRootBytesPtr);
-                    Module._free(contentType);
+                    Module._free(mediaType);
 
                     trackStore(newStore);
                 }
