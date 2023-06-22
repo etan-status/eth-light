@@ -126,11 +126,10 @@
             }
 
             function visualizeHeader(prefix, header) {
+                const beaconRoot = Module._ECLLightClientHeaderCopyBeaconRoot(header);
+                document.getElementById(prefix + 'BeaconRoot').innerText = toHexString(beaconRoot, 32);
+                Module._ECLRootDestroy(beaconRoot);
                 const beacon = Module._ECLLightClientHeaderGetBeacon(header);
-                const root = Module._malloc(32);
-                Module._ECLBeaconBlockHeaderGetRoot(beacon, root);
-                document.getElementById(prefix + 'BeaconRoot').innerText = toHexString(root, 32);
-                Module._free(root);
                 const slot = Module._ECLBeaconBlockHeaderGetSlot(beacon);
                 document.getElementById(prefix + 'BeaconSlot').innerText = slot;
                 const proposerIndex = Module._ECLBeaconBlockHeaderGetProposerIndex(beacon);
