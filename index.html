@@ -173,10 +173,10 @@
                     if (storeId != tickStoreId) return;
                     const mediaType = Module.stringToNewUTF8("application/json");
                     const finUpdatesBytesPtr = Module.stringToNewUTF8(event.data);
-                    const numFinalityUpdateBytes = Module.lengthBytesUTF8(event.data);
+                    const numFinUpdateBytes = Module.lengthBytesUTF8(event.data);
                     const res = Module._ECLLightClientStoreProcessFinalityUpdate(
                         store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
-                        mediaType, /* consensusVersion: */ 0, finUpdatesBytesPtr, numFinalityUpdateBytes);
+                        mediaType, /* consensusVersion: */ 0, finUpdatesBytesPtr, numFinUpdateBytes);
                     Module._free(finUpdatesBytesPtr);
                     Module._free(mediaType);
                     visualizeStore(store);
@@ -186,10 +186,10 @@
                     if (storeId != tickStoreId) return;
                     const mediaType = Module.stringToNewUTF8("application/json");
                     const optUpdateBytesPtr = Module.stringToNewUTF8(event.data);
-                    const numOptimisticUpdateBytes = Module.lengthBytesUTF8(event.data);
+                    const numOptUpdateBytes = Module.lengthBytesUTF8(event.data);
                     const res = Module._ECLLightClientStoreProcessOptimisticUpdate(
                         store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
-                        mediaType, /* consensusVersion: */ 0, optUpdateBytesPtr, numOptimisticUpdateBytes);
+                        mediaType, /* consensusVersion: */ 0, optUpdateBytesPtr, numOptUpdateBytes);
                     Module._free(optUpdateBytesPtr);
                     Module._free(mediaType);
                     visualizeStore(store);
