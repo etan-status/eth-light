@@ -5,15 +5,9 @@ cd "$(dirname "$0")"
 
 rm -rf nimbus-eth2
 git clone -b "dev/etan/lc-wasm" "https://github.com/status-im/nimbus-eth2"
-cd nimbus-eth2
 
 ulimit -n 1024
-export USE_SYSTEM_NIM=0
-make -j deps
-source env.sh
-
-cd -
-nim --version
+USE_SYSTEM_NIM='' make -C nimbus-eth2 -j deps
 
 git -C nimbus-eth2/vendor/nimbus-build-system/vendor/Nim apply <<'EOF'
 diff --git a/lib/system/threads.nim b/lib/system/threads.nim
@@ -36,7 +30,31 @@ index 4e27ba24e..bf154e874 100644
    when defined(amd64):
 EOF
 
-rm -rf nimbus_light_client_ffi.js nimbus_light_client_ffi.wasm nimbus_light_client_ffi.worker.js nimcache
+git -C nimbus-eth2 apply <<'EOF'
+diff --git a/beacon_chain/spec/eth2_apis/eth2_rest_serialization.nim b/beacon_chain/spec/eth2_apis/eth2_rest_serialization.nim
+index 17fae6cc..bbf71983 100644
+--- a/beacon_chain/spec/eth2_apis/eth2_rest_serialization.nim
++++ b/beacon_chain/spec/eth2_apis/eth2_rest_serialization.nim
+@@ -3357,9 +3357,10 @@ proc decodeBytes*[T: DecodeTypes](
+
+   if mediaType == ApplicationJsonMediaType:
+     try:
+-      ok RestJson.decode(value, T,
+-                         requireAllFields = true,
+-                         allowUnknownFields = true)
++      let r = RestJson.decode(value, T,
++                              requireAllFields = true,
++                              allowUnknownFields = true)
++      ok r
+     except SerializationError as exc:
+       debug "Failed to deserialize REST JSON data",
+             err = exc.formatMsg("<data>"),
+EOF
+
+USE_SYSTEM_NIM='' NIM_COMMIT='' BASH_VERSION='' NBS_ONLY_LOAD_ENV_VARS='' . nimbus-eth2/env.sh
+nim --version
+
+rm -rf libnimbus_lc.js libnimbus_lc.wasm libnimbus_lc.worker.js nimcache
 nim c \
     -d:disable_libbacktrace \
     -d:disableLTO \
@@ -71,5 +89,5 @@ nim c \
     --passL:'-sEXPORTED_RUNTIME_METHODS="[lengthBytesUTF8, stringToNewUTF8]"' \
     --passL:'-Wl,--no-entry' \
     --noMain:on \
-    --passL:'-o nimbus_light_client_ffi.js' \
-    nimbus-eth2/beacon_chain/nimbus_light_client_ffi.nim
+    --passL:'-o libnimbus_lc.js' \
+    nimbus-eth2/beacon_chain/libnimbus_lc/libnimbus_lc.nim

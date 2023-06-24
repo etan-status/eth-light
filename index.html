@@ -235,7 +235,7 @@
         let beaconApiBase = undefined;
         let rng = undefined;
         let cfg = undefined;
-        let genesisValidatorsRoot = undefined;
+        let genesisValRoot = undefined;
         let forkDigests = undefined;
         let beaconClock = undefined;
         let store = undefined;
@@ -256,7 +256,7 @@
                     const finUpdatesBytesPtr = Module.stringToNewUTF8(event.data);
                     const numFinUpdateBytes = Module.lengthBytesUTF8(event.data);
                     const res = Module._ECLLightClientStoreProcessFinalityUpdate(
-                        store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
+                        store, cfg, forkDigests, genesisValRoot, beaconClock,
                         mediaType, /* consensusVersion: */ 0, finUpdatesBytesPtr, numFinUpdateBytes);
                     Module._free(finUpdatesBytesPtr);
                     Module._free(mediaType);
@@ -269,7 +269,7 @@
                     const optUpdateBytesPtr = Module.stringToNewUTF8(event.data);
                     const numOptUpdateBytes = Module.lengthBytesUTF8(event.data);
                     const res = Module._ECLLightClientStoreProcessOptimisticUpdate(
-                        store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
+                        store, cfg, forkDigests, genesisValRoot, beaconClock,
                         mediaType, /* consensusVersion: */ 0, optUpdateBytesPtr, numOptUpdateBytes);
                     Module._free(optUpdateBytesPtr);
                     Module._free(mediaType);
@@ -305,15 +305,15 @@
                         if (response.ok) {
                             const data = await response.arrayBuffer();
                             if (storeId != tickStoreId) return;
-                            const updatesByRangeBytes = new Uint8Array(data);
+                            const updatesBytes = new Uint8Array(data);
 
                             const mediaType = Module.stringToNewUTF8(response.headers.get('Content-Type'));
-                            const updatesByRangeBytesPtr = Module._malloc(updatesByRangeBytes.length);
-                            Module.HEAPU8.set(updatesByRangeBytes, updatesByRangeBytesPtr);
+                            const updatesBytesPtr = Module._malloc(updatesBytes.length);
+                            Module.HEAPU8.set(updatesBytes, updatesBytesPtr);
                             res = Module._ECLLightClientStoreProcessUpdatesByRange(
-                                store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
-                                startPeriod, count, mediaType, updatesByRangeBytesPtr, updatesByRangeBytes.length);
-                            Module._free(updatesByRangeBytesPtr);
+                                store, cfg, forkDigests, genesisValRoot, beaconClock,
+                                startPeriod, count, mediaType, updatesBytesPtr, updatesBytes.length);
+                            Module._free(updatesBytesPtr);
                             Module._free(mediaType);
                         }
                     } else if (syncKind == Module.HEAPU8[Module._kECLLcSyncKind_FinalityUpdate]) {
@@ -335,7 +335,7 @@
                             const finUpdatesBytesPtr = Module._malloc(finUpdateBytes.length);
                             Module.HEAPU8.set(finUpdateBytes, finUpdatesBytesPtr);
                             res = Module._ECLLightClientStoreProcessFinalityUpdate(
-                                store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
+                                store, cfg, forkDigests, genesisValRoot, beaconClock,
                                 mediaType, consensusVersion, finUpdatesBytesPtr, finUpdateBytes.length);
                             Module._free(finUpdatesBytesPtr);
                             Module._free(consensusVersion);
@@ -361,7 +361,7 @@
                             const optUpdateBytesPtr = Module._malloc(optUpdateBytes.length);
                             Module.HEAPU8.set(optUpdateBytes, optUpdateBytesPtr);
                             res = Module._ECLLightClientStoreProcessOptimisticUpdate(
-                                store, cfg, forkDigests, genesisValidatorsRoot, beaconClock,
+                                store, cfg, forkDigests, genesisValRoot, beaconClock,
                                 mediaType, consensusVersion, optUpdateBytesPtr, optUpdateBytes.length);
                             Module._free(optUpdateBytesPtr);
                             Module._free(consensusVersion);
@@ -401,7 +401,7 @@
             rng = Module._ECLRandomNumberCreate();
             cfg = await loadCfg();
             const genesisState = await loadGenesis(cfg);
-            genesisValidatorsRoot = Module._ECLBeaconStateCopyGenesisValidatorsRoot(genesisState);
+            genesisValRoot = Module._ECLBeaconStateCopyGenesisValidatorsRoot(genesisState);
             forkDigests = Module._ECLForkDigestsCreateFromState(cfg, genesisState);
             beaconClock = Module._ECLBeaconClockCreateFromState(genesisState);
             Module._ECLBeaconStateDestroy(genesisState);
@@ -453,6 +453,6 @@
             document.getElementById('initButton').disabled = false;
         };
     </script>
-    <script async src="nimbus_light_client_ffi.js"></script>
+    <script async src="libnimbus_lc.js"></script>
 </body>
 </html>
