@@ -95,6 +95,10 @@
     </ul>
     Latest sync task: <b><span id="syncTask"></span></b><br />
     Next sync task: <b><span id="timeToNextSyncTask"></span></b><br />
+    <br />
+
+    <h1>History</h1>
+    <ul id="headersHistory"></ul>
 
     <script>
         const networkMetadataPath = 'https://raw.githubusercontent.com/eth-clients/eth2-networks/master/shared/mainnet';
@@ -152,12 +156,72 @@
 
         var Module = {};
 
-        function visualizeStore(store, cfg) {
-            function toHexString(bytes, numBytes) {
-                const array = Array.from(Module.HEAPU8.subarray(bytes, bytes + numBytes))
-                return '0x' + array.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
-            }
+        function toHexString(bytes, numBytes) {
+            const array = Array.from(Module.HEAPU8.subarray(bytes, bytes + numBytes))
+            return '0x' + array.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
+        }
 
+        function getBeaconRootString(header) {
+            const beaconRoot = Module._ETHLightClientHeaderCopyBeaconRoot(header, cfg);
+            const beaconRootString = toHexString(beaconRoot, 32);
+            Module._ETHRootDestroy(beaconRoot);
+            return beaconRootString;
+        }
+
+        function getBeaconSlot(header) {
+            const beacon = Module._ETHLightClientHeaderGetBeacon(header);
+            return Module._ETHBeaconBlockHeaderGetSlot(beacon);
+        }
+
+        function initHeadersCache() {
+            let headers = [];
+            let byRoot = {};
+
+            return {
+                'add': function(header, cfg) {
+                    const beaconRootString = getBeaconRootString(header);
+                    if (byRoot[beaconRootString]) {
+                        return;
+                    }
+
+                    const beaconSlot = getBeaconSlot(header);
+                    const i = headers.findIndex(x => beaconSlot > getBeaconSlot(x));
+                    const copy = Module._ETHLightClientHeaderCreateCopy(header)
+                    headers.splice(i >= 0 ? i : headers.length, 0, copy);
+                    byRoot[beaconRootString] = copy;
+
+                    if (headers.length > 128) {
+                        const removedHeader = headers.pop();
+                        const removedBeaconRootString = getBeaconRootString(removedHeader);
+                        delete byRoot[removedBeaconRootString];
+                        Module._ETHLightClientHeaderDestroy(removedHeader);
+                    }
+                },
+
+                'getAll': function() {
+                    return headers;
+                }
+            }
+        }
+
+        let headers = initHeadersCache();
+
+        function cacheHeaders(store, cfg) {
+            headers.add(Module._ETHLightClientStoreGetOptimisticHeader(store), cfg);
+            headers.add(Module._ETHLightClientStoreGetFinalizedHeader(store), cfg);
+
+            const ul = document.getElementById('headersHistory');
+            while (ul.firstChild) {
+                ul.removeChild(ul.firstChild);
+            }
+            for (const header of headers.getAll()) {
+                const li = document.createElement('li');
+                li.textContent = '' + getBeaconSlot(header) + ' (' + getBeaconRootString(header) + ')';
+                ul.appendChild(li);
+            }
+        }
+
+        function visualizeStore(store, cfg) {
             function toGweiString(weiU256Bytes) {
                 const array = Array.from(Module.HEAPU8.subarray(weiU256Bytes, weiU256Bytes + 32)).reverse();
                 const wei = BigInt('0x' + array.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), ''));
@@ -260,6 +324,7 @@
                         mediaType, /* consensusVersion: */ 0, finUpdatesBytesPtr, numFinUpdateBytes);
                     Module._free(finUpdatesBytesPtr);
                     Module._free(mediaType);
+                    cacheHeaders(store, cfg);
                     visualizeStore(store, cfg);
                 });
 
@@ -273,11 +338,13 @@
                         mediaType, /* consensusVersion: */ 0, optUpdateBytesPtr, numOptUpdateBytes);
                     Module._free(optUpdateBytesPtr);
                     Module._free(mediaType);
+                    cacheHeaders(store, cfg);
                     visualizeStore(store, cfg);
                 });
             }
 
             function runOnTick(tickStoreId, timeout) {
+                cacheHeaders(store, cfg);
                 visualizeStore(store, cfg);
                 async function onTick() {
                     trackStoreTimeout = undefined;
