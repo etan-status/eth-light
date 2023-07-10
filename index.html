@@ -105,7 +105,7 @@
             const data = await response.text();
 
             const fileContent = Module.stringToNewUTF8(data);
-            const cfg = Module._ECLNetworkConfigCreateFromYaml(fileContent);
+            const cfg = Module._ETHConsensusConfigCreateFromYaml(fileContent);
             assert(cfg);
             Module._free(fileContent);
 
@@ -113,7 +113,7 @@
         }
 
         async function loadGenesis(cfg) {
-            const consensusFork = Module._ECLNetworkConfigGetConsensusVersionAtEpoch(cfg, /* epoch: */ 0);
+            const consensusFork = Module._ETHConsensusConfigGetConsensusVersionAtEpoch(cfg, /* epoch: */ 0);
             const response = await fetch(networkMetadataPath + '/genesis.ssz');
             assert(response.ok);
             const data = await response.arrayBuffer();
@@ -121,7 +121,7 @@
 
             const sszBytesPtr = Module._malloc(sszBytes.length);
             Module.HEAPU8.set(sszBytes, sszBytesPtr);
-            const state = Module._ECLBeaconStateCreateFromSsz(cfg, consensusFork, sszBytesPtr, sszBytes.length);
+            const state = Module._ETHBeaconStateCreateFromSsz(cfg, consensusFork, sszBytesPtr, sszBytes.length);
             assert(state);
             Module._free(sszBytesPtr);
 
@@ -131,7 +131,7 @@
         let nextSyncTaskTime = undefined;
         function trackWallTime(beaconClock) {
             function onTick() {
-                const slot = Module._ECLBeaconClockGetSlot(beaconClock);
+                const slot = Module._ETHBeaconClockGetSlot(beaconClock);
                 document.getElementById('wallSlot').innerText = slot;
                 if (nextSyncTaskTime !== undefined) {
                     const now = Date.now();
@@ -174,61 +174,61 @@
             }
 
             function visualizeHeader(prefix, header) {
-                const beaconRoot = Module._ECLLightClientHeaderCopyBeaconRoot(header, cfg);
+                const beaconRoot = Module._ETHLightClientHeaderCopyBeaconRoot(header, cfg);
                 document.getElementById(prefix + 'BeaconRoot').innerText = toHexString(beaconRoot, 32);
-                Module._ECLRootDestroy(beaconRoot);
-                const beacon = Module._ECLLightClientHeaderGetBeacon(header);
-                const beaconSlot = Module._ECLBeaconBlockHeaderGetSlot(beacon);
+                Module._ETHRootDestroy(beaconRoot);
+                const beacon = Module._ETHLightClientHeaderGetBeacon(header);
+                const beaconSlot = Module._ETHBeaconBlockHeaderGetSlot(beacon);
                 document.getElementById(prefix + 'BeaconSlot').innerText = beaconSlot;
-                const beaconProposerIndex = Module._ECLBeaconBlockHeaderGetProposerIndex(beacon);
+                const beaconProposerIndex = Module._ETHBeaconBlockHeaderGetProposerIndex(beacon);
                 document.getElementById(prefix + 'BeaconProposerIndex').innerText = beaconProposerIndex;
-                const beaconParentRoot = Module._ECLBeaconBlockHeaderGetParentRoot(beacon);
+                const beaconParentRoot = Module._ETHBeaconBlockHeaderGetParentRoot(beacon);
                 document.getElementById(prefix + 'BeaconParentRoot').innerText = toHexString(beaconParentRoot, 32);
-                const beaconStateRoot = Module._ECLBeaconBlockHeaderGetStateRoot(beacon);
+                const beaconStateRoot = Module._ETHBeaconBlockHeaderGetStateRoot(beacon);
                 document.getElementById(prefix + 'BeaconStateRoot').innerText = toHexString(beaconStateRoot, 32);
-                const beaconBodyRoot = Module._ECLBeaconBlockHeaderGetBodyRoot(beacon);
+                const beaconBodyRoot = Module._ETHBeaconBlockHeaderGetBodyRoot(beacon);
                 document.getElementById(prefix + 'BeaconBodyRoot').innerText = toHexString(beaconBodyRoot, 32);
 
-                const executionHash = Module._ECLLightClientHeaderCopyExecutionHash(header, cfg);
+                const executionHash = Module._ETHLightClientHeaderCopyExecutionHash(header, cfg);
                 document.getElementById(prefix + 'ExecutionHash').innerText = toHexString(executionHash, 32);
-                Module._ECLRootDestroy(executionHash);
-                const execution = Module._ECLLightClientHeaderGetExecution(header);
-                const executionParentHash = Module._ECLExecutionPayloadHeaderGetParentHash(execution);
+                Module._ETHRootDestroy(executionHash);
+                const execution = Module._ETHLightClientHeaderGetExecution(header);
+                const executionParentHash = Module._ETHExecutionPayloadHeaderGetParentHash(execution);
                 document.getElementById(prefix + 'ExecutionParentHash').innerText = toHexString(executionParentHash, 32);
-                const executionFeeRecipient = Module._ECLExecutionPayloadHeaderGetFeeRecipient(execution);
+                const executionFeeRecipient = Module._ETHExecutionPayloadHeaderGetFeeRecipient(execution);
                 document.getElementById(prefix + 'ExecutionFeeRecipient').innerText = toHexString(executionFeeRecipient, 20);
-                const executionStateRoot = Module._ECLExecutionPayloadHeaderGetStateRoot(execution);
+                const executionStateRoot = Module._ETHExecutionPayloadHeaderGetStateRoot(execution);
                 document.getElementById(prefix + 'ExecutionStateRoot').innerText = toHexString(executionStateRoot, 32);
-                const executionReceiptsRoot = Module._ECLExecutionPayloadHeaderGetReceiptsRoot(execution);
+                const executionReceiptsRoot = Module._ETHExecutionPayloadHeaderGetReceiptsRoot(execution);
                 document.getElementById(prefix + 'ExecutionReceiptsRoot').innerText = toHexString(executionReceiptsRoot, 32);
-                const executionLogsBloom = Module._ECLExecutionPayloadHeaderGetLogsBloom(execution);
+                const executionLogsBloom = Module._ETHExecutionPayloadHeaderGetLogsBloom(execution);
                 document.getElementById(prefix + 'ExecutionLogsBloom').innerText = toHexString(executionLogsBloom, 256);
-                const executionPrevRandao = Module._ECLExecutionPayloadHeaderGetPrevRandao(execution);
+                const executionPrevRandao = Module._ETHExecutionPayloadHeaderGetPrevRandao(execution);
                 document.getElementById(prefix + 'ExecutionPrevRandao').innerText = toHexString(executionPrevRandao, 32);
-                const executionBlockNumber = Module._ECLExecutionPayloadHeaderGetBlockNumber(execution);
+                const executionBlockNumber = Module._ETHExecutionPayloadHeaderGetBlockNumber(execution);
                 document.getElementById(prefix + 'ExecutionBlockNumber').innerText = executionBlockNumber;
-                const executionGasLimit = Module._ECLExecutionPayloadHeaderGetGasLimit(execution);
+                const executionGasLimit = Module._ETHExecutionPayloadHeaderGetGasLimit(execution);
                 document.getElementById(prefix + 'ExecutionGasLimit').innerText = executionGasLimit;
-                const executionGasUsed = Module._ECLExecutionPayloadHeaderGetGasUsed(execution);
+                const executionGasUsed = Module._ETHExecutionPayloadHeaderGetGasUsed(execution);
                 document.getElementById(prefix + 'ExecutionGasUsed').innerText = executionGasUsed;
-                const executionTimestamp = Module._ECLExecutionPayloadHeaderGetTimestamp(execution);
+                const executionTimestamp = Module._ETHExecutionPayloadHeaderGetTimestamp(execution);
                 document.getElementById(prefix + 'ExecutionTimestamp').innerText = executionTimestamp;
-                const executionExtraDataBytes = Module._ECLExecutionPayloadHeaderGetExtraDataBytes(execution);
-                const numExecutionExtraDataBytes = Module._ECLExecutionPayloadHeaderGetNumExtraDataBytes(execution);
+                const executionExtraDataBytes = Module._ETHExecutionPayloadHeaderGetExtraDataBytes(execution);
+                const numExecutionExtraDataBytes = Module._ETHExecutionPayloadHeaderGetNumExtraDataBytes(execution);
                 document.getElementById(prefix + 'ExecutionExtraData').innerText = toHexString(executionExtraDataBytes, numExecutionExtraDataBytes);
-                const executionBaseFeePerGas = Module._ECLExecutionPayloadHeaderGetBaseFeePerGas(execution);
+                const executionBaseFeePerGas = Module._ETHExecutionPayloadHeaderGetBaseFeePerGas(execution);
                 document.getElementById(prefix + 'ExecutionBaseFeePerGas').innerText = toGweiString(executionBaseFeePerGas) + ' Gwei';
-                const executionDataGasUsed = Module._ECLExecutionPayloadHeaderGetDataGasUsed(execution);
+                const executionDataGasUsed = Module._ETHExecutionPayloadHeaderGetDataGasUsed(execution);
                 document.getElementById(prefix + 'ExecutionDataGasUsed').innerText = executionDataGasUsed;
-                const executionExcessDataGas = Module._ECLExecutionPayloadHeaderGetExcessDataGas(execution);
+                const executionExcessDataGas = Module._ETHExecutionPayloadHeaderGetExcessDataGas(execution);
                 document.getElementById(prefix + 'ExecutionExcessDataGas').innerText = executionExcessDataGas;
             }
 
-            visualizeHeader('finalized', Module._ECLLightClientStoreGetFinalizedHeader(store));
-            const isNextSyncCommitteeKnown = Module._ECLLightClientStoreIsNextSyncCommitteeKnown(store);
+            visualizeHeader('finalized', Module._ETHLightClientStoreGetFinalizedHeader(store));
+            const isNextSyncCommitteeKnown = Module._ETHLightClientStoreIsNextSyncCommitteeKnown(store);
             document.getElementById('nextSyncCommitteeKnown').innerText = (isNextSyncCommitteeKnown ? 'known' : 'unknown');
-            visualizeHeader('optimistic', Module._ECLLightClientStoreGetOptimisticHeader(store));
-            const safetyThreshold = Module._ECLLightClientStoreGetSafetyThreshold(store);
+            visualizeHeader('optimistic', Module._ETHLightClientStoreGetOptimisticHeader(store));
+            const safetyThreshold = Module._ETHLightClientStoreGetSafetyThreshold(store);
             document.getElementById('safetyThreshold').innerText = safetyThreshold;
         }
 
@@ -255,7 +255,7 @@
                     const mediaType = Module.stringToNewUTF8("application/json");
                     const finUpdatesBytesPtr = Module.stringToNewUTF8(event.data);
                     const numFinUpdateBytes = Module.lengthBytesUTF8(event.data);
-                    const res = Module._ECLLightClientStoreProcessFinalityUpdate(
+                    const res = Module._ETHLightClientStoreProcessFinalityUpdate(
                         store, cfg, forkDigests, genesisValRoot, beaconClock,
                         mediaType, /* consensusVersion: */ 0, finUpdatesBytesPtr, numFinUpdateBytes);
                     Module._free(finUpdatesBytesPtr);
@@ -268,7 +268,7 @@
                     const mediaType = Module.stringToNewUTF8("application/json");
                     const optUpdateBytesPtr = Module.stringToNewUTF8(event.data);
                     const numOptUpdateBytes = Module.lengthBytesUTF8(event.data);
-                    const res = Module._ECLLightClientStoreProcessOptimisticUpdate(
+                    const res = Module._ETHLightClientStoreProcessOptimisticUpdate(
                         store, cfg, forkDigests, genesisValRoot, beaconClock,
                         mediaType, /* consensusVersion: */ 0, optUpdateBytesPtr, numOptUpdateBytes);
                     Module._free(optUpdateBytesPtr);
@@ -285,7 +285,7 @@
 
                     const startPeriodPtr = Module._malloc(4);
                     const countPtr = Module._malloc(4);
-                    const syncKind = Module._ECLLightClientStoreGetNextSyncTask(
+                    const syncKind = Module._ETHLightClientStoreGetNextSyncTask(
                         store, beaconClock, startPeriodPtr, countPtr);
                     const startPeriod = Module.HEAPU32[startPeriodPtr >>> 2];
                     const count = Module.HEAPU32[countPtr >>> 2];
@@ -293,7 +293,7 @@
                     Module._free(startPeriodPtr);
 
                     let res = 1;
-                    if (syncKind == Module.HEAPU8[Module._kECLLcSyncKind_UpdatesByRange]) {
+                    if (syncKind == Module.HEAPU8[Module._kETHLcSyncKind_UpdatesByRange]) {
                         document.getElementById('syncTask').innerText = 'UpdatesByRange(' + startPeriod + ", " + count + ')';
                         const response = await fetch(beaconApiBase +
                             '/eth/v1/beacon/light_client/updates?start_period=' + startPeriod + '&count=' + count, {
@@ -310,13 +310,13 @@
                             const mediaType = Module.stringToNewUTF8(response.headers.get('Content-Type'));
                             const updatesBytesPtr = Module._malloc(updatesBytes.length);
                             Module.HEAPU8.set(updatesBytes, updatesBytesPtr);
-                            res = Module._ECLLightClientStoreProcessUpdatesByRange(
+                            res = Module._ETHLightClientStoreProcessUpdatesByRange(
                                 store, cfg, forkDigests, genesisValRoot, beaconClock,
                                 startPeriod, count, mediaType, updatesBytesPtr, updatesBytes.length);
                             Module._free(updatesBytesPtr);
                             Module._free(mediaType);
                         }
-                    } else if (syncKind == Module.HEAPU8[Module._kECLLcSyncKind_FinalityUpdate]) {
+                    } else if (syncKind == Module.HEAPU8[Module._kETHLcSyncKind_FinalityUpdate]) {
                         document.getElementById('syncTask').innerText = 'FinalityUpdate';
                         const response = await fetch(beaconApiBase +
                             '/eth/v1/beacon/light_client/finality_update', {
@@ -334,7 +334,7 @@
                             const consensusVersion = Module.stringToNewUTF8(response.headers.get('Eth-Consensus-Version'));
                             const finUpdatesBytesPtr = Module._malloc(finUpdateBytes.length);
                             Module.HEAPU8.set(finUpdateBytes, finUpdatesBytesPtr);
-                            res = Module._ECLLightClientStoreProcessFinalityUpdate(
+                            res = Module._ETHLightClientStoreProcessFinalityUpdate(
                                 store, cfg, forkDigests, genesisValRoot, beaconClock,
                                 mediaType, consensusVersion, finUpdatesBytesPtr, finUpdateBytes.length);
                             Module._free(finUpdatesBytesPtr);
@@ -342,7 +342,7 @@
                             Module._free(mediaType);
                         }
                     } else {
-                        assert(syncKind == Module.HEAPU8[Module._kECLLcSyncKind_OptimisticUpdate]);
+                        assert(syncKind == Module.HEAPU8[Module._kETHLcSyncKind_OptimisticUpdate]);
                         document.getElementById('syncTask').innerText = 'OptimisticUpdate';
                         const response = await fetch(beaconApiBase +
                             '/eth/v1/beacon/light_client/optimistic_update', {
@@ -360,7 +360,7 @@
                             const consensusVersion = Module.stringToNewUTF8(response.headers.get('Eth-Consensus-Version'));
                             const optUpdateBytesPtr = Module._malloc(optUpdateBytes.length);
                             Module.HEAPU8.set(optUpdateBytes, optUpdateBytesPtr);
-                            res = Module._ECLLightClientStoreProcessOptimisticUpdate(
+                            res = Module._ETHLightClientStoreProcessOptimisticUpdate(
                                 store, cfg, forkDigests, genesisValRoot, beaconClock,
                                 mediaType, consensusVersion, optUpdateBytesPtr, optUpdateBytes.length);
                             Module._free(optUpdateBytesPtr);
@@ -369,7 +369,7 @@
                         }
                     }
 
-                    let millisecondsToNextSyncTask = Module._ECLLightClientStoreGetMillisecondsToNextSyncTask(
+                    let millisecondsToNextSyncTask = Module._ETHLightClientStoreGetMillisecondsToNextSyncTask(
                         store, rng, beaconClock, res);
                     nextSyncTaskTime = Date.now() + millisecondsToNextSyncTask;
                     runOnTick(storeId, /* timeout: */ millisecondsToNextSyncTask);
@@ -392,19 +392,19 @@
                 nextSyncTaskTime = undefined;
             }
             if (store !== undefined) {
-                Module._ECLLightClientStoreDestroy(store);
+                Module._ETHLightClientStoreDestroy(store);
                 store = undefined;
             }
         }
 
         Module.onRuntimeInitialized = async function() {
-            rng = Module._ECLRandomNumberCreate();
+            rng = Module._ETHRandomNumberCreate();
             cfg = await loadCfg();
             const genesisState = await loadGenesis(cfg);
-            genesisValRoot = Module._ECLBeaconStateCopyGenesisValidatorsRoot(genesisState);
-            forkDigests = Module._ECLForkDigestsCreateFromState(cfg, genesisState);
-            beaconClock = Module._ECLBeaconClockCreateFromState(genesisState);
-            Module._ECLBeaconStateDestroy(genesisState);
+            genesisValRoot = Module._ETHBeaconStateCopyGenesisValidatorsRoot(genesisState);
+            forkDigests = Module._ETHForkDigestsCreateFromState(cfg, genesisState);
+            beaconClock = Module._ETHBeaconClockCreateFromState(genesisState);
+            Module._ETHBeaconStateDestroy(genesisState);
             trackWallTime(beaconClock);
 
             document.getElementById('initButton').addEventListener('click', async function() {
@@ -437,7 +437,7 @@
                     const consensusVersion = Module.stringToNewUTF8(response.headers.get('Eth-Consensus-Version'));
                     const bootstrapBytesPtr = Module._malloc(bootstrapBytes.length);
                     Module.HEAPU8.set(bootstrapBytes, bootstrapBytesPtr);
-                    const newStore = Module._ECLLightClientStoreCreateFromBootstrap(
+                    const newStore = Module._ETHLightClientStoreCreateFromBootstrap(
                         cfg, trustedBlockRootBytesPtr,
                         mediaType, consensusVersion, bootstrapBytesPtr, bootstrapBytes.length);
                     assert(newStore);
