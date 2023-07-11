@@ -347,6 +347,12 @@
                 cacheHeaders(store, cfg);
                 visualizeStore(store, cfg);
                 async function onTick() {
+                    if (storeId != tickStoreId) return;
+                    if (nextSyncTaskTime !== undefined && Date.now() < nextSyncTaskTime) {
+                        runOnTick(storeId, /* timeout: */ 100);
+                        return;
+                    }
+
                     trackStoreTimeout = undefined;
                     nextSyncTaskTime = undefined;
 
@@ -439,7 +445,7 @@
                     let millisecondsToNextSyncTask = Module._ETHLightClientStoreGetMillisecondsToNextSyncTask(
                         store, rng, beaconClock, res);
                     nextSyncTaskTime = Date.now() + millisecondsToNextSyncTask;
-                    runOnTick(storeId, /* timeout: */ millisecondsToNextSyncTask);
+                    runOnTick(storeId, /* timeout: */ 100);
                 }
                 trackStoreTimeout = setTimeout(onTick, timeout);
             }
