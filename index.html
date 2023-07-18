@@ -35,6 +35,7 @@
             background-color: #f9f9f9;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             padding: 10px;
+            overflow-y: scroll;
         }
 
         #mdDetail {
@@ -47,6 +48,16 @@
             padding: 10px 5px 10px;
             background-color: #e9e9e9;
             border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .headerMaster:hover {
+            background-color: #d9d9d9;
+        }
+
+        .headerMaster.selected {
+            background-color: #c9c9c9;
         }
 
         .headerMasterBeaconRoot {
@@ -74,6 +85,41 @@
         <br />
         Checkpoint block root:<br /><input id="trustedBlockRoot" value="0x15cf56ebf887ede9cf3fc10a26ec83828628932c100e42c98c84f83da710c863" /><input type="button" id="initButton" value="Init" disabled /><br />
         <br />
+
+        <div id="selectedHeaderDetail" hidden="hidden">
+            <h1>Selected header</h1>
+            <ul>
+                <li>
+                    <pre>beacon</pre>: <b><pre id="selectedBeaconRoot"></pre></b>
+                    <ul>
+                        <li><pre>slot</pre>: <b><pre id="selectedBeaconSlot"></pre></b></li>
+                        <li><pre>proposer_index</pre>: <b><pre id="selectedBeaconProposerIndex"></pre></b></li>
+                        <li><pre>parent_root</pre>: <b><pre id="selectedBeaconParentRoot"></pre></b></li>
+                        <li><pre>state_root</pre>: <b><pre id="selectedBeaconStateRoot"></pre></b></li>
+                        <li><pre>body_root</pre>: <b><pre id="selectedBeaconBodyRoot"></pre></b></li>
+                    </ul>
+                </li>
+                <li>
+                    <pre>execution</pre>: <b><pre id="selectedExecutionHash"></pre></b>
+                    <ul>
+                        <li><pre>parent_hash</pre>: <b><pre id="selectedExecutionParentHash"></pre></b></li>
+                        <li><pre>fee_recipient</pre>: <b><pre id="selectedExecutionFeeRecipient"></pre></b></li>
+                        <li><pre>state_root</pre>: <b><pre id="selectedExecutionStateRoot"></pre></b></li>
+                        <li><pre>receipts_root</pre>: <b><pre id="selectedExecutionReceiptsRoot"></pre></b></li>
+                        <li><pre>logs_bloom</pre>: <b><pre id="selectedExecutionLogsBloom"></pre></b></li>
+                        <li><pre>prev_randao</pre>: <b><pre id="selectedExecutionPrevRandao"></pre></b></li>
+                        <li><pre>block_number</pre>: <b><pre id="selectedExecutionBlockNumber"></pre></b></li>
+                        <li><pre>gas_limit</pre>: <b><pre id="selectedExecutionGasLimit"></pre></b></li>
+                        <li><pre>gas_used</pre>: <b><pre id="selectedExecutionGasUsed"></pre></b></li>
+                        <li><pre>timestamp</pre>: <b><pre id="selectedExecutionTimestamp"></pre></b></li>
+                        <li><pre>extra_data</pre>: <b><pre id="selectedExecutionExtraData"></pre></b></li>
+                        <li><pre>base_fee_per_gas</pre>: <b><pre id="selectedExecutionBaseFeePerGas"></pre></b></li>
+                        <li><pre>data_gas_used</pre>: <b><pre id="selectedExecutionDataGasUsed"></pre></b></li>
+                        <li><pre>excess_data_gas</pre>: <b><pre id="selectedExecutionExcessDataGas"></pre></b></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
 
         <h1>Sync progress</h1>
         <ul>
@@ -224,6 +270,72 @@
             return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
         }
 
+        function toGweiString(weiU256Bytes) {
+            const array = Array.from(Module.HEAPU8.subarray(weiU256Bytes, weiU256Bytes + 32)).reverse();
+            const wei = BigInt('0x' + array.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), ''));
+            const weiString = wei.toString();
+            const beforeDecimal = weiString.substring(0, weiString.length - 9);
+            const afterDecimal = weiString.substring(weiString.length - 9).replace(/0+$/, '');
+            let gweiString = '';
+            if (beforeDecimal === '') {
+                gweiString = '0.' + afterDecimal;
+            } else {
+                gweiString = beforeDecimal + '.' + afterDecimal;
+            }
+            return gweiString;
+        }
+
+        function visualizeHeader(prefix, header) {
+            const beaconRoot = Module._ETHLightClientHeaderCopyBeaconRoot(header, cfg);
+            document.getElementById(prefix + 'BeaconRoot').innerText = toHexString(beaconRoot, 32);
+            Module._ETHRootDestroy(beaconRoot);
+            const beacon = Module._ETHLightClientHeaderGetBeacon(header);
+            const beaconSlot = Module._ETHBeaconBlockHeaderGetSlot(beacon);
+            document.getElementById(prefix + 'BeaconSlot').innerText = beaconSlot;
+            const beaconProposerIndex = Module._ETHBeaconBlockHeaderGetProposerIndex(beacon);
+            document.getElementById(prefix + 'BeaconProposerIndex').innerText = beaconProposerIndex;
+            const beaconParentRoot = Module._ETHBeaconBlockHeaderGetParentRoot(beacon);
+            document.getElementById(prefix + 'BeaconParentRoot').innerText = toHexString(beaconParentRoot, 32);
+            const beaconStateRoot = Module._ETHBeaconBlockHeaderGetStateRoot(beacon);
+            document.getElementById(prefix + 'BeaconStateRoot').innerText = toHexString(beaconStateRoot, 32);
+            const beaconBodyRoot = Module._ETHBeaconBlockHeaderGetBodyRoot(beacon);
+            document.getElementById(prefix + 'BeaconBodyRoot').innerText = toHexString(beaconBodyRoot, 32);
+
+            const executionHash = Module._ETHLightClientHeaderCopyExecutionHash(header, cfg);
+            document.getElementById(prefix + 'ExecutionHash').innerText = toHexString(executionHash, 32);
+            Module._ETHRootDestroy(executionHash);
+            const execution = Module._ETHLightClientHeaderGetExecution(header);
+            const executionParentHash = Module._ETHExecutionPayloadHeaderGetParentHash(execution);
+            document.getElementById(prefix + 'ExecutionParentHash').innerText = toHexString(executionParentHash, 32);
+            const executionFeeRecipient = Module._ETHExecutionPayloadHeaderGetFeeRecipient(execution);
+            document.getElementById(prefix + 'ExecutionFeeRecipient').innerText = toHexString(executionFeeRecipient, 20);
+            const executionStateRoot = Module._ETHExecutionPayloadHeaderGetStateRoot(execution);
+            document.getElementById(prefix + 'ExecutionStateRoot').innerText = toHexString(executionStateRoot, 32);
+            const executionReceiptsRoot = Module._ETHExecutionPayloadHeaderGetReceiptsRoot(execution);
+            document.getElementById(prefix + 'ExecutionReceiptsRoot').innerText = toHexString(executionReceiptsRoot, 32);
+            const executionLogsBloom = Module._ETHExecutionPayloadHeaderGetLogsBloom(execution);
+            document.getElementById(prefix + 'ExecutionLogsBloom').innerText = toHexString(executionLogsBloom, 256);
+            const executionPrevRandao = Module._ETHExecutionPayloadHeaderGetPrevRandao(execution);
+            document.getElementById(prefix + 'ExecutionPrevRandao').innerText = toHexString(executionPrevRandao, 32);
+            const executionBlockNumber = Module._ETHExecutionPayloadHeaderGetBlockNumber(execution);
+            document.getElementById(prefix + 'ExecutionBlockNumber').innerText = executionBlockNumber;
+            const executionGasLimit = Module._ETHExecutionPayloadHeaderGetGasLimit(execution);
+            document.getElementById(prefix + 'ExecutionGasLimit').innerText = executionGasLimit;
+            const executionGasUsed = Module._ETHExecutionPayloadHeaderGetGasUsed(execution);
+            document.getElementById(prefix + 'ExecutionGasUsed').innerText = executionGasUsed;
+            const executionTimestamp = Module._ETHExecutionPayloadHeaderGetTimestamp(execution);
+            document.getElementById(prefix + 'ExecutionTimestamp').innerText = executionTimestamp;
+            const executionExtraDataBytes = Module._ETHExecutionPayloadHeaderGetExtraDataBytes(execution);
+            const numExecutionExtraDataBytes = Module._ETHExecutionPayloadHeaderGetNumExtraDataBytes(execution);
+            document.getElementById(prefix + 'ExecutionExtraData').innerText = toHexString(executionExtraDataBytes, numExecutionExtraDataBytes);
+            const executionBaseFeePerGas = Module._ETHExecutionPayloadHeaderGetBaseFeePerGas(execution);
+            document.getElementById(prefix + 'ExecutionBaseFeePerGas').innerText = toGweiString(executionBaseFeePerGas) + ' Gwei';
+            const executionDataGasUsed = Module._ETHExecutionPayloadHeaderGetDataGasUsed(execution);
+            document.getElementById(prefix + 'ExecutionDataGasUsed').innerText = executionDataGasUsed;
+            const executionExcessDataGas = Module._ETHExecutionPayloadHeaderGetExcessDataGas(execution);
+            document.getElementById(prefix + 'ExecutionExcessDataGas').innerText = executionExcessDataGas;
+        }
+
         function getBeaconRootString(header) {
             const beaconRoot = Module._ETHLightClientHeaderCopyBeaconRoot(header, cfg);
             const beaconRootString = toHexString(beaconRoot, 32);
@@ -241,136 +353,125 @@
             let byRoot = {};
 
             return {
-                'add': function(header, cfg) {
-                    const beaconRootString = getBeaconRootString(header);
-                    if (byRoot[beaconRootString]) {
+                'add': function (header, cfg) {
+                    const beaconRoot = getBeaconRootString(header);
+                    if (byRoot[beaconRoot]) {
                         return;
                     }
 
                     const beaconSlot = getBeaconSlot(header);
-                    const i = headers.findIndex(x => beaconSlot > getBeaconSlot(x));
+                    const i = headers.findIndex(x => (beaconSlot > getBeaconSlot(x)) ||
+                        (beaconSlot == getBeaconSlot && beaconRoot < getBeaconRootString(x)));
                     const copy = Module._ETHLightClientHeaderCreateCopy(header)
                     headers.splice(i >= 0 ? i : headers.length, 0, copy);
-                    byRoot[beaconRootString] = copy;
+                    byRoot[beaconRoot] = copy;
 
                     if (headers.length > 128) {
                         const removedHeader = headers.pop();
-                        const removedBeaconRootString = getBeaconRootString(removedHeader);
-                        delete byRoot[removedBeaconRootString];
+                        const removedBeaconRoot = getBeaconRootString(removedHeader);
+                        delete byRoot[removedBeaconRoot];
                         Module._ETHLightClientHeaderDestroy(removedHeader);
                     }
                 },
 
-                'getAll': function() {
+                'get': function (beaconRoot) {
+                    return byRoot[beaconRoot];
+                },
+
+                'getAll': function () {
                     return headers;
                 }
             }
         }
 
         let headers = initHeadersCache();
+        let selectedHeader = undefined;
 
         function cacheHeaders(store, cfg) {
             headers.add(Module._ETHLightClientStoreGetOptimisticHeader(store), cfg);
             headers.add(Module._ETHLightClientStoreGetFinalizedHeader(store), cfg);
 
-            const mdMaster = document.getElementById('mdMaster');
-            while (mdMaster.firstChild) {
-                mdMaster.removeChild(mdMaster.firstChild);
-            }
-            for (const header of headers.getAll()) {
-                const headerDiv = document.createElement('div');
-                headerDiv.className = 'headerMaster';
-                const beaconRootDiv = document.createElement('div');
-                beaconRootDiv.className = 'headerMasterBeaconRoot';
-                const beaconRoot = getBeaconRootString(header);
-                beaconRootDiv.innerHTML = beaconRoot.substring(2, 34) + '<br />' + beaconRoot.substring(34);
-                headerDiv.appendChild(beaconRootDiv);
-                const infoDiv = document.createElement('div');
-                infoDiv.className = 'headerMasterInfo';
-                headerDiv.appendChild(infoDiv);
-                const beaconSlotDiv = document.createElement('div');
-                beaconSlotDiv.innerHTML = '<span class="fas fa-ticket-alt"></span> ' + getBeaconSlot(header);
-                infoDiv.appendChild(beaconSlotDiv);
-                const execution = Module._ETHLightClientHeaderGetExecution(header);
-                const executionBlockNumberDiv = document.createElement('div');
-                const executionBlockNumber = Module._ETHExecutionPayloadHeaderGetBlockNumber(execution);
-                executionBlockNumberDiv.innerHTML = '<span class="fas fa-cubes"></span> ' + executionBlockNumber;
-                infoDiv.appendChild(executionBlockNumberDiv);
-                const executionTimestampDiv = document.createElement('div');
-                const executionTimestamp = Module._ETHExecutionPayloadHeaderGetTimestamp(execution);
-                executionTimestampDiv.innerHTML = '<span class="fas fa-clock"></span> ' + toDateString(executionTimestamp);
-                infoDiv.appendChild(executionTimestampDiv);
-                mdMaster.appendChild(headerDiv);
+            const newHeaders = headers.getAll();
+            const oldHeaderDivs = Array.from(mdMaster.children);
+
+            let i = 0;
+            let j = 0;
+
+            while (i < newHeaders.length || j < oldHeaderDivs.length) {
+                const newHeader = newHeaders[i];
+                let beaconRoot = undefined;
+                let beaconSlot = undefined;
+                if (newHeader) {
+                    beaconRoot = getBeaconRootString(newHeader);
+                    beaconSlot = getBeaconSlot(newHeader);
+                }
+
+                const oldHeaderDiv = oldHeaderDivs[j];
+                if (newHeader && oldHeaderDiv && beaconRoot == oldHeaderDiv.dataset.beaconRoot) {
+                    i++;
+                    j++;
+                } else if (newHeader && (!oldHeaderDiv ||
+                    beaconSlot > oldHeaderDiv.dataset.beaconSlot ||
+                    (beaconSlot == oldHeaderDiv.dataset.beaconSlot &&
+                    beaconRoot < oldHeaderDiv.dataset.beaconRoot)))
+                {
+                    let headerDiv = document.createElement('div');
+                    headerDiv.id = `headerMaster_${beaconRoot}`;
+                    headerDiv.dataset.beaconRoot = beaconRoot;
+                    headerDiv.dataset.beaconSlot = beaconSlot;
+                    headerDiv.className = 'headerMaster';
+                    headerDiv.onclick = function () {
+                        if (selectedHeader !== undefined) {
+                            const selectedHeaderDiv = document.getElementById(`headerMaster_${selectedHeader}`);
+                            selectedHeaderDiv.classList.remove('selected');
+                            if (selectedHeaderDiv.dataset.beaconRoot === beaconRoot) {
+                                document.getElementById('selectedHeaderDetail').hidden = true;
+                                selectedHeader = undefined;
+                                return;
+                            }
+                        }
+                        const header = headers.get(beaconRoot);
+                        if (header) {
+                            headerDiv.classList.add('selected');
+                            selectedHeader = beaconRoot;
+                            visualizeHeader('selected', header);
+                            document.getElementById('selectedHeaderDetail').hidden = false;
+                        }
+                    };
+                    const beaconRootDiv = document.createElement('div');
+                    beaconRootDiv.className = 'headerMasterBeaconRoot';
+                    beaconRootDiv.innerHTML = beaconRoot.substring(2, 34) + '<br />' + beaconRoot.substring(34);
+                    headerDiv.appendChild(beaconRootDiv);
+                    const infoDiv = document.createElement('div');
+                    infoDiv.className = 'headerMasterInfo';
+                    headerDiv.appendChild(infoDiv);
+                    const beaconSlotDiv = document.createElement('div');
+                    beaconSlotDiv.innerHTML = '<span class="fas fa-ticket-alt"></span> ' + beaconSlot;
+                    infoDiv.appendChild(beaconSlotDiv);
+                    const execution = Module._ETHLightClientHeaderGetExecution(newHeader);
+                    const executionBlockNumberDiv = document.createElement('div');
+                    const executionBlockNumber = Module._ETHExecutionPayloadHeaderGetBlockNumber(execution);
+                    executionBlockNumberDiv.innerHTML = '<span class="fas fa-cubes"></span> ' + executionBlockNumber;
+                    infoDiv.appendChild(executionBlockNumberDiv);
+                    const executionTimestampDiv = document.createElement('div');
+                    const executionTimestamp = Module._ETHExecutionPayloadHeaderGetTimestamp(execution);
+                    executionTimestampDiv.innerHTML = '<span class="fas fa-clock"></span> ' + toDateString(executionTimestamp);
+                    infoDiv.appendChild(executionTimestampDiv);
+
+                    mdMaster.insertBefore(headerDiv, oldHeaderDiv);
+                    i++;
+                } else {
+                    if (oldHeaderDiv.classList.contains('selected')) {
+                        document.getElementById('selectedHeaderDetail').hidden = true;
+                        selectedHeader = undefined;
+                    }
+                    mdMaster.removeChild(oldHeaderDiv);
+                    j++;
+                }
             }
         }
 
         function visualizeStore(store, cfg) {
-            function toGweiString(weiU256Bytes) {
-                const array = Array.from(Module.HEAPU8.subarray(weiU256Bytes, weiU256Bytes + 32)).reverse();
-                const wei = BigInt('0x' + array.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), ''));
-                const weiString = wei.toString();
-                const beforeDecimal = weiString.substring(0, weiString.length - 9);
-                const afterDecimal = weiString.substring(weiString.length - 9).replace(/0+$/, '');
-                let gweiString = '';
-                if (beforeDecimal === '') {
-                    gweiString = '0.' + afterDecimal;
-                } else {
-                    gweiString = beforeDecimal + '.' + afterDecimal;
-                }
-                return gweiString;
-            }
-
-            function visualizeHeader(prefix, header) {
-                const beaconRoot = Module._ETHLightClientHeaderCopyBeaconRoot(header, cfg);
-                document.getElementById(prefix + 'BeaconRoot').innerText = toHexString(beaconRoot, 32);
-                Module._ETHRootDestroy(beaconRoot);
-                const beacon = Module._ETHLightClientHeaderGetBeacon(header);
-                const beaconSlot = Module._ETHBeaconBlockHeaderGetSlot(beacon);
-                document.getElementById(prefix + 'BeaconSlot').innerText = beaconSlot;
-                const beaconProposerIndex = Module._ETHBeaconBlockHeaderGetProposerIndex(beacon);
-                document.getElementById(prefix + 'BeaconProposerIndex').innerText = beaconProposerIndex;
-                const beaconParentRoot = Module._ETHBeaconBlockHeaderGetParentRoot(beacon);
-                document.getElementById(prefix + 'BeaconParentRoot').innerText = toHexString(beaconParentRoot, 32);
-                const beaconStateRoot = Module._ETHBeaconBlockHeaderGetStateRoot(beacon);
-                document.getElementById(prefix + 'BeaconStateRoot').innerText = toHexString(beaconStateRoot, 32);
-                const beaconBodyRoot = Module._ETHBeaconBlockHeaderGetBodyRoot(beacon);
-                document.getElementById(prefix + 'BeaconBodyRoot').innerText = toHexString(beaconBodyRoot, 32);
-
-                const executionHash = Module._ETHLightClientHeaderCopyExecutionHash(header, cfg);
-                document.getElementById(prefix + 'ExecutionHash').innerText = toHexString(executionHash, 32);
-                Module._ETHRootDestroy(executionHash);
-                const execution = Module._ETHLightClientHeaderGetExecution(header);
-                const executionParentHash = Module._ETHExecutionPayloadHeaderGetParentHash(execution);
-                document.getElementById(prefix + 'ExecutionParentHash').innerText = toHexString(executionParentHash, 32);
-                const executionFeeRecipient = Module._ETHExecutionPayloadHeaderGetFeeRecipient(execution);
-                document.getElementById(prefix + 'ExecutionFeeRecipient').innerText = toHexString(executionFeeRecipient, 20);
-                const executionStateRoot = Module._ETHExecutionPayloadHeaderGetStateRoot(execution);
-                document.getElementById(prefix + 'ExecutionStateRoot').innerText = toHexString(executionStateRoot, 32);
-                const executionReceiptsRoot = Module._ETHExecutionPayloadHeaderGetReceiptsRoot(execution);
-                document.getElementById(prefix + 'ExecutionReceiptsRoot').innerText = toHexString(executionReceiptsRoot, 32);
-                const executionLogsBloom = Module._ETHExecutionPayloadHeaderGetLogsBloom(execution);
-                document.getElementById(prefix + 'ExecutionLogsBloom').innerText = toHexString(executionLogsBloom, 256);
-                const executionPrevRandao = Module._ETHExecutionPayloadHeaderGetPrevRandao(execution);
-                document.getElementById(prefix + 'ExecutionPrevRandao').innerText = toHexString(executionPrevRandao, 32);
-                const executionBlockNumber = Module._ETHExecutionPayloadHeaderGetBlockNumber(execution);
-                document.getElementById(prefix + 'ExecutionBlockNumber').innerText = executionBlockNumber;
-                const executionGasLimit = Module._ETHExecutionPayloadHeaderGetGasLimit(execution);
-                document.getElementById(prefix + 'ExecutionGasLimit').innerText = executionGasLimit;
-                const executionGasUsed = Module._ETHExecutionPayloadHeaderGetGasUsed(execution);
-                document.getElementById(prefix + 'ExecutionGasUsed').innerText = executionGasUsed;
-                const executionTimestamp = Module._ETHExecutionPayloadHeaderGetTimestamp(execution);
-                document.getElementById(prefix + 'ExecutionTimestamp').innerText = executionTimestamp;
-                const executionExtraDataBytes = Module._ETHExecutionPayloadHeaderGetExtraDataBytes(execution);
-                const numExecutionExtraDataBytes = Module._ETHExecutionPayloadHeaderGetNumExtraDataBytes(execution);
-                document.getElementById(prefix + 'ExecutionExtraData').innerText = toHexString(executionExtraDataBytes, numExecutionExtraDataBytes);
-                const executionBaseFeePerGas = Module._ETHExecutionPayloadHeaderGetBaseFeePerGas(execution);
-                document.getElementById(prefix + 'ExecutionBaseFeePerGas').innerText = toGweiString(executionBaseFeePerGas) + ' Gwei';
-                const executionDataGasUsed = Module._ETHExecutionPayloadHeaderGetDataGasUsed(execution);
-                document.getElementById(prefix + 'ExecutionDataGasUsed').innerText = executionDataGasUsed;
-                const executionExcessDataGas = Module._ETHExecutionPayloadHeaderGetExcessDataGas(execution);
-                document.getElementById(prefix + 'ExecutionExcessDataGas').innerText = executionExcessDataGas;
-            }
-
             visualizeHeader('finalized', Module._ETHLightClientStoreGetFinalizedHeader(store));
             const isNextSyncCommitteeKnown = Module._ETHLightClientStoreIsNextSyncCommitteeKnown(store);
             document.getElementById('nextSyncCommitteeKnown').innerText = (isNextSyncCommitteeKnown ? 'known' : 'unknown');
