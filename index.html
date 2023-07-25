@@ -648,12 +648,14 @@
                     const syncKind = Module._ETHLightClientStoreGetNextSyncTask(
                         store, beaconClock, startPeriodPtr, countPtr);
                     const startPeriod = Module.HEAPU32[startPeriodPtr >>> 2];
-                    const count = Module.HEAPU32[countPtr >>> 2];
+                    let count = Module.HEAPU32[countPtr >>> 2];
                     Module._free(countPtr);
                     Module._free(startPeriodPtr);
 
                     let res = 1;
                     if (syncKind == Module.HEAPU8[Module._kETHLcSyncKind_UpdatesByRange]) {
+                        const maxUpdatesByRange = 1;
+                        if (count > maxUpdatesByRange) count = maxUpdatesByRange;
                         document.getElementById('syncTask').innerText = 'UpdatesByRange(' + startPeriod + ", " + count + ')';
                         const response = await fetch(beaconApiBase +
                             '/eth/v1/beacon/light_client/updates?start_period=' + startPeriod + '&count=' + count, {
