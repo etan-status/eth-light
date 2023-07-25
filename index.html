@@ -18,12 +18,16 @@
             font-style: normal;
         }
 
-        #beaconApiBase, #trustedBlockRoot {
+        #executionApiBase, #beaconApiBase, #trustedBlockRoot {
             width: 500px;
         }
 
         pre {
             display: inline;
+        }
+
+        li.execution {
+            color: #595959;
         }
 
         #mdMaster {
@@ -81,6 +85,8 @@
         <h1>Bootstrap</h1>
         Current slot: <b><span id="wallSlot"></span></b><br />
         <br />
+        Execution-API base:<br /><input id="executionApiBase" value="https://execution-api.eth-light.xyz/v1/mainnet" /><br />
+        <br />
         Beacon-API base:<br /><input id="beaconApiBase" value="https://beacon-api.eth-light.xyz" /><br />
         <br />
         Checkpoint block root:<br /><input id="trustedBlockRoot" value="0x15cf56ebf887ede9cf3fc10a26ec83828628932c100e42c98c84f83da710c863" /><input type="button" id="initButton" value="Init" disabled /><br />
@@ -116,6 +122,8 @@
                         <li><pre>base_fee_per_gas</pre>: <b><pre id="selectedExecutionBaseFeePerGas"></pre></b></li>
                         <li><pre>data_gas_used</pre>: <b><pre id="selectedExecutionDataGasUsed"></pre></b></li>
                         <li><pre>excess_data_gas</pre>: <b><pre id="selectedExecutionExcessDataGas"></pre></b></li>
+                        <li class="execution"><pre>transactions_root</pre>: <b><pre id="selectedExecutionTransactionsRoot"></pre></b></li>
+                        <li class="execution"><pre>withdrawals_root</pre>: <b><pre id="selectedExecutionWithdrawalsRoot"></pre></b></li>
                     </ul>
                 </li>
             </ul>
@@ -153,6 +161,8 @@
                             <li><pre>base_fee_per_gas</pre>: <b><pre id="finalizedExecutionBaseFeePerGas"></pre></b></li>
                             <li><pre>data_gas_used</pre>: <b><pre id="finalizedExecutionDataGasUsed"></pre></b></li>
                             <li><pre>excess_data_gas</pre>: <b><pre id="finalizedExecutionExcessDataGas"></pre></b></li>
+                            <li class="execution"><pre>transactions_root</pre>: <b><pre id="finalizedExecutionTransactionsRoot"></pre></b></li>
+                            <li class="execution"><pre>withdrawals_root</pre>: <b><pre id="finalizedExecutionWithdrawalsRoot"></pre></b></li>
                         </ul>
                     </li>
                 </ul>
@@ -188,6 +198,8 @@
                             <li><pre>base_fee_per_gas</pre>: <b><pre id="optimisticExecutionBaseFeePerGas"></pre></b></li>
                             <li><pre>data_gas_used</pre>: <b><pre id="optimisticExecutionDataGasUsed"></pre></b></li>
                             <li><pre>excess_data_gas</pre>: <b><pre id="optimisticExecutionExcessDataGas"></pre></b></li>
+                            <li class="execution"><pre>transactions_root</pre>: <b><pre id="optimisticExecutionTransactionsRoot"></pre></b></li>
+                            <li class="execution"><pre>withdrawals_root</pre>: <b><pre id="optimisticExecutionWithdrawalsRoot"></pre></b></li>
                         </ul>
                     </li>
                 </ul>
@@ -254,6 +266,11 @@
 
         var Module = {};
 
+        let executionApiBase = undefined;
+        let beaconApiBase = undefined;
+
+        const zeroHash = '0x0000000000000000000000000000000000000000000000000000000000000000';
+
         function toHexString(bytes, numBytes) {
             const array = Array.from(Module.HEAPU8.subarray(bytes, bytes + numBytes))
             return '0x' + array.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
@@ -285,10 +302,124 @@
             return gweiString;
         }
 
-        function visualizeHeader(prefix, header) {
+        function getBeaconRoot(header) {
             const beaconRoot = Module._ETHLightClientHeaderCopyBeaconRoot(header, cfg);
-            document.getElementById(prefix + 'BeaconRoot').innerText = toHexString(beaconRoot, 32);
+            const beaconRootString = toHexString(beaconRoot, 32);
             Module._ETHRootDestroy(beaconRoot);
+            return beaconRootString;
+        }
+
+        function getBeaconSlot(header) {
+            const beacon = Module._ETHLightClientHeaderGetBeacon(header);
+            return Module._ETHBeaconBlockHeaderGetSlot(beacon);
+        }
+
+        function initHeadersCache() {
+            let headers = [];
+            let byRoot = {};
+            let executionBlockHeaders = {};
+
+            return {
+                'add': function (header, cfg) {
+                    const beaconRoot = getBeaconRoot(header);
+                    if (byRoot[beaconRoot]) {
+                        return;
+                    }
+
+                    const beaconSlot = getBeaconSlot(header);
+                    const i = headers.findIndex(x => (beaconSlot > getBeaconSlot(x)) ||
+                        (beaconSlot == getBeaconSlot && beaconRoot < getBeaconRoot(x)));
+                    const copy = Module._ETHLightClientHeaderCreateCopy(header)
+                    headers.splice(i >= 0 ? i : headers.length, 0, copy);
+                    byRoot[beaconRoot] = copy;
+
+                    if (headers.length > 128) {
+                        const removedHeader = headers.pop();
+                        const removedBeaconRoot = getBeaconRoot(removedHeader);
+
+                        const removedExecutionBlockHeader = executionBlockHeaders[removedBeaconRoot];
+                        if (removedExecutionBlockHeader) {
+                            delete executionBlockHeaders[removedBeaconRoot];
+                            Module._ETHExecutionBlockHeaderDestroy(removedExecutionBlockHeader);
+                        }
+
+                        delete byRoot[removedBeaconRoot];
+                        Module._ETHLightClientHeaderDestroy(removedHeader);
+                    }
+                },
+
+                'getAll': function () {
+                    return headers;
+                },
+
+                'get': function (beaconRoot) {
+                    return byRoot[beaconRoot];
+                },
+
+                'setExecutionBlockHeader': function (beaconRoot, executionBlockHeader) {
+                    executionBlockHeaders[beaconRoot] = executionBlockHeader;
+                },
+
+                'getExecutionBlockHeader': function (beaconRoot) {
+                    return executionBlockHeaders[beaconRoot];
+                }
+            };
+        }
+
+        let headers = initHeadersCache();
+
+        async function fetchExecutionBlockHeader(header) {
+            const executionHash = Module._ETHLightClientHeaderCopyExecutionHash(header, cfg);
+            try {
+                const executionHashString = toHexString(executionHash, 32);
+                if (executionHashString == zeroHash) return;
+                const beaconRoot = getBeaconRoot(header);
+                let executionBlockHeader = headers.getExecutionBlockHeader(beaconRoot);
+                if (executionBlockHeader) {
+                    return executionBlockHeader;
+                }
+
+                let data;
+                try {
+                    const executionBlockResponse = await fetch(executionApiBase, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            jsonrpc: '2.0',
+                            id: 1,
+                            method: 'eth_getBlockByHash',
+                            params: [executionHashString, /* fullTransactions: */ false]
+                        })
+                    });
+                    if (!executionBlockResponse.ok) return;
+                    const executionBlockJson = await executionBlockResponse.json();
+                    if (!executionBlockJson.result) return;
+                    data = executionBlockJson.result;
+                } catch {
+                    return;
+                }
+                if (!headers.get(beaconRoot)) return;
+
+                const blockHeaderJson = Module.stringToNewUTF8(JSON.stringify(data));
+                executionBlockHeader = Module._ETHExecutionBlockHeaderCreateFromJson(executionHash, blockHeaderJson);
+                Module._free(blockHeaderJson);
+
+                if (executionBlockHeader) {
+                    headers.setExecutionBlockHeader(beaconRoot, executionBlockHeader);
+                }
+                return executionBlockHeader;
+            } finally {
+                Module._ETHRootDestroy(executionHash);
+            }
+        }
+
+        function visualizeHeader(prefix, header) {
+            const beaconRoot = getBeaconRoot(header);
+            if (document.getElementById(prefix + 'BeaconRoot').innerText === beaconRoot) return;
+
+            document.getElementById(prefix + 'BeaconRoot').innerText = beaconRoot;
             const beacon = Module._ETHLightClientHeaderGetBeacon(header);
             const beaconSlot = Module._ETHBeaconBlockHeaderGetSlot(beacon);
             document.getElementById(prefix + 'BeaconSlot').innerText = beaconSlot;
@@ -334,59 +465,32 @@
             document.getElementById(prefix + 'ExecutionDataGasUsed').innerText = executionDataGasUsed;
             const executionExcessDataGas = Module._ETHExecutionPayloadHeaderGetExcessDataGas(execution);
             document.getElementById(prefix + 'ExecutionExcessDataGas').innerText = executionExcessDataGas;
-        }
 
-        function getBeaconRootString(header) {
-            const beaconRoot = Module._ETHLightClientHeaderCopyBeaconRoot(header, cfg);
-            const beaconRootString = toHexString(beaconRoot, 32);
-            Module._ETHRootDestroy(beaconRoot);
-            return beaconRootString;
-        }
+            if (executionHash == zeroHash) {
+                document.getElementById(prefix + 'ExecutionTransactionsRoot').innerText = zeroHash;
+                document.getElementById(prefix + 'ExecutionWithdrawalsRoot').innerText = zeroHash;
+            } else {
+                document.getElementById(prefix + 'ExecutionTransactionsRoot').innerText = '';
+                document.getElementById(prefix + 'ExecutionWithdrawalsRoot').innerText = '';
 
-        function getBeaconSlot(header) {
-            const beacon = Module._ETHLightClientHeaderGetBeacon(header);
-            return Module._ETHBeaconBlockHeaderGetSlot(beacon);
-        }
-
-        function initHeadersCache() {
-            let headers = [];
-            let byRoot = {};
-
-            return {
-                'add': function (header, cfg) {
-                    const beaconRoot = getBeaconRootString(header);
-                    if (byRoot[beaconRoot]) {
+                const executionBlockHeaderFut = fetchExecutionBlockHeader(header);
+                executionBlockHeaderFut.then((executionBlockHeader) => {
+                    if (document.getElementById(prefix + 'BeaconRoot').innerText !== beaconRoot) return;
+                    if (!executionBlockHeader) {
+                        document.getElementById(prefix + 'ExecutionTransactionsRoot').innerText = 'Error';
+                        document.getElementById(prefix + 'ExecutionWithdrawalsRoot').innerText = 'Error';
                         return;
                     }
 
-                    const beaconSlot = getBeaconSlot(header);
-                    const i = headers.findIndex(x => (beaconSlot > getBeaconSlot(x)) ||
-                        (beaconSlot == getBeaconSlot && beaconRoot < getBeaconRootString(x)));
-                    const copy = Module._ETHLightClientHeaderCreateCopy(header)
-                    headers.splice(i >= 0 ? i : headers.length, 0, copy);
-                    byRoot[beaconRoot] = copy;
-
-                    if (headers.length > 128) {
-                        const removedHeader = headers.pop();
-                        const removedBeaconRoot = getBeaconRootString(removedHeader);
-                        delete byRoot[removedBeaconRoot];
-                        Module._ETHLightClientHeaderDestroy(removedHeader);
-                    }
-                },
-
-                'get': function (beaconRoot) {
-                    return byRoot[beaconRoot];
-                },
-
-                'getAll': function () {
-                    return headers;
-                }
+                    const executionTransactionsRoot = Module._ETHExecutionBlockHeaderGetTransactionsRoot(executionBlockHeader);
+                    document.getElementById(prefix + 'ExecutionTransactionsRoot').innerText = toHexString(executionTransactionsRoot, 32);
+                    const executionWithdrawalsRoot = Module._ETHExecutionBlockHeaderGetWithdrawalsRoot(executionBlockHeader);
+                    document.getElementById(prefix + 'ExecutionWithdrawalsRoot').innerText = toHexString(executionWithdrawalsRoot, 32);
+                });
             }
         }
 
-        let headers = initHeadersCache();
         let selectedHeader = undefined;
-
         function cacheHeaders(store, cfg) {
             headers.add(Module._ETHLightClientStoreGetOptimisticHeader(store), cfg);
             headers.add(Module._ETHLightClientStoreGetFinalizedHeader(store), cfg);
@@ -402,7 +506,7 @@
                 let beaconRoot = undefined;
                 let beaconSlot = undefined;
                 if (newHeader) {
-                    beaconRoot = getBeaconRootString(newHeader);
+                    beaconRoot = getBeaconRoot(newHeader);
                     beaconSlot = getBeaconSlot(newHeader);
                 }
 
@@ -480,7 +584,6 @@
             document.getElementById('safetyThreshold').innerText = safetyThreshold;
         }
 
-        let beaconApiBase = undefined;
         let rng = undefined;
         let cfg = undefined;
         let genesisValRoot = undefined;
@@ -672,6 +775,7 @@
                 document.getElementById('initButton').disabled = true;
                 clearStore();
 
+                executionApiBase = document.getElementById('executionApiBase').value;
                 beaconApiBase = document.getElementById('beaconApiBase').value;
                 const response = await fetch(beaconApiBase +
                     '/eth/v1/beacon/light_client/bootstrap/' + trustedBlockRootString, {

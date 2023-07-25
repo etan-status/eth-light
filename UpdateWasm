@@ -4,10 +4,12 @@ set -eu -o pipefail
 cd "$(dirname "$0")"
 
 rm -rf nimbus-eth2
-git clone -b "dev/etan/lc-wasm" "https://github.com/status-im/nimbus-eth2"
+git clone -b "dev/etan/lc-wasm2" "https://github.com/status-im/nimbus-eth2"
 
 ulimit -n 1024
-USE_SYSTEM_NIM='' make -C nimbus-eth2 -j deps
+USE_SYSTEM_NIM='' make -C nimbus-eth2 -j update
+
+git -C nimbus-eth2/vendor/nim-chronos checkout 'origin/poll-engine-fixes'
 
 git -C nimbus-eth2/vendor/nimbus-build-system/vendor/Nim apply <<'EOF'
 diff --git a/lib/system/threads.nim b/lib/system/threads.nim
@@ -28,6 +30,22 @@ index 4e27ba24e..bf154e874 100644
  elif defined(linux):
    proc syscall(arg: clong): clong {.varargs, importc: "syscall", header: "<unistd.h>".}
    when defined(amd64):
+EOF
+
+git -C nimbus-eth2/vendor/nim-chronos apply <<'EOF'
+diff --git a/chronos/sendfile.nim b/chronos/sendfile.nim
+index 8cba9e8..06bbc2e 100644
+--- a/chronos/sendfile.nim
++++ b/chronos/sendfile.nim
+@@ -11,7 +11,7 @@
+
+ {.push raises: [].}
+
+-when defined(nimdoc):
++when defined(nimdoc) or defined(emscripten):
+   proc sendfile*(outfd, infd: int, offset: int, count: var int): int =
+     ## Copies data between file descriptor ``infd`` and ``outfd``. Because this
+     ## copying is done within the kernel, ``sendfile()`` is more efficient than
 EOF
 
 git -C nimbus-eth2 apply <<'EOF'
@@ -57,6 +75,8 @@ nim --version
 rm -rf libnimbus_lc.js libnimbus_lc.wasm libnimbus_lc.worker.js nimcache
 nim c \
     -d:disable_libbacktrace \
+    -d:disableMarchNative \
+    -d:chronosEventEngine=poll \
     -d:disableLTO \
     -d:emscripten \
     -d:release \
@@ -85,7 +105,7 @@ nim c \
     --passL:'-sSTACK_SIZE=128MB' \
     --passC:'-sUSE_PTHREADS=1' \
     --passL:'-sUSE_PTHREADS=1' \
-    --passL:'-sEXPORTED_FUNCTIONS="[_free, _malloc, _ETHRandomNumberCreate, _ETHConsensusConfigCreateFromYaml, _ETHConsensusConfigGetConsensusVersionAtEpoch, _ETHBeaconStateCreateFromSsz, _ETHBeaconStateDestroy, _ETHBeaconStateCopyGenesisValidatorsRoot, _ETHRootDestroy, _ETHForkDigestsCreateFromState, _ETHBeaconClockCreateFromState, _ETHBeaconClockGetSlot, _ETHLightClientStoreCreateFromBootstrap, _ETHLightClientStoreDestroy, _kETHLcSyncKind_UpdatesByRange, _kETHLcSyncKind_FinalityUpdate, _kETHLcSyncKind_OptimisticUpdate, _ETHLightClientStoreGetNextSyncTask, _ETHLightClientStoreGetMillisecondsToNextSyncTask, _ETHLightClientStoreProcessUpdatesByRange, _ETHLightClientStoreProcessFinalityUpdate, _ETHLightClientStoreProcessOptimisticUpdate, _ETHLightClientStoreGetFinalizedHeader, _ETHLightClientStoreIsNextSyncCommitteeKnown, _ETHLightClientStoreGetOptimisticHeader, _ETHLightClientStoreGetSafetyThreshold, _ETHLightClientHeaderCreateCopy, _ETHLightClientHeaderDestroy, _ETHLightClientHeaderCopyBeaconRoot, _ETHLightClientHeaderGetBeacon, _ETHBeaconBlockHeaderGetSlot, _ETHBeaconBlockHeaderGetProposerIndex, _ETHBeaconBlockHeaderGetParentRoot, _ETHBeaconBlockHeaderGetStateRoot, _ETHBeaconBlockHeaderGetBodyRoot, _ETHLightClientHeaderCopyExecutionHash, _ETHLightClientHeaderGetExecution, _ETHExecutionPayloadHeaderGetParentHash, _ETHExecutionPayloadHeaderGetFeeRecipient, _ETHExecutionPayloadHeaderGetStateRoot, _ETHExecutionPayloadHeaderGetReceiptsRoot, _ETHExecutionPayloadHeaderGetLogsBloom, _ETHExecutionPayloadHeaderGetPrevRandao, _ETHExecutionPayloadHeaderGetBlockNumber, _ETHExecutionPayloadHeaderGetGasLimit, _ETHExecutionPayloadHeaderGetGasUsed, _ETHExecutionPayloadHeaderGetTimestamp, _ETHExecutionPayloadHeaderGetExtraDataBytes, _ETHExecutionPayloadHeaderGetNumExtraDataBytes, _ETHExecutionPayloadHeaderGetBaseFeePerGas, _ETHExecutionPayloadHeaderGetDataGasUsed, _ETHExecutionPayloadHeaderGetExcessDataGas]"' \
+    --passL:'-sEXPORTED_FUNCTIONS="[_free, _malloc, _ETHRandomNumberCreate, _ETHConsensusConfigCreateFromYaml, _ETHConsensusConfigGetConsensusVersionAtEpoch, _ETHBeaconStateCreateFromSsz, _ETHBeaconStateDestroy, _ETHBeaconStateCopyGenesisValidatorsRoot, _ETHRootDestroy, _ETHForkDigestsCreateFromState, _ETHBeaconClockCreateFromState, _ETHBeaconClockGetSlot, _ETHLightClientStoreCreateFromBootstrap, _ETHLightClientStoreDestroy, _kETHLcSyncKind_UpdatesByRange, _kETHLcSyncKind_FinalityUpdate, _kETHLcSyncKind_OptimisticUpdate, _ETHLightClientStoreGetNextSyncTask, _ETHLightClientStoreGetMillisecondsToNextSyncTask, _ETHLightClientStoreProcessUpdatesByRange, _ETHLightClientStoreProcessFinalityUpdate, _ETHLightClientStoreProcessOptimisticUpdate, _ETHLightClientStoreGetFinalizedHeader, _ETHLightClientStoreIsNextSyncCommitteeKnown, _ETHLightClientStoreGetOptimisticHeader, _ETHLightClientStoreGetSafetyThreshold, _ETHLightClientHeaderCreateCopy, _ETHLightClientHeaderDestroy, _ETHLightClientHeaderCopyBeaconRoot, _ETHLightClientHeaderGetBeacon, _ETHBeaconBlockHeaderGetSlot, _ETHBeaconBlockHeaderGetProposerIndex, _ETHBeaconBlockHeaderGetParentRoot, _ETHBeaconBlockHeaderGetStateRoot, _ETHBeaconBlockHeaderGetBodyRoot, _ETHLightClientHeaderCopyExecutionHash, _ETHLightClientHeaderGetExecution, _ETHExecutionPayloadHeaderGetParentHash, _ETHExecutionPayloadHeaderGetFeeRecipient, _ETHExecutionPayloadHeaderGetStateRoot, _ETHExecutionPayloadHeaderGetReceiptsRoot, _ETHExecutionPayloadHeaderGetLogsBloom, _ETHExecutionPayloadHeaderGetPrevRandao, _ETHExecutionPayloadHeaderGetBlockNumber, _ETHExecutionPayloadHeaderGetGasLimit, _ETHExecutionPayloadHeaderGetGasUsed, _ETHExecutionPayloadHeaderGetTimestamp, _ETHExecutionPayloadHeaderGetExtraDataBytes, _ETHExecutionPayloadHeaderGetNumExtraDataBytes, _ETHExecutionPayloadHeaderGetBaseFeePerGas, _ETHExecutionPayloadHeaderGetDataGasUsed, _ETHExecutionPayloadHeaderGetExcessDataGas, _ETHExecutionBlockHeaderCreateFromJson, _ETHExecutionBlockHeaderDestroy, _ETHExecutionBlockHeaderGetTransactionsRoot, _ETHExecutionBlockHeaderGetWithdrawalsRoot]"' \
     --passL:'-sEXPORTED_RUNTIME_METHODS="[lengthBytesUTF8, stringToNewUTF8]"' \
     --passL:'-Wl,--no-entry' \
     --noMain:on \
