@@ -26,6 +26,10 @@
             display: inline;
         }
 
+        a {
+            text-decoration: none;
+        }
+
         li.execution {
             color: #595959;
         }
@@ -52,16 +56,6 @@
             padding: 10px 5px 10px;
             background-color: #e9e9e9;
             border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .headerMaster:hover {
-            background-color: #d9d9d9;
-        }
-
-        .headerMaster.selected {
-            background-color: #c9c9c9;
         }
 
         .headerMasterBeaconRoot {
@@ -71,16 +65,73 @@
         }
 
         .headerMasterInfo {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 3px 0px 3px;
+            padding: 0px 3px 0px 3px;
             font-family: 'm_1mlight', monospace;
             font-size: 0.7em;
+            border: 1px green;
+        }
+
+        .headerMasterInfo table {
+            white-space: nowrap;
+            border-collapse: collapse;
+        }
+
+        .headerMasterInfo td {
+            width: 60px;
+            padding-top: 5px;
+        }
+
+        .fas {
+            width: 12px;
+            text-align: right;
         }
     </style>
 </head>
 <body>
-    <div id="mdMaster"></div>
+    <div id="mdMaster">
+        <div id="headerList"></div>
+        <div id="selectedHeaderDetail" hidden="hidden">
+            <div id="selectedHeader" class="headerMaster">
+                <div id="selectedBeaconRoot" class="headerMasterBeaconRoot"></div>
+                <div class="headerMasterInfo">
+                    <table>
+                        <tr>
+                            <td><span class="fas fa-ticket-alt"></span> <span id="selectedBeaconSlot"></span></td>
+                            <td><span class="fas fa-cubes"></span> <span id="selectedExecutionBlockNumber"></span></td>
+                            <td colspan="2" style="text-align: right;"><span class="fas fa-clock"></span> <span id="selectedExecutionTimestamp"></span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="fas fa-user-check"></span> <span id="selectedBeaconProposerIndex"></span></td>
+                            <td colspan="2" class="a"><span class="fas fa-tachometer-alt"></span> <span id="selectedExecutionGasUsedPercentage"></span> <span id="selectedExecutionGasUsed"></span>/<span id="selectedExecutionGasLimit"></span></td>
+                            <td style="text-align: right;"><span class="fas fa-gas-pump"></span> <span id="selectedExecutionBaseFeePerGas"></span></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4"><span class="fas fa-hand-holding-usd"></span> <span id="selectedExecutionFeeRecipient" style="display: inline-block; transform: scaleX(1.015); transform-origin: left;"></span></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4"><input type="button" id="backButton" value="Back" /></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <ul>
+                <li><pre>beacon.parent_root</pre>: <b><pre id="selectedBeaconParentRoot"></pre></b></li>
+                <li><pre>beacon.state_root</pre>: <b><pre id="selectedBeaconStateRoot"></pre></b></li>
+                <li><pre>beacon.body_root</pre>: <b><pre id="selectedBeaconBodyRoot"></pre></b></li>
+                <li><pre>execution.hash</pre>: <b><pre id="selectedExecutionHash"></pre></b>
+                <li><pre>execution.parent_hash</pre>: <b><pre id="selectedExecutionParentHash"></pre></b></li>
+                <li><pre>execution.state_root</pre>: <b><pre id="selectedExecutionStateRoot"></pre></b></li>
+                <li><pre>execution.receipts_root</pre>: <b><pre id="selectedExecutionReceiptsRoot"></pre></b></li>
+                <li><pre>execution.logs_bloom</pre>: <b><pre id="selectedExecutionLogsBloom"></pre></b></li>
+                <li><pre>execution.prev_randao</pre>: <b><pre id="selectedExecutionPrevRandao"></pre></b></li>
+                <li><pre>execution.extra_data</pre>: <b><pre id="selectedExecutionExtraData"></pre></b></li>
+                <li><pre>execution.data_gas_used</pre>: <b><pre id="selectedExecutionDataGasUsed"></pre></b></li>
+                <li><pre>execution.excess_data_gas</pre>: <b><pre id="selectedExecutionExcessDataGas"></pre></b></li>
+                <li class="execution"><pre>execution.transactions_root</pre>: <b><pre id="selectedExecutionTransactionsRoot"></pre></b></li>
+                <li class="execution"><pre>execution.withdrawals_root</pre>: <b><pre id="selectedExecutionWithdrawalsRoot"></pre></b></li>
+            </ul>
+        </div>
+    </div>
     <div id="mdDetail">
         <h1>Bootstrap</h1>
         Current slot: <b><span id="wallSlot"></span></b><br />
@@ -91,123 +142,6 @@
         <br />
         Checkpoint block root:<br /><input id="trustedBlockRoot" value="0x15cf56ebf887ede9cf3fc10a26ec83828628932c100e42c98c84f83da710c863" /><input type="button" id="initButton" value="Init" disabled /><br />
         <br />
-
-        <div id="selectedHeaderDetail" hidden="hidden">
-            <h1>Selected header</h1>
-            <ul>
-                <li>
-                    <pre>beacon</pre>: <b><pre id="selectedBeaconRoot"></pre></b>
-                    <ul>
-                        <li><pre>slot</pre>: <b><pre id="selectedBeaconSlot"></pre></b></li>
-                        <li><pre>proposer_index</pre>: <b><pre id="selectedBeaconProposerIndex"></pre></b></li>
-                        <li><pre>parent_root</pre>: <b><pre id="selectedBeaconParentRoot"></pre></b></li>
-                        <li><pre>state_root</pre>: <b><pre id="selectedBeaconStateRoot"></pre></b></li>
-                        <li><pre>body_root</pre>: <b><pre id="selectedBeaconBodyRoot"></pre></b></li>
-                    </ul>
-                </li>
-                <li>
-                    <pre>execution</pre>: <b><pre id="selectedExecutionHash"></pre></b>
-                    <ul>
-                        <li><pre>parent_hash</pre>: <b><pre id="selectedExecutionParentHash"></pre></b></li>
-                        <li><pre>fee_recipient</pre>: <b><pre id="selectedExecutionFeeRecipient"></pre></b></li>
-                        <li><pre>state_root</pre>: <b><pre id="selectedExecutionStateRoot"></pre></b></li>
-                        <li><pre>receipts_root</pre>: <b><pre id="selectedExecutionReceiptsRoot"></pre></b></li>
-                        <li><pre>logs_bloom</pre>: <b><pre id="selectedExecutionLogsBloom"></pre></b></li>
-                        <li><pre>prev_randao</pre>: <b><pre id="selectedExecutionPrevRandao"></pre></b></li>
-                        <li><pre>block_number</pre>: <b><pre id="selectedExecutionBlockNumber"></pre></b></li>
-                        <li><pre>gas_limit</pre>: <b><pre id="selectedExecutionGasLimit"></pre></b></li>
-                        <li><pre>gas_used</pre>: <b><pre id="selectedExecutionGasUsed"></pre></b></li>
-                        <li><pre>timestamp</pre>: <b><pre id="selectedExecutionTimestamp"></pre></b></li>
-                        <li><pre>extra_data</pre>: <b><pre id="selectedExecutionExtraData"></pre></b></li>
-                        <li><pre>base_fee_per_gas</pre>: <b><pre id="selectedExecutionBaseFeePerGas"></pre></b></li>
-                        <li><pre>data_gas_used</pre>: <b><pre id="selectedExecutionDataGasUsed"></pre></b></li>
-                        <li><pre>excess_data_gas</pre>: <b><pre id="selectedExecutionExcessDataGas"></pre></b></li>
-                        <li class="execution"><pre>transactions_root</pre>: <b><pre id="selectedExecutionTransactionsRoot"></pre></b></li>
-                        <li class="execution"><pre>withdrawals_root</pre>: <b><pre id="selectedExecutionWithdrawalsRoot"></pre></b></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-
-        <h1>Sync progress</h1>
-        <ul>
-            <li>
-                <pre>finalized_header</pre>
-                <ul>
-                    <li>
-                        <pre>beacon</pre>: <b><pre id="finalizedBeaconRoot"></pre></b>
-                        <ul>
-                            <li><pre>slot</pre>: <b><pre id="finalizedBeaconSlot"></pre></b></li>
-                            <li><pre>proposer_index</pre>: <b><pre id="finalizedBeaconProposerIndex"></pre></b></li>
-                            <li><pre>parent_root</pre>: <b><pre id="finalizedBeaconParentRoot"></pre></b></li>
-                            <li><pre>state_root</pre>: <b><pre id="finalizedBeaconStateRoot"></pre></b></li>
-                            <li><pre>body_root</pre>: <b><pre id="finalizedBeaconBodyRoot"></pre></b></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <pre>execution</pre>: <b><pre id="finalizedExecutionHash"></pre></b>
-                        <ul>
-                            <li><pre>parent_hash</pre>: <b><pre id="finalizedExecutionParentHash"></pre></b></li>
-                            <li><pre>fee_recipient</pre>: <b><pre id="finalizedExecutionFeeRecipient"></pre></b></li>
-                            <li><pre>state_root</pre>: <b><pre id="finalizedExecutionStateRoot"></pre></b></li>
-                            <li><pre>receipts_root</pre>: <b><pre id="finalizedExecutionReceiptsRoot"></pre></b></li>
-                            <li><pre>logs_bloom</pre>: <b><pre id="finalizedExecutionLogsBloom"></pre></b></li>
-                            <li><pre>prev_randao</pre>: <b><pre id="finalizedExecutionPrevRandao"></pre></b></li>
-                            <li><pre>block_number</pre>: <b><pre id="finalizedExecutionBlockNumber"></pre></b></li>
-                            <li><pre>gas_limit</pre>: <b><pre id="finalizedExecutionGasLimit"></pre></b></li>
-                            <li><pre>gas_used</pre>: <b><pre id="finalizedExecutionGasUsed"></pre></b></li>
-                            <li><pre>timestamp</pre>: <b><pre id="finalizedExecutionTimestamp"></pre></b></li>
-                            <li><pre>extra_data</pre>: <b><pre id="finalizedExecutionExtraData"></pre></b></li>
-                            <li><pre>base_fee_per_gas</pre>: <b><pre id="finalizedExecutionBaseFeePerGas"></pre></b></li>
-                            <li><pre>data_gas_used</pre>: <b><pre id="finalizedExecutionDataGasUsed"></pre></b></li>
-                            <li><pre>excess_data_gas</pre>: <b><pre id="finalizedExecutionExcessDataGas"></pre></b></li>
-                            <li class="execution"><pre>transactions_root</pre>: <b><pre id="finalizedExecutionTransactionsRoot"></pre></b></li>
-                            <li class="execution"><pre>withdrawals_root</pre>: <b><pre id="finalizedExecutionWithdrawalsRoot"></pre></b></li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-            <li><pre>next_sync_committee</pre>: <b><pre id="nextSyncCommitteeKnown"></pre></b></li>
-            <li>
-                <pre>optimistic_header</pre>
-                <ul>
-                    <li>
-                        <pre>beacon</pre>: <b><pre id="optimisticBeaconRoot"></pre></b>
-                        <ul>
-                            <li><pre>slot</pre>: <b><pre id="optimisticBeaconSlot"></pre></b></li>
-                            <li><pre>proposer_index</pre>: <b><pre id="optimisticBeaconProposerIndex"></pre></b></li>
-                            <li><pre>parent_root</pre>: <b><pre id="optimisticBeaconParentRoot"></pre></b></li>
-                            <li><pre>state_root</pre>: <b><pre id="optimisticBeaconStateRoot"></pre></b></li>
-                            <li><pre>body_root</pre>: <b><pre id="optimisticBeaconBodyRoot"></pre></b></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <pre>execution</pre>: <b><pre id="optimisticExecutionHash"></pre></b>
-                        <ul>
-                            <li><pre>parent_hash</pre>: <b><pre id="optimisticExecutionParentHash"></pre></b></li>
-                            <li><pre>fee_recipient</pre>: <b><pre id="optimisticExecutionFeeRecipient"></pre></b></li>
-                            <li><pre>state_root</pre>: <b><pre id="optimisticExecutionStateRoot"></pre></b></li>
-                            <li><pre>receipts_root</pre>: <b><pre id="optimisticExecutionReceiptsRoot"></pre></b></li>
-                            <li><pre>logs_bloom</pre>: <b><pre id="optimisticExecutionLogsBloom"></pre></b></li>
-                            <li><pre>prev_randao</pre>: <b><pre id="optimisticExecutionPrevRandao"></pre></b></li>
-                            <li><pre>block_number</pre>: <b><pre id="optimisticExecutionBlockNumber"></pre></b></li>
-                            <li><pre>gas_limit</pre>: <b><pre id="optimisticExecutionGasLimit"></pre></b></li>
-                            <li><pre>gas_used</pre>: <b><pre id="optimisticExecutionGasUsed"></pre></b></li>
-                            <li><pre>timestamp</pre>: <b><pre id="optimisticExecutionTimestamp"></pre></b></li>
-                            <li><pre>extra_data</pre>: <b><pre id="optimisticExecutionExtraData"></pre></b></li>
-                            <li><pre>base_fee_per_gas</pre>: <b><pre id="optimisticExecutionBaseFeePerGas"></pre></b></li>
-                            <li><pre>data_gas_used</pre>: <b><pre id="optimisticExecutionDataGasUsed"></pre></b></li>
-                            <li><pre>excess_data_gas</pre>: <b><pre id="optimisticExecutionExcessDataGas"></pre></b></li>
-                            <li class="execution"><pre>transactions_root</pre>: <b><pre id="optimisticExecutionTransactionsRoot"></pre></b></li>
-                            <li class="execution"><pre>withdrawals_root</pre>: <b><pre id="optimisticExecutionWithdrawalsRoot"></pre></b></li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-            <li><pre>safety_threshold</pre>: <b><pre id="safetyThreshold"></pre></b></li>
-        </ul>
-        Latest sync task: <b><span id="syncTask"></span></b><br />
-        Next sync task: <b><span id="timeToNextSyncTask"></span></b><br />
     </div>
 
     <script>
@@ -247,18 +181,6 @@
             function onTick() {
                 const slot = Module._ETHBeaconClockGetSlot(beaconClock);
                 document.getElementById('wallSlot').innerText = slot;
-                if (nextSyncTaskTime !== undefined) {
-                    const now = Date.now();
-                    let remainingMilliseconds = 0;
-                    if (nextSyncTaskTime > now) {
-                        remainingMilliseconds = nextSyncTaskTime - now;
-                    }
-                    const seconds = Math.floor((remainingMilliseconds / 1000) % 60).toString().padStart(2, '0');
-                    const minutes = Math.floor((remainingMilliseconds / (1000 * 60)) % 60).toString().padStart(2, '0');
-                    const hours = Math.floor((remainingMilliseconds / (1000 * 60 * 60)) % 24).toString().padStart(2, '0');
-                    document.getElementById('timeToNextSyncTask').innerText =
-                        hours + ':' + minutes + ':' + seconds;
-                }
                 setTimeout(onTick, /* timeout: */ 100);
             }
             setTimeout(onTick, /* timeout: */ 100);
@@ -274,6 +196,22 @@
         function toHexString(bytes, numBytes) {
             const array = Array.from(Module.HEAPU8.subarray(bytes, bytes + numBytes))
             return '0x' + array.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
+        }
+
+        function toHumanReadableNumberString(number) {
+            if (number >= 1e12) {
+                return (number / 1e12).toFixed(1) + 'T';
+            }
+            if (number >= 1e9) {
+                return (number / 1e9).toFixed(1) + 'B';
+            }
+            if (number >= 1e6) {
+                return (number / 1e6).toFixed(1) + 'M';
+            }
+            if (number >= 1e3) {
+                return (number / 1e3).toFixed(1) + 'K';
+            }
+            return number.toString();
         }
 
         function toDateString(timestamp) {
@@ -292,14 +230,10 @@
             const wei = BigInt('0x' + array.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), ''));
             const weiString = wei.toString();
             const beforeDecimal = weiString.substring(0, weiString.length - 9);
-            const afterDecimal = weiString.substring(weiString.length - 9).replace(/0+$/, '');
-            let gweiString = '';
             if (beforeDecimal === '') {
-                gweiString = '0.' + afterDecimal;
-            } else {
-                gweiString = beforeDecimal + '.' + afterDecimal;
+                return '0';
             }
-            return gweiString;
+            return beforeDecimal;
         }
 
         function getBeaconRoot(header) {
@@ -417,14 +351,21 @@
 
         function visualizeHeader(prefix, header) {
             const beaconRoot = getBeaconRoot(header);
-            if (document.getElementById(prefix + 'BeaconRoot').innerText === beaconRoot) return;
+            if (document.getElementById(prefix + 'BeaconRoot').dataset.beaconRoot === beaconRoot) return;
+            document.getElementById(prefix + 'BeaconRoot').dataset.beaconRoot = beaconRoot;
 
-            document.getElementById(prefix + 'BeaconRoot').innerText = beaconRoot;
+            document.getElementById(prefix + 'BeaconRoot').innerHTML =
+                '<a href="https://beaconcha.in/slot/' + beaconRoot + '" target="_blank">' +
+                beaconRoot.substring(2, 34) + '<br />' + beaconRoot.substring(34) + '</a>';
             const beacon = Module._ETHLightClientHeaderGetBeacon(header);
             const beaconSlot = Module._ETHBeaconBlockHeaderGetSlot(beacon);
-            document.getElementById(prefix + 'BeaconSlot').innerText = beaconSlot;
+            document.getElementById(prefix + 'BeaconSlot').innerHTML =
+                '<a href="https://beaconcha.in/slot/' + beaconSlot + '" target="_blank">' +
+                beaconSlot + '</a>';
             const beaconProposerIndex = Module._ETHBeaconBlockHeaderGetProposerIndex(beacon);
-            document.getElementById(prefix + 'BeaconProposerIndex').innerText = beaconProposerIndex;
+            document.getElementById(prefix + 'BeaconProposerIndex').innerHTML =
+                '<a href="https://beaconcha.in/validator/' + beaconProposerIndex + '" target="_blank">' +
+                beaconProposerIndex + '</a>';
             const beaconParentRoot = Module._ETHBeaconBlockHeaderGetParentRoot(beacon);
             document.getElementById(prefix + 'BeaconParentRoot').innerText = toHexString(beaconParentRoot, 32);
             const beaconStateRoot = Module._ETHBeaconBlockHeaderGetStateRoot(beacon);
@@ -433,13 +374,16 @@
             document.getElementById(prefix + 'BeaconBodyRoot').innerText = toHexString(beaconBodyRoot, 32);
 
             const executionHash = Module._ETHLightClientHeaderCopyExecutionHash(header, cfg);
-            document.getElementById(prefix + 'ExecutionHash').innerText = toHexString(executionHash, 32);
+            const executionHashString = toHexString(executionHash, 32);
+            document.getElementById(prefix + 'ExecutionHash').innerText = executionHashString;
             Module._ETHRootDestroy(executionHash);
             const execution = Module._ETHLightClientHeaderGetExecution(header);
             const executionParentHash = Module._ETHExecutionPayloadHeaderGetParentHash(execution);
             document.getElementById(prefix + 'ExecutionParentHash').innerText = toHexString(executionParentHash, 32);
             const executionFeeRecipient = Module._ETHExecutionPayloadHeaderGetFeeRecipient(execution);
-            document.getElementById(prefix + 'ExecutionFeeRecipient').innerText = toHexString(executionFeeRecipient, 20);
+            document.getElementById(prefix + 'ExecutionFeeRecipient').innerHTML =
+                '<a href="https://etherscan.io/address/' + toHexString(executionFeeRecipient, 20) + '#mine" target="_blank">' +
+                toHexString(executionFeeRecipient, 20) + '</a>';
             const executionStateRoot = Module._ETHExecutionPayloadHeaderGetStateRoot(execution);
             document.getElementById(prefix + 'ExecutionStateRoot').innerText = toHexString(executionStateRoot, 32);
             const executionReceiptsRoot = Module._ETHExecutionPayloadHeaderGetReceiptsRoot(execution);
@@ -449,13 +393,16 @@
             const executionPrevRandao = Module._ETHExecutionPayloadHeaderGetPrevRandao(execution);
             document.getElementById(prefix + 'ExecutionPrevRandao').innerText = toHexString(executionPrevRandao, 32);
             const executionBlockNumber = Module._ETHExecutionPayloadHeaderGetBlockNumber(execution);
-            document.getElementById(prefix + 'ExecutionBlockNumber').innerText = executionBlockNumber;
+            document.getElementById(prefix + 'ExecutionBlockNumber').innerHTML =
+                '<a href="https://etherscan.io/block/' + executionHashString + '" target="_blank">' +
+                executionBlockNumber + '</a>';
             const executionGasLimit = Module._ETHExecutionPayloadHeaderGetGasLimit(execution);
-            document.getElementById(prefix + 'ExecutionGasLimit').innerText = executionGasLimit;
+            document.getElementById(prefix + 'ExecutionGasLimit').innerText = toHumanReadableNumberString(executionGasLimit);
             const executionGasUsed = Module._ETHExecutionPayloadHeaderGetGasUsed(execution);
-            document.getElementById(prefix + 'ExecutionGasUsed').innerText = executionGasUsed;
+            document.getElementById(prefix + 'ExecutionGasUsed').innerText = toHumanReadableNumberString(executionGasUsed);
+            document.getElementById(prefix + 'ExecutionGasUsedPercentage').innerText = (executionGasUsed * 100 / executionGasLimit).toFixed(2) + '%';
             const executionTimestamp = Module._ETHExecutionPayloadHeaderGetTimestamp(execution);
-            document.getElementById(prefix + 'ExecutionTimestamp').innerText = executionTimestamp;
+            document.getElementById(prefix + 'ExecutionTimestamp').innerText = toDateString(executionTimestamp);
             const executionExtraDataBytes = Module._ETHExecutionPayloadHeaderGetExtraDataBytes(execution);
             const numExecutionExtraDataBytes = Module._ETHExecutionPayloadHeaderGetNumExtraDataBytes(execution);
             document.getElementById(prefix + 'ExecutionExtraData').innerText = toHexString(executionExtraDataBytes, numExecutionExtraDataBytes);
@@ -475,7 +422,7 @@
 
                 const executionBlockHeaderFut = fetchExecutionBlockHeader(header);
                 executionBlockHeaderFut.then((executionBlockHeader) => {
-                    if (document.getElementById(prefix + 'BeaconRoot').innerText !== beaconRoot) return;
+                    if (document.getElementById(prefix + 'BeaconRoot').dataset.beaconRoot !== beaconRoot) return;
                     if (!executionBlockHeader) {
                         document.getElementById(prefix + 'ExecutionTransactionsRoot').innerText = 'Error';
                         document.getElementById(prefix + 'ExecutionWithdrawalsRoot').innerText = 'Error';
@@ -491,12 +438,23 @@
         }
 
         let selectedHeader = undefined;
+
+        document.getElementById('backButton').onclick = function () {
+            selectedHeader = undefined;
+            document.getElementById('selectedHeaderDetail').hidden = true;
+            document.getElementById('headerList').hidden = false;
+        };
+
         function cacheHeaders(store, cfg) {
+            const finalizedRoot = getBeaconRoot(Module._ETHLightClientStoreGetFinalizedHeader(store));
+            document.getElementById('trustedBlockRoot').value = finalizedRoot;
+            localStorage.setItem('trustedBlockRoot', finalizedRoot);
+
             headers.add(Module._ETHLightClientStoreGetOptimisticHeader(store), cfg);
             headers.add(Module._ETHLightClientStoreGetFinalizedHeader(store), cfg);
 
             const newHeaders = headers.getAll();
-            const oldHeaderDivs = Array.from(mdMaster.children);
+            const oldHeaderDivs = Array.from(headerList.children);
 
             let i = 0;
             let j = 0;
@@ -519,69 +477,92 @@
                     (beaconSlot == oldHeaderDiv.dataset.beaconSlot &&
                     beaconRoot < oldHeaderDiv.dataset.beaconRoot)))
                 {
+                    const beacon = Module._ETHLightClientHeaderGetBeacon(newHeader);
+                    const beaconProposerIndex = Module._ETHBeaconBlockHeaderGetProposerIndex(beacon);
+                    const executionHash = Module._ETHLightClientHeaderCopyExecutionHash(newHeader, cfg);
+                    const executionHashString = toHexString(executionHash, 32);
+                    Module._ETHRootDestroy(executionHash);
+                    const execution = Module._ETHLightClientHeaderGetExecution(newHeader);
+                    const executionFeeRecipient = Module._ETHExecutionPayloadHeaderGetFeeRecipient(execution);
+                    const executionBlockNumber = Module._ETHExecutionPayloadHeaderGetBlockNumber(execution);
+                    const executionGasLimit = Module._ETHExecutionPayloadHeaderGetGasLimit(execution);
+                    const executionGasUsed = Module._ETHExecutionPayloadHeaderGetGasUsed(execution);
+                    const executionTimestamp = Module._ETHExecutionPayloadHeaderGetTimestamp(execution);
+                    const executionBaseFeePerGas = Module._ETHExecutionPayloadHeaderGetBaseFeePerGas(execution);
+
+                    const detailsButtonId = `detailsButton_${beaconRoot}`;
                     let headerDiv = document.createElement('div');
                     headerDiv.id = `headerMaster_${beaconRoot}`;
                     headerDiv.dataset.beaconRoot = beaconRoot;
                     headerDiv.dataset.beaconSlot = beaconSlot;
                     headerDiv.className = 'headerMaster';
-                    headerDiv.onclick = function () {
-                        if (selectedHeader !== undefined) {
-                            const selectedHeaderDiv = document.getElementById(`headerMaster_${selectedHeader}`);
-                            selectedHeaderDiv.classList.remove('selected');
-                            if (selectedHeaderDiv.dataset.beaconRoot === beaconRoot) {
-                                document.getElementById('selectedHeaderDetail').hidden = true;
-                                selectedHeader = undefined;
-                                return;
-                            }
-                        }
+                    headerDiv.innerHTML =
+                        '<div class="headerMasterBeaconRoot">' +
+                        '<a href="https://beaconcha.in/slot/' + beaconRoot + '" target="_blank">' +
+                        beaconRoot.substring(2, 34) + '<br />' + beaconRoot.substring(34) + '</a>' +
+                        '</div>' +
+                        '<div class="headerMasterInfo">' +
+                        '    <table>' +
+                        '        <tr>' +
+                        '            <td><span class="fas fa-ticket-alt"></span> <span>' +
+                        '<a href="https://beaconcha.in/slot/' + beaconSlot + '" target="_blank">' +
+                        beaconSlot + '</a>' +
+                        '</span></td>' +
+                        '            <td><span class="fas fa-cubes"></span> <span>' +
+                        '<a href="https://etherscan.io/block/' + executionHashString + '" target="_blank">' +
+                        executionBlockNumber + '</a>' +
+                        '</span></td>' +
+                        '            <td colspan="2" style="text-align: right;"><span class="fas fa-clock"></span> <span>' +
+                        toDateString(executionTimestamp) +
+                        '</span></td>' +
+                        '        </tr>' +
+                        '        <tr>' +
+                        '            <td><span class="fas fa-user-check"></span> <span>' +
+                        '<a href="https://beaconcha.in/validator/' + beaconProposerIndex + '" target="_blank">' +
+                        beaconProposerIndex + '</a>' +
+                        '</span></td>' +
+                        '            <td colspan="2" class="a"><span class="fas fa-tachometer-alt"></span> <span>' +
+                        (executionGasUsed * 100 / executionGasLimit).toFixed(2) + '%' +
+                        '</span> <span>' +
+                        toHumanReadableNumberString(executionGasUsed) +
+                        '</span>/<span>' +
+                        toHumanReadableNumberString(executionGasLimit) +
+                        '</span></td>' +
+                        '            <td style="text-align: right;"><span class="fas fa-gas-pump"></span> <span>' +
+                        toGweiString(executionBaseFeePerGas) + ' Gwei' +
+                        '</span></td>' +
+                        '        </tr>' +
+                        '        <tr>' +
+                        '            <td colspan="4"><span class="fas fa-hand-holding-usd"></span> <span style="display: inline-block; transform: scaleX(1.015); transform-origin: left;">' +
+                        '<a href="https://etherscan.io/address/' + toHexString(executionFeeRecipient, 20) + '#mine" target="_blank">' +
+                        toHexString(executionFeeRecipient, 20) + '</a>' +
+                        '</span></td>' +
+                        '        </tr>' +
+                        '        <tr>' +
+                        '            <td colspan="4"><input type="button" id="' +
+                        detailsButtonId +
+                        '" value="Details" /></td>' +
+                        '        </tr>' +
+                        '    </table>' +
+                        '</div>';
+
+                    headerList.insertBefore(headerDiv, oldHeaderDiv);
+                    i++;
+
+                    document.getElementById(detailsButtonId).onclick = function () {
                         const header = headers.get(beaconRoot);
                         if (header) {
-                            headerDiv.classList.add('selected');
                             selectedHeader = beaconRoot;
                             visualizeHeader('selected', header);
+                            document.getElementById('headerList').hidden = true;
                             document.getElementById('selectedHeaderDetail').hidden = false;
                         }
                     };
-                    const beaconRootDiv = document.createElement('div');
-                    beaconRootDiv.className = 'headerMasterBeaconRoot';
-                    beaconRootDiv.innerHTML = beaconRoot.substring(2, 34) + '<br />' + beaconRoot.substring(34);
-                    headerDiv.appendChild(beaconRootDiv);
-                    const infoDiv = document.createElement('div');
-                    infoDiv.className = 'headerMasterInfo';
-                    headerDiv.appendChild(infoDiv);
-                    const beaconSlotDiv = document.createElement('div');
-                    beaconSlotDiv.innerHTML = '<span class="fas fa-ticket-alt"></span> ' + beaconSlot;
-                    infoDiv.appendChild(beaconSlotDiv);
-                    const execution = Module._ETHLightClientHeaderGetExecution(newHeader);
-                    const executionBlockNumberDiv = document.createElement('div');
-                    const executionBlockNumber = Module._ETHExecutionPayloadHeaderGetBlockNumber(execution);
-                    executionBlockNumberDiv.innerHTML = '<span class="fas fa-cubes"></span> ' + executionBlockNumber;
-                    infoDiv.appendChild(executionBlockNumberDiv);
-                    const executionTimestampDiv = document.createElement('div');
-                    const executionTimestamp = Module._ETHExecutionPayloadHeaderGetTimestamp(execution);
-                    executionTimestampDiv.innerHTML = '<span class="fas fa-clock"></span> ' + toDateString(executionTimestamp);
-                    infoDiv.appendChild(executionTimestampDiv);
-
-                    mdMaster.insertBefore(headerDiv, oldHeaderDiv);
-                    i++;
                 } else {
-                    if (oldHeaderDiv.classList.contains('selected')) {
-                        document.getElementById('selectedHeaderDetail').hidden = true;
-                        selectedHeader = undefined;
-                    }
-                    mdMaster.removeChild(oldHeaderDiv);
+                    headerList.removeChild(oldHeaderDiv);
                     j++;
                 }
             }
-        }
-
-        function visualizeStore(store, cfg) {
-            visualizeHeader('finalized', Module._ETHLightClientStoreGetFinalizedHeader(store));
-            const isNextSyncCommitteeKnown = Module._ETHLightClientStoreIsNextSyncCommitteeKnown(store);
-            document.getElementById('nextSyncCommitteeKnown').innerText = (isNextSyncCommitteeKnown ? 'known' : 'unknown');
-            visualizeHeader('optimistic', Module._ETHLightClientStoreGetOptimisticHeader(store));
-            const safetyThreshold = Module._ETHLightClientStoreGetSafetyThreshold(store);
-            document.getElementById('safetyThreshold').innerText = safetyThreshold;
         }
 
         let rng = undefined;
@@ -612,7 +593,6 @@
                     Module._free(finUpdatesBytesPtr);
                     Module._free(mediaType);
                     cacheHeaders(store, cfg);
-                    visualizeStore(store, cfg);
                 });
 
                 trackStoreSource.addEventListener('light_client_optimistic_update', function (event) {
@@ -626,13 +606,11 @@
                     Module._free(optUpdateBytesPtr);
                     Module._free(mediaType);
                     cacheHeaders(store, cfg);
-                    visualizeStore(store, cfg);
                 });
             }
 
             function runOnTick(tickStoreId, timeout) {
                 cacheHeaders(store, cfg);
-                visualizeStore(store, cfg);
                 async function onTick() {
                     if (storeId != tickStoreId) return;
                     if (nextSyncTaskTime !== undefined && Date.now() < nextSyncTaskTime) {
@@ -656,7 +634,6 @@
                     if (syncKind == Module.HEAPU8[Module._kETHLcSyncKind_UpdatesByRange]) {
                         const maxUpdatesByRange = 1;
                         if (count > maxUpdatesByRange) count = maxUpdatesByRange;
-                        document.getElementById('syncTask').innerText = 'UpdatesByRange(' + startPeriod + ", " + count + ')';
                         const response = await fetch(beaconApiBase +
                             '/eth/v1/beacon/light_client/updates?start_period=' + startPeriod + '&count=' + count, {
                                 headers: {
@@ -679,7 +656,6 @@
                             Module._free(mediaType);
                         }
                     } else if (syncKind == Module.HEAPU8[Module._kETHLcSyncKind_FinalityUpdate]) {
-                        document.getElementById('syncTask').innerText = 'FinalityUpdate';
                         const response = await fetch(beaconApiBase +
                             '/eth/v1/beacon/light_client/finality_update', {
                                 headers: {
@@ -705,7 +681,6 @@
                         }
                     } else {
                         assert(syncKind == Module.HEAPU8[Module._kETHLcSyncKind_OptimisticUpdate]);
-                        document.getElementById('syncTask').innerText = 'OptimisticUpdate';
                         const response = await fetch(beaconApiBase +
                             '/eth/v1/beacon/light_client/optimistic_update', {
                                 headers: {
@@ -757,6 +732,11 @@
                 Module._ETHLightClientStoreDestroy(store);
                 store = undefined;
             }
+        }
+
+        const savedTrustedBlockRoot = localStorage.getItem('trustedBlockRoot');
+        if (savedTrustedBlockRoot) {
+            document.getElementById('trustedBlockRoot').value = savedTrustedBlockRoot;
         }
 
         Module.onRuntimeInitialized = async function() {
