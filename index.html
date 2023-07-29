@@ -18,10 +18,6 @@
             font-style: normal;
         }
 
-        #executionApiBase, #beaconApiBase, #trustedBlockRoot {
-            width: 500px;
-        }
-
         pre {
             display: inline;
         }
@@ -85,11 +81,43 @@
             width: 12px;
             text-align: right;
         }
+
+        #executionApiBase, #beaconApiBase, #trustedBlockRoot {
+            width: 230px;
+            font-family: 'm_1mlight', monospace;
+        }
     </style>
 </head>
 <body>
     <div id="mdMaster">
-        <div id="headerList"></div>
+        <div id="masterTop" class="headerMaster">
+            <div class="headerMasterInfo">
+                <table>
+                    <tr>
+                        <td><input type="button" id="settingsButton" value="Settings" /></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div id="settings" class="headerMaster" hidden="hidden">
+            <div class="headerMasterInfo">
+                <table >
+                    <tr>
+                        <td><span class="fas fa-cogs"></span> <input id="executionApiBase" value="https://execution-api.eth-light.xyz/v1/mainnet" /></td>
+                    </tr>
+                    <tr>
+                        <td><span class="fas fa-satellite-dish"></span> <input id="beaconApiBase" value="https://beacon-api.eth-light.xyz" /></td>
+                    </tr>
+                    <tr>
+                        <td><span class="fas fa-shield-alt"></span> <input id="trustedBlockRoot" value="0x15cf56ebf887ede9cf3fc10a26ec83828628932c100e42c98c84f83da710c863" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="button" id="initButton" value="Save" disabled /></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div id="headerList" hidden="hidden"></div>
         <div id="selectedHeaderDetail" hidden="hidden">
             <div id="selectedHeader" class="headerMaster">
                 <div id="selectedBeaconRoot" class="headerMasterBeaconRoot"></div>
@@ -133,15 +161,6 @@
         </div>
     </div>
     <div id="mdDetail">
-        <h1>Bootstrap</h1>
-        Current slot: <b><span id="wallSlot"></span></b><br />
-        <br />
-        Execution-API base:<br /><input id="executionApiBase" value="https://execution-api.eth-light.xyz/v1/mainnet" /><br />
-        <br />
-        Beacon-API base:<br /><input id="beaconApiBase" value="https://beacon-api.eth-light.xyz" /><br />
-        <br />
-        Checkpoint block root:<br /><input id="trustedBlockRoot" value="0x15cf56ebf887ede9cf3fc10a26ec83828628932c100e42c98c84f83da710c863" /><input type="button" id="initButton" value="Init" disabled /><br />
-        <br />
     </div>
 
     <script>
@@ -174,16 +193,6 @@
             Module._free(sszBytesPtr);
 
             return state;
-        }
-
-        let nextSyncTaskTime = undefined;
-        function trackWallTime(beaconClock) {
-            function onTick() {
-                const slot = Module._ETHBeaconClockGetSlot(beaconClock);
-                document.getElementById('wallSlot').innerText = slot;
-                setTimeout(onTick, /* timeout: */ 100);
-            }
-            setTimeout(onTick, /* timeout: */ 100);
         }
 
         var Module = {};
@@ -439,6 +448,13 @@
 
         let selectedHeader = undefined;
 
+        document.getElementById('settingsButton').onclick = function () {
+            document.getElementById('masterTop').hidden = true;
+            document.getElementById('headerList').hidden = true;
+            document.getElementById('selectedHeaderDetail').hidden = true;
+            document.getElementById('settings').hidden = false;
+        }
+
         document.getElementById('backButton').onclick = function () {
             selectedHeader = undefined;
             document.getElementById('selectedHeaderDetail').hidden = true;
@@ -574,6 +590,7 @@
         let storeId = 0;
         let trackStoreTimeout = undefined;
         let trackStoreSource = undefined;
+        let nextSyncTaskTime = undefined;
         function trackStore(newStore) {
             store = newStore;
             storeId++;
@@ -747,7 +764,6 @@
             forkDigests = Module._ETHForkDigestsCreateFromState(cfg, genesisState);
             beaconClock = Module._ETHBeaconClockCreateFromState(genesisState);
             Module._ETHBeaconStateDestroy(genesisState);
-            trackWallTime(beaconClock);
 
             document.getElementById('initButton').addEventListener('click', async function() {
                 const trustedBlockRootString = document.getElementById('trustedBlockRoot').value;
@@ -790,10 +806,19 @@
                     Module._free(mediaType);
 
                     trackStore(newStore);
+
+                    document.getElementById('settings').hidden = true;
+                    document.getElementById('masterTop').hidden = false;
+                    if (selectedHeader) {
+                        document.getElementById('selectedHeaderDetail').hidden = false;
+                    } else {
+                        document.getElementById('headerList').hidden = false;
+                    }
                 }
                 document.getElementById('initButton').disabled = false;
             });
             document.getElementById('initButton').disabled = false;
+            document.getElementById('initButton').click();
         };
     </script>
     <script async src="libnimbus_lc.js"></script>
