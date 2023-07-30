@@ -142,6 +142,7 @@
                     </table>
                 </div>
             </div>
+            <div id="selectedExecutionTransactionList"></div>
             <ul>
                 <li><pre>beacon.parent_root</pre>: <b><pre id="selectedBeaconParentRoot"></pre></b></li>
                 <li><pre>beacon.state_root</pre>: <b><pre id="selectedBeaconStateRoot"></pre></b></li>
@@ -153,8 +154,8 @@
                 <li><pre>execution.logs_bloom</pre>: <b><pre id="selectedExecutionLogsBloom"></pre></b></li>
                 <li><pre>execution.prev_randao</pre>: <b><pre id="selectedExecutionPrevRandao"></pre></b></li>
                 <li><pre>execution.extra_data</pre>: <b><pre id="selectedExecutionExtraData"></pre></b></li>
-                <li><pre>execution.data_gas_used</pre>: <b><pre id="selectedExecutionDataGasUsed"></pre></b></li>
-                <li><pre>execution.excess_data_gas</pre>: <b><pre id="selectedExecutionExcessDataGas"></pre></b></li>
+                <li><pre>execution.blob_gas_used</pre>: <b><pre id="selectedExecutionBlobGasUsed"></pre></b></li>
+                <li><pre>execution.excess_blob_gas</pre>: <b><pre id="selectedExecutionExcessBlobGas"></pre></b></li>
                 <li class="execution"><pre>execution.transactions_root</pre>: <b><pre id="selectedExecutionTransactionsRoot"></pre></b></li>
                 <li class="execution"><pre>execution.withdrawals_root</pre>: <b><pre id="selectedExecutionWithdrawalsRoot"></pre></b></li>
             </ul>
@@ -211,11 +212,20 @@
             if (number >= 1e12) {
                 return (number / 1e12).toFixed(1) + 'T';
             }
+            if (number >= 1e11) {
+                return (number / 1e9).toFixed(0) + 'T';
+            }
             if (number >= 1e9) {
                 return (number / 1e9).toFixed(1) + 'B';
             }
+            if (number >= 1e8) {
+                return (number / 1e6).toFixed(0) + 'M';
+            }
             if (number >= 1e6) {
                 return (number / 1e6).toFixed(1) + 'M';
+            }
+            if (number >= 1e5) {
+                return (number / 1e3).toFixed(0) + 'K';
             }
             if (number >= 1e3) {
                 return (number / 1e3).toFixed(1) + 'K';
@@ -260,7 +270,7 @@
         function initHeadersCache() {
             let headers = [];
             let byRoot = {};
-            let executionBlockHeaders = {};
+            let executionBlocks = {};
 
             return {
                 'add': function (header, cfg) {
@@ -280,9 +290,11 @@
                         const removedHeader = headers.pop();
                         const removedBeaconRoot = getBeaconRoot(removedHeader);
 
-                        const removedExecutionBlockHeader = executionBlockHeaders[removedBeaconRoot];
-                        if (removedExecutionBlockHeader) {
-                            delete executionBlockHeaders[removedBeaconRoot];
+                        const removedExecutionBlock = executionBlocks[removedBeaconRoot];
+                        if (removedExecutionBlock) {
+                            const [removedExecutionBlockHeader, removedExecutionTransactions] = removedExecutionBlock;
+                            delete executionBlocks[removedBeaconRoot];
+                            Module._ETHExecutionTransactionsDestroy(removedExecutionTransactions);
                             Module._ETHExecutionBlockHeaderDestroy(removedExecutionBlockHeader);
                         }
 
@@ -299,27 +311,27 @@
                     return byRoot[beaconRoot];
                 },
 
-                'setExecutionBlockHeader': function (beaconRoot, executionBlockHeader) {
-                    executionBlockHeaders[beaconRoot] = executionBlockHeader;
+                'setExecutionBlock': function (beaconRoot, executionBlock) {
+                    executionBlocks[beaconRoot] = executionBlock;
                 },
 
-                'getExecutionBlockHeader': function (beaconRoot) {
-                    return executionBlockHeaders[beaconRoot];
+                'getExecutionBlock': function (beaconRoot) {
+                    return executionBlocks[beaconRoot];
                 }
             };
         }
 
         let headers = initHeadersCache();
 
-        async function fetchExecutionBlockHeader(header) {
+        async function fetchExecutionBlock(header) {
             const executionHash = Module._ETHLightClientHeaderCopyExecutionHash(header, cfg);
             try {
                 const executionHashString = toHexString(executionHash, 32);
                 if (executionHashString == zeroHash) return;
                 const beaconRoot = getBeaconRoot(header);
-                let executionBlockHeader = headers.getExecutionBlockHeader(beaconRoot);
-                if (executionBlockHeader) {
-                    return executionBlockHeader;
+                let executionBlock = headers.getExecutionBlock(beaconRoot);
+                if (executionBlock) {
+                    return executionBlock;
                 }
 
                 let data;
@@ -333,7 +345,7 @@
                             jsonrpc: '2.0',
                             id: 1,
                             method: 'eth_getBlockByHash',
-                            params: [executionHashString, /* fullTransactions: */ false]
+                            params: [executionHashString, /* fullTransactions: */ true]
                         })
                     });
                     if (!executionBlockResponse.ok) return;
@@ -345,14 +357,27 @@
                 }
                 if (!headers.get(beaconRoot)) return;
 
-                const blockHeaderJson = Module.stringToNewUTF8(JSON.stringify(data));
-                executionBlockHeader = Module._ETHExecutionBlockHeaderCreateFromJson(executionHash, blockHeaderJson);
-                Module._free(blockHeaderJson);
-
-                if (executionBlockHeader) {
-                    headers.setExecutionBlockHeader(beaconRoot, executionBlockHeader);
+                const fullTransactions = JSON.stringify(data.transactions);
+                for (txIndex in data.transactions) {
+                    data.transactions[txIndex] = data.transactions[txIndex].hash;
                 }
-                return executionBlockHeader;
+                const blockHeaderJson = Module.stringToNewUTF8(JSON.stringify(data));
+                const executionBlockHeader = Module._ETHExecutionBlockHeaderCreateFromJson(executionHash, blockHeaderJson);
+                Module._free(blockHeaderJson);
+                if (!executionBlockHeader) return;
+
+                const executionTransactionsRoot = Module._ETHExecutionBlockHeaderGetTransactionsRoot(executionBlockHeader);
+                const transactionsJson = Module.stringToNewUTF8(fullTransactions);
+                const transactions = Module._ETHExecutionTransactionsCreateFromJson(executionTransactionsRoot, transactionsJson);
+                Module._free(transactionsJson);
+                if (!transactions) {
+                    Module._ETHExecutionBlockHeaderDestroy(executionBlockHeader);
+                    return;
+                }
+
+                executionBlock = [executionBlockHeader, transactions];
+                headers.setExecutionBlock(beaconRoot, executionBlock);
+                return executionBlock;
             } finally {
                 Module._ETHRootDestroy(executionHash);
             }
@@ -417,33 +442,77 @@
             document.getElementById(prefix + 'ExecutionExtraData').innerText = toHexString(executionExtraDataBytes, numExecutionExtraDataBytes);
             const executionBaseFeePerGas = Module._ETHExecutionPayloadHeaderGetBaseFeePerGas(execution);
             document.getElementById(prefix + 'ExecutionBaseFeePerGas').innerText = toGweiString(executionBaseFeePerGas) + ' Gwei';
-            const executionDataGasUsed = Module._ETHExecutionPayloadHeaderGetDataGasUsed(execution);
-            document.getElementById(prefix + 'ExecutionDataGasUsed').innerText = executionDataGasUsed;
-            const executionExcessDataGas = Module._ETHExecutionPayloadHeaderGetExcessDataGas(execution);
-            document.getElementById(prefix + 'ExecutionExcessDataGas').innerText = executionExcessDataGas;
+            const executionBlobGasUsed = Module._ETHExecutionPayloadHeaderGetBlobGasUsed(execution);
+            document.getElementById(prefix + 'ExecutionBlobGasUsed').innerText = executionBlobGasUsed;
+            const executionExcessBlobGas = Module._ETHExecutionPayloadHeaderGetExcessBlobGas(execution);
+            document.getElementById(prefix + 'ExecutionExcessBlobGas').innerText = executionExcessBlobGas;
 
-            if (executionHash == zeroHash) {
-                document.getElementById(prefix + 'ExecutionTransactionsRoot').innerText = zeroHash;
-                document.getElementById(prefix + 'ExecutionWithdrawalsRoot').innerText = zeroHash;
-            } else {
-                document.getElementById(prefix + 'ExecutionTransactionsRoot').innerText = '';
-                document.getElementById(prefix + 'ExecutionWithdrawalsRoot').innerText = '';
+            function fillExecutionInfo() {
+                if (executionHash == zeroHash) {
+                    document.getElementById(prefix + 'ExecutionTransactionsRoot').innerText = zeroHash;
+                    document.getElementById(prefix + 'ExecutionWithdrawalsRoot').innerText = zeroHash;
+                    document.getElementById(prefix + 'ExecutionTransactionList').innerHTML = '';
+                } else {
+                    document.getElementById(prefix + 'ExecutionTransactionsRoot').innerText = '';
+                    document.getElementById(prefix + 'ExecutionWithdrawalsRoot').innerText = '';
+                    document.getElementById(prefix + 'ExecutionTransactionList').innerHTML = '';
 
-                const executionBlockHeaderFut = fetchExecutionBlockHeader(header);
-                executionBlockHeaderFut.then((executionBlockHeader) => {
-                    if (document.getElementById(prefix + 'BeaconRoot').dataset.beaconRoot !== beaconRoot) return;
-                    if (!executionBlockHeader) {
-                        document.getElementById(prefix + 'ExecutionTransactionsRoot').innerText = 'Error';
-                        document.getElementById(prefix + 'ExecutionWithdrawalsRoot').innerText = 'Error';
-                        return;
-                    }
+                    const executionBlockFut = fetchExecutionBlock(header);
+                    executionBlockFut.then((executionBlock) => {
+                        if (document.getElementById(prefix + 'BeaconRoot').dataset.beaconRoot !== beaconRoot) return;
+                        if (!executionBlock) {
+                            document.getElementById(prefix + 'ExecutionTransactionsRoot').innerText = 'Error';
+                            document.getElementById(prefix + 'ExecutionWithdrawalsRoot').innerText = 'Error';
+                            document.getElementById(prefix + 'ExecutionTransactionList').innerHTML =
+                                '<div class="headerMaster">' +
+                                '   <div class="headerMasterBeaconRoot">Failed to validate transactions</div>' +
+                                '   <div class="headerMasterInfo">' +
+                                '       <table>' +
+                                '           <tr>' +
+                                '               <td><input type="button" id="' +
+                                prefix + 'ExecutionReloadButton' +
+                                '" value="Retry" /></td>' +
+                                '           </tr>' +
+                                '       </table>' +
+                                '   </div>' +
+                                '</div>';
+                            document.getElementById(prefix + 'ExecutionReloadButton').onclick = fillExecutionInfo;
+                            return;
+                        }
 
-                    const executionTransactionsRoot = Module._ETHExecutionBlockHeaderGetTransactionsRoot(executionBlockHeader);
-                    document.getElementById(prefix + 'ExecutionTransactionsRoot').innerText = toHexString(executionTransactionsRoot, 32);
-                    const executionWithdrawalsRoot = Module._ETHExecutionBlockHeaderGetWithdrawalsRoot(executionBlockHeader);
-                    document.getElementById(prefix + 'ExecutionWithdrawalsRoot').innerText = toHexString(executionWithdrawalsRoot, 32);
-                });
+                        const [executionBlockHeader, transactions] = executionBlock;
+                        const executionTransactionsRoot = Module._ETHExecutionBlockHeaderGetTransactionsRoot(executionBlockHeader);
+                        document.getElementById(prefix + 'ExecutionTransactionsRoot').innerText = toHexString(executionTransactionsRoot, 32);
+                        const executionWithdrawalsRoot = Module._ETHExecutionBlockHeaderGetWithdrawalsRoot(executionBlockHeader);
+                        document.getElementById(prefix + 'ExecutionWithdrawalsRoot').innerText = toHexString(executionWithdrawalsRoot, 32);
+
+                        const numTransactions = Module._ETHExecutionTransactionsGetCount(transactions);
+                        document.getElementById(prefix + 'ExecutionTransactionList').innerHTML = '';
+                        const numTransactionBytesPtr = Module._malloc(4);
+                        assert(numTransactionBytesPtr);
+                        for (let transactionIndex = 0; transactionIndex < numTransactions; transactionIndex++) {
+                            const transactionHash = Module._ETHExecutionTransactionsGetHash(transactions, transactionIndex);
+                            const transactionHashString = toHexString(transactionHash, 32);
+                            const transactionBytes = Module._ETHExecutionTransactionsGetBytes(transactions, transactionIndex, numTransactionBytesPtr);
+                            const transactionBytesString = toHexString(transactionBytes, Module.HEAPU32[numTransactionBytesPtr >>> 2]);
+
+                            const transactionDiv = document.createElement('div');
+                            transactionDiv.id = `txMaster_${transactionHashString}`;
+                            transactionDiv.dataset.transactionHash = transactionHashString;
+                            transactionDiv.className = 'headerMaster';
+                            transactionDiv.innerHTML =
+                                '<div class="headerMasterBeaconRoot">' +
+                                '<a href="https://etherscan.io/tx/' + transactionHashString + '" target="_blank">' +
+                                transactionHashString.substring(2, 34) + '<br />' + transactionHashString.substring(34) + '</a>' +
+                                '</div>';
+
+                            document.getElementById(prefix + 'ExecutionTransactionList').appendChild(transactionDiv);
+                        }
+                        Module._free(numTransactionBytesPtr);
+                    });
+                }
             }
+            fillExecutionInfo();
         }
 
         let selectedHeader = undefined;
@@ -799,20 +868,21 @@
                     const newStore = Module._ETHLightClientStoreCreateFromBootstrap(
                         cfg, trustedBlockRootBytesPtr,
                         mediaType, consensusVersion, bootstrapBytesPtr, bootstrapBytes.length);
-                    assert(newStore);
                     Module._free(bootstrapBytesPtr);
                     Module._free(consensusVersion);
                     Module._free(trustedBlockRootBytesPtr);
                     Module._free(mediaType);
 
-                    trackStore(newStore);
+                    if (newStore) {
+                        trackStore(newStore);
 
-                    document.getElementById('settings').hidden = true;
-                    document.getElementById('masterTop').hidden = false;
-                    if (selectedHeader) {
-                        document.getElementById('selectedHeaderDetail').hidden = false;
-                    } else {
-                        document.getElementById('headerList').hidden = false;
+                        document.getElementById('settings').hidden = true;
+                        document.getElementById('masterTop').hidden = false;
+                        if (selectedHeader) {
+                            document.getElementById('selectedHeaderDetail').hidden = false;
+                        } else {
+                            document.getElementById('headerList').hidden = false;
+                        }
                     }
                 }
                 document.getElementById('initButton').disabled = false;
