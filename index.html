@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <title>Ethereum Light</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous"/>
     <style>
         @font-face {
             font-family: 'm_1mmedium';
@@ -142,7 +142,7 @@
                     </table>
                 </div>
             </div>
-            <div id="selectedExecutionTransactionList"></div>
+            <div id="selectedTransactionList"></div>
             <ul>
                 <li><pre>beacon.parent_root</pre>: <b><pre id="selectedBeaconParentRoot"></pre></b></li>
                 <li><pre>beacon.state_root</pre>: <b><pre id="selectedBeaconStateRoot"></pre></b></li>
@@ -292,9 +292,9 @@
 
                         const removedExecutionBlock = executionBlocks[removedBeaconRoot];
                         if (removedExecutionBlock) {
-                            const [removedExecutionBlockHeader, removedExecutionTransactions] = removedExecutionBlock;
+                            const [removedExecutionBlockHeader, removedTransactions] = removedExecutionBlock;
                             delete executionBlocks[removedBeaconRoot];
-                            Module._ETHExecutionTransactionsDestroy(removedExecutionTransactions);
+                            Module._ETHTransactionsDestroy(removedTransactions);
                             Module._ETHExecutionBlockHeaderDestroy(removedExecutionBlockHeader);
                         }
 
@@ -368,7 +368,7 @@
 
                 const executionTransactionsRoot = Module._ETHExecutionBlockHeaderGetTransactionsRoot(executionBlockHeader);
                 const transactionsJson = Module.stringToNewUTF8(fullTransactions);
-                const transactions = Module._ETHExecutionTransactionsCreateFromJson(executionTransactionsRoot, transactionsJson);
+                const transactions = Module._ETHTransactionsCreateFromJson(executionTransactionsRoot, transactionsJson);
                 Module._free(transactionsJson);
                 if (!transactions) {
                     Module._ETHExecutionBlockHeaderDestroy(executionBlockHeader);
@@ -451,11 +451,11 @@
                 if (executionHash == zeroHash) {
                     document.getElementById(prefix + 'ExecutionTransactionsRoot').innerText = zeroHash;
                     document.getElementById(prefix + 'ExecutionWithdrawalsRoot').innerText = zeroHash;
-                    document.getElementById(prefix + 'ExecutionTransactionList').innerHTML = '';
+                    document.getElementById(prefix + 'TransactionList').innerHTML = '';
                 } else {
                     document.getElementById(prefix + 'ExecutionTransactionsRoot').innerText = '';
                     document.getElementById(prefix + 'ExecutionWithdrawalsRoot').innerText = '';
-                    document.getElementById(prefix + 'ExecutionTransactionList').innerHTML = '';
+                    document.getElementById(prefix + 'TransactionList').innerHTML = '';
 
                     const executionBlockFut = fetchExecutionBlock(header);
                     executionBlockFut.then((executionBlock) => {
@@ -463,7 +463,7 @@
                         if (!executionBlock) {
                             document.getElementById(prefix + 'ExecutionTransactionsRoot').innerText = 'Error';
                             document.getElementById(prefix + 'ExecutionWithdrawalsRoot').innerText = 'Error';
-                            document.getElementById(prefix + 'ExecutionTransactionList').innerHTML =
+                            document.getElementById(prefix + 'TransactionList').innerHTML =
                                 '<div class="headerMaster">' +
                                 '   <div class="headerMasterBeaconRoot">Failed to validate transactions</div>' +
                                 '   <div class="headerMasterInfo">' +
@@ -486,14 +486,17 @@
                         const executionWithdrawalsRoot = Module._ETHExecutionBlockHeaderGetWithdrawalsRoot(executionBlockHeader);
                         document.getElementById(prefix + 'ExecutionWithdrawalsRoot').innerText = toHexString(executionWithdrawalsRoot, 32);
 
-                        const numTransactions = Module._ETHExecutionTransactionsGetCount(transactions);
-                        document.getElementById(prefix + 'ExecutionTransactionList').innerHTML = '';
+                        const numTransactions = Module._ETHTransactionsGetCount(transactions);
+                        document.getElementById(prefix + 'TransactionList').innerHTML = '';
                         const numTransactionBytesPtr = Module._malloc(4);
                         assert(numTransactionBytesPtr);
                         for (let transactionIndex = 0; transactionIndex < numTransactions; transactionIndex++) {
-                            const transactionHash = Module._ETHExecutionTransactionsGetHash(transactions, transactionIndex);
+                            const transaction = Module._ETHTransactionsGet(transactions, transactionIndex);
+
+                            const transactionHash = Module._ETHTransactionGetHash(transaction);
                             const transactionHashString = toHexString(transactionHash, 32);
-                            const transactionBytes = Module._ETHExecutionTransactionsGetBytes(transactions, transactionIndex, numTransactionBytesPtr);
+                            const transactionFrom = Module._ETHTransactionGetFrom(transaction);
+                            const transactionBytes = Module._ETHTransactionGetBytes(transaction, numTransactionBytesPtr);
                             const transactionBytesString = toHexString(transactionBytes, Module.HEAPU32[numTransactionBytesPtr >>> 2]);
 
                             const transactionDiv = document.createElement('div');
@@ -504,9 +507,19 @@
                                 '<div class="headerMasterBeaconRoot">' +
                                 '<a href="https://etherscan.io/tx/' + transactionHashString + '" target="_blank">' +
                                 transactionHashString.substring(2, 34) + '<br />' + transactionHashString.substring(34) + '</a>' +
+                                '</div>' +
+                                '<div class="headerMasterInfo">' +
+                                '    <table>' +
+                                '        <tr>' +
+                                '            <td><span class="fas fa-right-from-bracket"></span> <span style="display: inline-block; transform: scaleX(1.015); transform-origin: left;">' +
+                                '<a href="https://etherscan.io/address/' + toHexString(transactionFrom, 20) + '" target="_blank">' +
+                                toHexString(transactionFrom, 20) + '</a>' +
+                                '</span></td>' +
+                                '        </tr>' +
+                                '    </table>' +
                                 '</div>';
 
-                            document.getElementById(prefix + 'ExecutionTransactionList').appendChild(transactionDiv);
+                            document.getElementById(prefix + 'TransactionList').appendChild(transactionDiv);
                         }
                         Module._free(numTransactionBytesPtr);
                     });
