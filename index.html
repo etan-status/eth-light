@@ -208,6 +208,12 @@
             return '0x' + array.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
         }
 
+        function toDecString(bytes, numBytes) {
+            const array = Array.from(Module.HEAPU8.subarray(bytes, bytes + numBytes)).reverse();
+            const num = BigInt('0x' + array.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), ''));
+            return num.toString();
+        }
+
         function toHumanReadableNumberString(number) {
             if (number >= 1e12) {
                 return (number / 1e12).toFixed(1) + 'T';
@@ -496,6 +502,7 @@
                             const transactionHash = Module._ETHTransactionGetHash(transaction);
                             const transactionHashString = toHexString(transactionHash, 32);
                             const transactionFrom = Module._ETHTransactionGetFrom(transaction);
+                            const transactionNonce = Module._ETHTransactionGetNonce(transaction);
                             const transactionBytes = Module._ETHTransactionGetBytes(transaction, numTransactionBytesPtr);
                             const transactionBytesString = toHexString(transactionBytes, Module.HEAPU32[numTransactionBytesPtr >>> 2]);
 
@@ -514,6 +521,11 @@
                                 '            <td><span class="fas fa-right-from-bracket"></span> <span style="display: inline-block; transform: scaleX(1.015); transform-origin: left;">' +
                                 '<a href="https://etherscan.io/address/' + toHexString(transactionFrom, 20) + '" target="_blank">' +
                                 toHexString(transactionFrom, 20) + '</a>' +
+                                '</span></td>' +
+                                '        </tr>' +
+                                '        <tr>' +
+                                '            <td><span class="fas fa-hashtag"></span> <span>' +
+                                toDecString(transactionNonce, 8) +
                                 '</span></td>' +
                                 '        </tr>' +
                                 '    </table>' +
