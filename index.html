@@ -92,7 +92,7 @@
     <div id="mdMaster">
         <div id="masterTop" class="headerMaster">
             <div class="headerMasterInfo">
-                <table>
+                <table style="width: 100%">
                     <tr>
                         <td><input type="button" id="settingsButton" value="Settings" /></td>
                     </tr>
@@ -101,7 +101,7 @@
         </div>
         <div id="settings" class="headerMaster" hidden="hidden">
             <div class="headerMasterInfo">
-                <table >
+                <table style="width: 100%">
                     <tr>
                         <td><span class="fas fa-cogs"></span> <input id="executionApiBase" value="https://execution-api.eth-light.xyz/v1/mainnet" /></td>
                     </tr>
@@ -122,7 +122,7 @@
             <div id="selectedHeader" class="headerMaster">
                 <div id="selectedBeaconRoot" class="headerMasterBeaconRoot"></div>
                 <div class="headerMasterInfo">
-                    <table>
+                    <table style="width: 100%">
                         <tr>
                             <td><span class="fas fa-ticket-alt"></span> <span id="selectedBeaconSlot"></span></td>
                             <td><span class="fas fa-cubes"></span> <span id="selectedExecutionBlockNumber"></span></td>
@@ -131,7 +131,7 @@
                         <tr>
                             <td><span class="fas fa-user-check"></span> <span id="selectedBeaconProposerIndex"></span></td>
                             <td colspan="2" class="a"><span class="fas fa-tachometer-alt"></span> <span id="selectedExecutionGasUsedPercentage"></span> <span id="selectedExecutionGasUsed"></span>/<span id="selectedExecutionGasLimit"></span></td>
-                            <td style="text-align: right;"><span class="fas fa-gas-pump"></span> <span id="selectedExecutionBaseFeePerGas"></span></td>
+                            <td style="text-align: right;"><span class="fas fa-fire-flame-curved"></span> <span id="selectedExecutionBaseFeePerGas"></span></td>
                         </tr>
                         <tr>
                             <td colspan="4"><span class="fas fa-hand-holding-usd"></span> <span id="selectedExecutionFeeRecipient" style="display: inline-block; transform: scaleX(1.015); transform-origin: left;"></span></td>
@@ -250,8 +250,8 @@
             return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
         }
 
-        function toGweiString(weiU256Bytes) {
-            const array = Array.from(Module.HEAPU8.subarray(weiU256Bytes, weiU256Bytes + 32)).reverse();
+        function toGweiString(bytes, numBytes) {
+            const array = Array.from(Module.HEAPU8.subarray(bytes, bytes + numBytes)).reverse();
             const wei = BigInt('0x' + array.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), ''));
             const weiString = wei.toString();
             const beforeDecimal = weiString.substring(0, weiString.length - 9);
@@ -447,7 +447,7 @@
             const numExecutionExtraDataBytes = Module._ETHExecutionPayloadHeaderGetNumExtraDataBytes(execution);
             document.getElementById(prefix + 'ExecutionExtraData').innerText = toHexString(executionExtraDataBytes, numExecutionExtraDataBytes);
             const executionBaseFeePerGas = Module._ETHExecutionPayloadHeaderGetBaseFeePerGas(execution);
-            document.getElementById(prefix + 'ExecutionBaseFeePerGas').innerText = toGweiString(executionBaseFeePerGas) + ' Gwei';
+            document.getElementById(prefix + 'ExecutionBaseFeePerGas').innerText = toGweiString(executionBaseFeePerGas, 32) + ' Gwei';
             const executionBlobGasUsed = Module._ETHExecutionPayloadHeaderGetBlobGasUsed(execution);
             document.getElementById(prefix + 'ExecutionBlobGasUsed').innerText = executionBlobGasUsed;
             const executionExcessBlobGas = Module._ETHExecutionPayloadHeaderGetExcessBlobGas(execution);
@@ -473,7 +473,7 @@
                                 '<div class="headerMaster">' +
                                 '   <div class="headerMasterBeaconRoot">Failed to validate transactions</div>' +
                                 '   <div class="headerMasterInfo">' +
-                                '       <table>' +
+                                '       <table style="width: 100%">' +
                                 '           <tr>' +
                                 '               <td><input type="button" id="' +
                                 prefix + 'ExecutionReloadButton' +
@@ -503,6 +503,8 @@
                             const transactionHashString = toHexString(transactionHash, 32);
                             const transactionFrom = Module._ETHTransactionGetFrom(transaction);
                             const transactionNonce = Module._ETHTransactionGetNonce(transaction);
+                            const transactionMaxPriorityFeePerGas = Module._ETHTransactionGetMaxPriorityFeePerGas(transaction);
+                            const transactionMaxFeePerGas = Module._ETHTransactionGetMaxFeePerGas(transaction);
                             const transactionBytes = Module._ETHTransactionGetBytes(transaction, numTransactionBytesPtr);
                             const transactionBytesString = toHexString(transactionBytes, Module.HEAPU32[numTransactionBytesPtr >>> 2]);
 
@@ -516,9 +518,9 @@
                                 transactionHashString.substring(2, 34) + '<br />' + transactionHashString.substring(34) + '</a>' +
                                 '</div>' +
                                 '<div class="headerMasterInfo">' +
-                                '    <table>' +
+                                '    <table style="width: 100%">' +
                                 '        <tr>' +
-                                '            <td><span class="fas fa-right-from-bracket"></span> <span style="display: inline-block; transform: scaleX(1.015); transform-origin: left;">' +
+                                '            <td colspan="4"><span class="fas fa-right-from-bracket"></span> <span style="display: inline-block; transform: scaleX(1.015); transform-origin: left;">' +
                                 '<a href="https://etherscan.io/address/' + toHexString(transactionFrom, 20) + '" target="_blank">' +
                                 toHexString(transactionFrom, 20) + '</a>' +
                                 '</span></td>' +
@@ -526,6 +528,13 @@
                                 '        <tr>' +
                                 '            <td><span class="fas fa-hashtag"></span> <span>' +
                                 toDecString(transactionNonce, 8) +
+                                '</span></td>' +
+                                '            <td width="100%">&nbsp;</td>' +
+                                '            <td><span class="fas fa-money-bill-1"></span> <span>' +
+                                toGweiString(transactionMaxPriorityFeePerGas, 8) + ' Gwei' +
+                                '</span></td>' +
+                                '            <td style="text-align: right;"><span class="fas fa-gas-pump"></span> <span>' +
+                                toGweiString(transactionMaxFeePerGas, 8) + ' Gwei' +
                                 '</span></td>' +
                                 '        </tr>' +
                                 '    </table>' +
@@ -612,7 +621,7 @@
                         beaconRoot.substring(2, 34) + '<br />' + beaconRoot.substring(34) + '</a>' +
                         '</div>' +
                         '<div class="headerMasterInfo">' +
-                        '    <table>' +
+                        '    <table style="width: 100%">' +
                         '        <tr>' +
                         '            <td><span class="fas fa-ticket-alt"></span> <span>' +
                         '<a href="https://beaconcha.in/slot/' + beaconSlot + '" target="_blank">' +
@@ -638,8 +647,8 @@
                         '</span>/<span>' +
                         toHumanReadableNumberString(executionGasLimit) +
                         '</span></td>' +
-                        '            <td style="text-align: right;"><span class="fas fa-gas-pump"></span> <span>' +
-                        toGweiString(executionBaseFeePerGas) + ' Gwei' +
+                        '            <td style="text-align: right;"><span class="fas fa-fire-flame-curved"></span> <span>' +
+                        toGweiString(executionBaseFeePerGas, 32) + ' Gwei' +
                         '</span></td>' +
                         '        </tr>' +
                         '        <tr>' +
