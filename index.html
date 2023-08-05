@@ -79,7 +79,7 @@
 
         .fas {
             width: 12px;
-            text-align: right;
+            text-align: center;
         }
 
         #beaconApiBase, #executionApiBase, #trustedBlockRoot {
@@ -253,12 +253,27 @@
         function toGweiString(bytes, numBytes) {
             const array = Array.from(Module.HEAPU8.subarray(bytes, bytes + numBytes)).reverse();
             const wei = BigInt('0x' + array.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), ''));
-            const weiString = wei.toString();
+            const weiString = wei.toString().padStart(9, '0');
             const beforeDecimal = weiString.substring(0, weiString.length - 9);
             if (beforeDecimal === '') {
                 return '0';
             }
             return beforeDecimal;
+        }
+
+        function toEthString(bytes, numBytes) {
+            const array = Array.from(Module.HEAPU8.subarray(bytes, bytes + numBytes)).reverse();
+            const wei = BigInt('0x' + array.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), ''));
+            const weiString = wei.toString().padStart(18, '0');
+            const beforeDecimal = weiString.substring(0, weiString.length - 18);
+            const afterDecimal = weiString.substring(weiString.length - 18).replace(/0+$/, '');
+            if (beforeDecimal === '') {
+                if (afterDecimal === '') {
+                    return '0';
+                }
+                return '0.' + afterDecimal;
+            }
+            return beforeDecimal + '.' + afterDecimal;
         }
 
         function getBeaconRoot(header) {
@@ -508,6 +523,7 @@
                             const transactionGas = Module._ETHTransactionGetGas(transaction);
                             const transactionIsCreatingContract = Module._ETHTransactionIsCreatingContract(transaction);
                             const transactionTo = Module._ETHTransactionGetTo(transaction);
+                            const transactionValue = Module._ETHTransactionGetValue(transaction);
                             const transactionBytes = Module._ETHTransactionGetBytes(transaction, numTransactionBytesPtr);
                             const transactionBytesString = toHexString(transactionBytes, Module.HEAPU32[numTransactionBytesPtr >>> 2]);
 
@@ -540,6 +556,11 @@
                                 '            <td colspan="4"><span class="fas fa-right-from-bracket"></span> <span style="display: inline-block; transform: scaleX(1.015); transform-origin: left;">' +
                                 '<a href="https://etherscan.io/address/' + toHexString(transactionFrom, 20) + '" target="_blank">' +
                                 toHexString(transactionFrom, 20) + '</a>' +
+                                '</span></td>' +
+                                '        </tr>' +
+                                '        <tr>' +
+                                '            <td colspan="4"><span class="fas fa-brands fa-ethereum"></span> <span>' +
+                                toEthString(transactionValue, 32) + ' ETH' +
                                 '</span></td>' +
                                 '        </tr>' +
                                 '        <tr>' +
