@@ -214,6 +214,31 @@
             return num.toString();
         }
 
+        function toHumanReadableByteCountString(numBytes) {
+            if (numBytes >= 1e12) {
+                return (numBytes / 1e12).toFixed(1) + ' TB';
+            }
+            if (numBytes >= 1e11) {
+                return (numBytes / 1e9).toFixed(0) + ' GB';
+            }
+            if (numBytes >= 1e9) {
+                return (numBytes / 1e9).toFixed(1) + ' GB';
+            }
+            if (numBytes >= 1e8) {
+                return (numBytes / 1e6).toFixed(0) + ' MB';
+            }
+            if (numBytes >= 1e6) {
+                return (numBytes / 1e6).toFixed(1) + ' MB';
+            }
+            if (numBytes >= 1e5) {
+                return (numBytes / 1e3).toFixed(0) + ' KB';
+            }
+            if (numBytes >= 1e3) {
+                return (numBytes / 1e3).toFixed(1) + ' KB';
+            }
+            return numBytes + ' bytes'
+        }
+
         function toHumanReadableNumberString(number) {
             if (number >= 1e12) {
                 return (number / 1e12).toFixed(1) + 'T';
@@ -509,6 +534,8 @@
 
                         const numTransactions = Module._ETHTransactionsGetCount(transactions);
                         document.getElementById(prefix + 'TransactionList').innerHTML = '';
+                        const numTransactionInputBytesPtr = Module._malloc(4);
+                        assert(numTransactionInputBytesPtr);
                         const numTransactionBytesPtr = Module._malloc(4);
                         assert(numTransactionBytesPtr);
                         for (let transactionIndex = 0; transactionIndex < numTransactions; transactionIndex++) {
@@ -524,6 +551,8 @@
                             const transactionIsCreatingContract = Module._ETHTransactionIsCreatingContract(transaction);
                             const transactionTo = Module._ETHTransactionGetTo(transaction);
                             const transactionValue = Module._ETHTransactionGetValue(transaction);
+                            const transactionInputBytes = Module._ETHTransactionGetBytes(transaction, numTransactionInputBytesPtr);
+                            const numTransactionInputBytes = Module.HEAPU32[numTransactionInputBytesPtr >>> 2];
                             const transactionBytes = Module._ETHTransactionGetBytes(transaction, numTransactionBytesPtr);
                             const transactionBytesString = toHexString(transactionBytes, Module.HEAPU32[numTransactionBytesPtr >>> 2]);
 
@@ -559,8 +588,11 @@
                                 '</span></td>' +
                                 '        </tr>' +
                                 '        <tr>' +
-                                '            <td colspan="4"><span class="fas fa-brands fa-ethereum"></span> <span>' +
+                                '            <td colspan="3"><span class="fas fa-brands fa-ethereum"></span> <span>' +
                                 toEthString(transactionValue, 32) + ' ETH' +
+                                '</span></td>' +
+                                '            <td colspan="1" style="text-align: right;"><span class="fas fa-file-arrow-up"></span> <span>' +
+                                toHumanReadableByteCountString(numTransactionInputBytes) +
                                 '</span></td>' +
                                 '        </tr>' +
                                 '        <tr>' +
@@ -577,6 +609,7 @@
                             document.getElementById(prefix + 'TransactionList').appendChild(transactionDiv);
                         }
                         Module._free(numTransactionBytesPtr);
+                        Module._free(numTransactionInputBytesPtr);
                     });
                 }
             }
