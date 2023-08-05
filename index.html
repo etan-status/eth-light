@@ -124,7 +124,7 @@
                 <div class="headerMasterInfo">
                     <table style="width: 100%">
                         <tr>
-                            <td><span class="fas fa-ticket-alt"></span> <span id="selectedBeaconSlot"></span></td>
+                            <td><span class="fas fa-link"></span> <span id="selectedBeaconSlot"></span></td>
                             <td><span class="fas fa-cubes"></span> <span id="selectedExecutionBlockNumber"></span></td>
                             <td colspan="2" style="text-align: right;"><span class="fas fa-clock"></span> <span id="selectedExecutionTimestamp"></span></td>
                         </tr>
@@ -505,6 +505,7 @@
                             const transactionNonce = Module._ETHTransactionGetNonce(transaction);
                             const transactionMaxPriorityFeePerGas = Module._ETHTransactionGetMaxPriorityFeePerGas(transaction);
                             const transactionMaxFeePerGas = Module._ETHTransactionGetMaxFeePerGas(transaction);
+                            const transactionGas = Module._ETHTransactionGetGas(transaction);
                             const transactionBytes = Module._ETHTransactionGetBytes(transaction, numTransactionBytesPtr);
                             const transactionBytesString = toHexString(transactionBytes, Module.HEAPU32[numTransactionBytesPtr >>> 2]);
 
@@ -529,7 +530,9 @@
                                 '            <td><span class="fas fa-hashtag"></span> <span>' +
                                 toDecString(transactionNonce, 8) +
                                 '</span></td>' +
-                                '            <td width="100%">&nbsp;</td>' +
+                                '            <td><span class="fas fa-tachometer-alt"></span> <span>' +
+                                toHumanReadableNumberString(Number(toDecString(transactionGas, 8))) +
+                                '</span></td>' +
                                 '            <td><span class="fas fa-money-bill-1"></span> <span>' +
                                 toGweiString(transactionMaxPriorityFeePerGas, 8) + ' Gwei' +
                                 '</span></td>' +
@@ -623,7 +626,7 @@
                         '<div class="headerMasterInfo">' +
                         '    <table style="width: 100%">' +
                         '        <tr>' +
-                        '            <td><span class="fas fa-ticket-alt"></span> <span>' +
+                        '            <td><span class="fas fa-link"></span> <span>' +
                         '<a href="https://beaconcha.in/slot/' + beaconSlot + '" target="_blank">' +
                         beaconSlot + '</a>' +
                         '</span></td>' +
@@ -860,6 +863,8 @@
         }
 
         Module.onRuntimeInitialized = async function() {
+            Module._NimMain();
+
             rng = Module._ETHRandomNumberCreate();
             cfg = await loadCfg();
             const genesisState = await loadGenesis(cfg);
