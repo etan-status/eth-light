@@ -82,7 +82,7 @@
             text-align: right;
         }
 
-        #executionApiBase, #beaconApiBase, #trustedBlockRoot {
+        #beaconApiBase, #executionApiBase, #trustedBlockRoot {
             width: 230px;
             font-family: 'm_1mlight', monospace;
         }
@@ -103,10 +103,10 @@
             <div class="headerMasterInfo">
                 <table style="width: 100%">
                     <tr>
-                        <td><span class="fas fa-cogs"></span> <input id="executionApiBase" value="https://execution-api.eth-light.xyz/v1/mainnet" /></td>
+                        <td><span class="fas fa-satellite-dish"></span> <input id="beaconApiBase" value="https://beacon-api.eth-light.xyz" /></td>
                     </tr>
                     <tr>
-                        <td><span class="fas fa-satellite-dish"></span> <input id="beaconApiBase" value="https://beacon-api.eth-light.xyz" /></td>
+                        <td><span class="fas fa-cogs"></span> <input id="executionApiBase" value="https://execution-api.eth-light.xyz/v1/mainnet" /></td>
                     </tr>
                     <tr>
                         <td><span class="fas fa-shield-alt"></span> <input id="trustedBlockRoot" value="0x15cf56ebf887ede9cf3fc10a26ec83828628932c100e42c98c84f83da710c863" /></td>
@@ -124,7 +124,7 @@
                 <div class="headerMasterInfo">
                     <table style="width: 100%">
                         <tr>
-                            <td><span class="fas fa-link"></span> <span id="selectedBeaconSlot"></span></td>
+                            <td><span class="fas fa-satellite-dish"></span> <span id="selectedBeaconSlot"></span></td>
                             <td><span class="fas fa-cubes"></span> <span id="selectedExecutionBlockNumber"></span></td>
                             <td colspan="2" style="text-align: right;"><span class="fas fa-clock"></span> <span id="selectedExecutionTimestamp"></span></td>
                         </tr>
@@ -198,8 +198,8 @@
 
         var Module = {};
 
-        let executionApiBase = undefined;
         let beaconApiBase = undefined;
+        let executionApiBase = undefined;
 
         const zeroHash = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -506,6 +506,8 @@
                             const transactionMaxPriorityFeePerGas = Module._ETHTransactionGetMaxPriorityFeePerGas(transaction);
                             const transactionMaxFeePerGas = Module._ETHTransactionGetMaxFeePerGas(transaction);
                             const transactionGas = Module._ETHTransactionGetGas(transaction);
+                            const transactionIsCreatingContract = Module._ETHTransactionIsCreatingContract(transaction);
+                            const transactionTo = Module._ETHTransactionGetTo(transaction);
                             const transactionBytes = Module._ETHTransactionGetBytes(transaction, numTransactionBytesPtr);
                             const transactionBytesString = toHexString(transactionBytes, Module.HEAPU32[numTransactionBytesPtr >>> 2]);
 
@@ -521,12 +523,6 @@
                                 '<div class="headerMasterInfo">' +
                                 '    <table style="width: 100%">' +
                                 '        <tr>' +
-                                '            <td colspan="4"><span class="fas fa-right-from-bracket"></span> <span style="display: inline-block; transform: scaleX(1.015); transform-origin: left;">' +
-                                '<a href="https://etherscan.io/address/' + toHexString(transactionFrom, 20) + '" target="_blank">' +
-                                toHexString(transactionFrom, 20) + '</a>' +
-                                '</span></td>' +
-                                '        </tr>' +
-                                '        <tr>' +
                                 '            <td><span class="fas fa-hashtag"></span> <span>' +
                                 toDecString(transactionNonce, 8) +
                                 '</span></td>' +
@@ -538,6 +534,20 @@
                                 '</span></td>' +
                                 '            <td style="text-align: right;"><span class="fas fa-gas-pump"></span> <span>' +
                                 toGweiString(transactionMaxFeePerGas, 8) + ' Gwei' +
+                                '</span></td>' +
+                                '        </tr>' +
+                                '        <tr>' +
+                                '            <td colspan="4"><span class="fas fa-right-from-bracket"></span> <span style="display: inline-block; transform: scaleX(1.015); transform-origin: left;">' +
+                                '<a href="https://etherscan.io/address/' + toHexString(transactionFrom, 20) + '" target="_blank">' +
+                                toHexString(transactionFrom, 20) + '</a>' +
+                                '</span></td>' +
+                                '        </tr>' +
+                                '        <tr>' +
+                                '            <td colspan="4"><span class="fas ' +
+                                (transactionIsCreatingContract ? 'fa-star-of-life' : 'fa-right-to-bracket') +
+                                '"></span> <span style="display: inline-block; transform: scaleX(1.015); transform-origin: left;">' +
+                                '<a href="https://etherscan.io/address/' + toHexString(transactionTo, 20) + '" target="_blank">' +
+                                toHexString(transactionTo, 20) + '</a>' +
                                 '</span></td>' +
                                 '        </tr>' +
                                 '    </table>' +
@@ -626,7 +636,7 @@
                         '<div class="headerMasterInfo">' +
                         '    <table style="width: 100%">' +
                         '        <tr>' +
-                        '            <td><span class="fas fa-link"></span> <span>' +
+                        '            <td><span class="fas fa-satellite-dish"></span> <span>' +
                         '<a href="https://beaconcha.in/slot/' + beaconSlot + '" target="_blank">' +
                         beaconSlot + '</a>' +
                         '</span></td>' +
@@ -881,8 +891,8 @@
                 document.getElementById('initButton').disabled = true;
                 clearStore();
 
-                executionApiBase = document.getElementById('executionApiBase').value;
                 beaconApiBase = document.getElementById('beaconApiBase').value;
+                executionApiBase = document.getElementById('executionApiBase').value;
                 const response = await fetch(beaconApiBase +
                     '/eth/v1/beacon/light_client/bootstrap/' + trustedBlockRootString, {
                         headers: {
