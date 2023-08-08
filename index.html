@@ -74,6 +74,7 @@
         .kv td {
             padding-top: 10px;
             vertical-align: top;
+            white-space: nowrap;
         }
 
         .description {
@@ -212,7 +213,7 @@
                             <td class="kvValue"><span id="selectedTransactionInputLength"></span> <span class="description">(<span id="selectedTransactionInputDescription"></span>)</span> <span id="selectedTransactionInput"></span></td>
                         </tr>
                         <tr id="selectedTransactionHasAccessList">
-                            <td class="kvKey">Access list</td>
+                            <td class="kvKey">Access list<span id="selectedTransactionAccessListLabel"></span></td>
                             <td class="kvValue"><span id="selectedTransactionAccessListLength"></span> <span class="description">(<span id="selectedTransactionAccessListDescription"></span>)</span> <span id="selectedTransactionAccessList"></span></td>
                         </tr>
                         <tr>
@@ -649,7 +650,7 @@
             bytes = bytes.slice(nonceInfo.dataLen);
             document.getElementById('selectedTransactionNonceLength').innerText = arrayToHexString(nonceLength);
             document.getElementById('selectedTransactionNonce').innerText = arrayToHexString(nonce);
-            document.getElementById('selectedTransactionNonceDescription').innerText = arrayToDecString(nonce.reverse());
+            document.getElementById('selectedTransactionNonceDescription').innerText = arrayToDecString(nonce);
 
             if (eip2718Type === 0x02) {
                 const maxPriorityFeePerGasInfo = decodeRlpLength(bytes);
@@ -732,18 +733,68 @@
                 assert(accessListInfo.type === 'list');
                 const accessListLength = bytes.slice(0, accessListInfo.offset);
                 bytes = bytes.slice(accessListInfo.offset);
-                const accessList = bytes.slice(0, accessListInfo.dataLen);
+                let accessList = bytes.slice(0, accessListInfo.dataLen);
                 bytes = bytes.slice(accessListInfo.dataLen);
                 document.getElementById('selectedTransactionHasAccessList').hidden = false;
                 document.getElementById('selectedTransactionAccessListLength').innerText = arrayToHexString(accessListLength);
-                if (accessListInfo.dataLen > 64) {
-                    document.getElementById('selectedTransactionAccessList').innerHTML =
-                        '<br />' + (arrayToHexString(accessList).match(/.{1,64}/g) ?? []).join('<br />');
-                } else {
-                    document.getElementById('selectedTransactionAccessList').innerText = arrayToHexString(accessList);
-                }
-                document.getElementById('selectedTransactionAccessListDescription').innerText = toHumanReadableByteCountString(accessListInfo.dataLen);
+                document.getElementById('selectedTransactionAccessListDescription').innerHTML = toHumanReadableByteCountString(accessListInfo.dataLen);
+                document.getElementById('selectedTransactionAccessList').innerHTML = '';
+                document.getElementById('selectedTransactionAccessListLabel').innerHTML = '';
 
+                let accessTupleIndex = 0;
+                while (accessList.length) {
+                    const accessTupleInfo = decodeRlpLength(accessList);
+                    assert(accessTupleInfo.type === 'list');
+                    const accessTupleLength = accessList.slice(0, accessTupleInfo.offset);
+                    accessList = accessList.slice(accessTupleInfo.offset);
+                    let accessTuple = accessList.slice(0, accessTupleInfo.dataLen);
+                    accessList = accessList.slice(accessTupleInfo.dataLen);
+                    document.getElementById('selectedTransactionAccessList').innerHTML +=
+                        '<br /><span>' + arrayToHexString(accessTupleLength) + '</span> ' +
+                        '<span class="description">(' + toHumanReadableByteCountString(accessTupleInfo.dataLen) + ')</span>';
+                    document.getElementById('selectedTransactionAccessListLabel').innerHTML +=
+                        '<br /><span>[' + accessTupleIndex + ']</span>';
+
+                    const addressInfo = decodeRlpLength(accessTuple);
+                    assert(addressInfo.type === 'str');
+                    const addressLength = accessTuple.slice(0, addressInfo.offset);
+                    accessTuple = accessTuple.slice(addressInfo.offset);
+                    const address = accessTuple.slice(0, addressInfo.dataLen);
+                    accessTuple = accessTuple.slice(addressInfo.dataLen);
+                    document.getElementById('selectedTransactionAccessList').innerHTML +=
+                        '<br /><span>' + arrayToHexString(addressLength) + '</span> ' +
+                        '<span>' + arrayToHexString(address) + '</span>';
+                    document.getElementById('selectedTransactionAccessListLabel').innerHTML +=
+                        '<br /><span><a href="https://etherscan.io/address/0x' + arrayToHexString(address) + '" target="_blank">Address</a></span>';
+
+                    const storageKeysInfo = decodeRlpLength(accessTuple);
+                    assert(storageKeysInfo.type === 'list');
+                    const storageKeysLength = accessTuple.slice(0, storageKeysInfo.offset);
+                    accessTuple = accessTuple.slice(storageKeysInfo.offset);
+                    let storageKeys = accessTuple.slice(0, storageKeysInfo.dataLen);
+                    accessTuple = accessTuple.slice(storageKeysInfo.dataLen);
+                    document.getElementById('selectedTransactionAccessList').innerHTML +=
+                        '<br /><span>' + arrayToHexString(storageKeysLength) + '</span> ' +
+                        '<span class="description">(' + toHumanReadableByteCountString(storageKeysInfo.dataLen) + ')</span>';
+                    document.getElementById('selectedTransactionAccessListLabel').innerHTML +=
+                        '<br /><span>Storage keys</span>';
+
+                    while (storageKeys.length) {
+                        const storageKeyInfo = decodeRlpLength(storageKeys);
+                        assert(storageKeyInfo.type === 'str');
+                        const storageKeyLength = storageKeys.slice(0, storageKeyInfo.offset);
+                        storageKeys = storageKeys.slice(storageKeyInfo.offset);
+                        const storageKey = storageKeys.slice(0, storageKeyInfo.dataLen);
+                        storageKeys = storageKeys.slice(storageKeyInfo.dataLen);
+                        document.getElementById('selectedTransactionAccessList').innerHTML +=
+                            '<br /><span>' + arrayToHexString(storageKeyLength) + '</span> ' +
+                            '<span>' + arrayToHexString(storageKey) + '</span>';
+                        document.getElementById('selectedTransactionAccessListLabel').innerHTML += '<br />';
+                    }
+
+                    assert(accessTuple.length === 0);
+                    accessTupleIndex++;
+                }
             } else {
                 document.getElementById('selectedTransactionHasAccessList').hidden = true;
             }
@@ -762,17 +813,17 @@
                 assert(vNumber === 0x00 || vNumber === 0x01);
                 yParity = vNumber;
                 document.getElementById('selectedTransactionVDescription').innerText =
-                    yParity.toString(16).padStart(2, '0');
+                    'Y parity: ' + yParity.toString(16).padStart(2, '0');
             } else {
                 yParity = 1 - (vNumber & 0x1);
                 if (vNumber === 27 || vNumber === 28) {
                     document.getElementById('selectedTransactionVDescription').innerText =
-                        yParity.toString(16).padStart(2, '0') +
+                        'Y parity: ' + yParity.toString(16).padStart(2, '0') +
                         ' - No replay protection';
                 } else {
                     const recoveredChainId = Math.floor((vNumber - 35) / 2);
                     document.getElementById('selectedTransactionVDescription').innerText =
-                        yParity.toString(16).padStart(2, '0') +
+                        'Y parity: ' + yParity.toString(16).padStart(2, '0') +
                         ' - Chain ID: ' + recoveredChainId.toString(16).padStart(2, '0');
                 }
             }
