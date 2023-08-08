@@ -162,71 +162,71 @@
         </div>
     </div>
     <div id="mdDetail">
-        <div id="selectedTransactionDetail" hidden="hidden" style="text-align: center;">
+        <div id="selectedTransactionRlpDetail" hidden="hidden" style="text-align: center;">
             <div class="headerMaster" style="width: 800px; margin-top: 57px; margin-bottom: 57px; margin-left: auto; margin-right: auto;">
                 <table class="kv" style="width: 100%;">
                     <thead style="border-bottom: 1px solid #d9d9d9;">
                         <tr>
                             <td class="kvKey" style="padding-bottom: 10px;">Hash</td>
-                            <td class="kvValue"><div id="selectedTransactionHash"></div></td>
+                            <td class="kvValue"><div id="selectedTransactionRlpHash"></div></td>
                         </tr>
                     </thead>
                         <tbody>
-                        <tr id="selectedTransactionHasEip2718Type">
+                        <tr id="selectedTransactionRlpHasEip2718Type">
                             <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-2718" target="_blank">EIP-2718</a> type</td>
-                            <td class="kvValue"><span id="selectedTransactionEip2718Type"></span> <span class="description">(<span id="selectedTransactionEip2718TypeDescription"></span>)</span></td>
+                            <td class="kvValue"><span id="selectedTransactionRlpEip2718Type"></span> <span class="description">(<span id="selectedTransactionRlpEip2718TypeDescription"></span>)</span></td>
                         </tr>
                         <tr>
                             <td class="kvKey">Payload length</td>
-                            <td class="kvValue"><span id="selectedTransactionLength"></span> <span class="description">(<span id="selectedTransactionLengthDescription"></span>)</span></td>
+                            <td class="kvValue"><span id="selectedTransactionRlpLength"></span> <span class="description">(<span id="selectedTransactionRlpLengthDescription"></span>)</span></td>
                         </tr>
-                        <tr id="selectedTransactionHasChainId">
-                            <td class="kvKey">Chain ID</td>
-                            <td class="kvValue"><span id="selectedTransactionChainIdLength"></span> <span id="selectedTransactionChainId"></span></td>
+                        <tr id="selectedTransactionRlpHasChainId">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-155" target="_blank">Chain ID</a></td>
+                            <td class="kvValue"><span id="selectedTransactionRlpChainIdLength"></span> <span id="selectedTransactionRlpChainId"></span></td>
                         </tr>
                         <tr>
                             <td class="kvKey">Nonce</td>
-                            <td class="kvValue"><span id="selectedTransactionNonceLength"></span> <span id="selectedTransactionNonce"></span> <span class="description">(<span id="selectedTransactionNonceDescription"></span>)</span></td>
+                            <td class="kvValue"><span id="selectedTransactionRlpNonceLength"></span> <span id="selectedTransactionRlpNonce"></span> <span class="description">(<span id="selectedTransactionRlpNonceDescription"></span>)</span></td>
                         </tr>
-                        <tr id="selectedTransactionHasMaxPriorityFeePerGas">
-                            <td class="kvKey">Max priority fee per gas</td>
-                            <td class="kvValue"><span id="selectedTransactionMaxPriorityFeePerGasLength"></span> <span id="selectedTransactionMaxPriorityFeePerGas"></span> <span class="description">(<span id="selectedTransactionMaxPriorityFeePerGasDescription"></span>)</span></td>
+                        <tr id="selectedTransactionRlpHasMaxPriorityFeePerGas">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-1559" target="_blank">Max priority fee per gas</a></td>
+                            <td class="kvValue"><span id="selectedTransactionRlpMaxPriorityFeePerGasLength"></span> <span id="selectedTransactionRlpMaxPriorityFeePerGas"></span> <span class="description">(<span id="selectedTransactionRlpMaxPriorityFeePerGasDescription"></span>)</span></td>
                         </tr>
                         <tr>
                             <td class="kvKey">Max fee per gas</td>
-                            <td class="kvValue"><span id="selectedTransactionMaxFeePerGasLength"></span> <span id="selectedTransactionMaxFeePerGas"></span> <span class="description">(<span id="selectedTransactionMaxFeePerGasDescription"></span>)</span></td>
+                            <td class="kvValue"><span id="selectedTransactionRlpMaxFeePerGasLength"></span> <span id="selectedTransactionRlpMaxFeePerGas"></span> <span class="description">(<span id="selectedTransactionRlpMaxFeePerGasDescription"></span>)</span></td>
                         </tr>
                         <tr>
                             <td class="kvKey">Gas</td>
-                            <td class="kvValue"><span id="selectedTransactionGasLength"></span> <span id="selectedTransactionGas"></span> <span class="description">(<span id="selectedTransactionGasDescription"></span>)</span></td>
+                            <td class="kvValue"><span id="selectedTransactionRlpGasLength"></span> <span id="selectedTransactionRlpGas"></span> <span class="description">(<span id="selectedTransactionRlpGasDescription"></span>)</span></td>
                         </tr>
                         <tr>
                             <td class="kvKey">To</td>
-                            <td class="kvValue"><span id="selectedTransactionToLength"></span> <span id="selectedTransactionTo"></span> <span class="description">(<span id="selectedTransactionToDescription"></span>)</span></td>
+                            <td class="kvValue"><span id="selectedTransactionRlpToLength"></span> <span id="selectedTransactionRlpTo"></span> <span class="description">(<span id="selectedTransactionRlpToDescription"></span>)</span></td>
                         </tr>
                         <tr>
                             <td class="kvKey">Value</td>
-                            <td class="kvValue"><span id="selectedTransactionValueLength"></span> <span id="selectedTransactionValue"></span> <span class="description">(<span id="selectedTransactionValueDescription"></span>)</span></td>
+                            <td class="kvValue"><span id="selectedTransactionRlpValueLength"></span> <span id="selectedTransactionRlpValue"></span> <span class="description">(<span id="selectedTransactionRlpValueDescription"></span>)</span></td>
                         </tr>
                         <tr>
                             <td class="kvKey">Input</td>
-                            <td class="kvValue"><span id="selectedTransactionInputLength"></span> <span class="description">(<span id="selectedTransactionInputDescription"></span>)</span> <span id="selectedTransactionInput"></span></td>
+                            <td class="kvValue"><span id="selectedTransactionRlpInputLength"></span> <span class="description">(<span id="selectedTransactionRlpInputDescription"></span>)</span> <span id="selectedTransactionRlpInput"></span></td>
                         </tr>
-                        <tr id="selectedTransactionHasAccessList">
-                            <td class="kvKey">Access list<span id="selectedTransactionAccessListLabel"></span></td>
-                            <td class="kvValue"><span id="selectedTransactionAccessListLength"></span> <span class="description">(<span id="selectedTransactionAccessListDescription"></span>)</span> <span id="selectedTransactionAccessList"></span></td>
+                        <tr id="selectedTransactionRlpHasAccessList">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-2930" target="_blank">Access list</a><span id="selectedTransactionRlpAccessListLabel"></span></td>
+                            <td class="kvValue"><span id="selectedTransactionRlpAccessListLength"></span> <span class="description">(<span id="selectedTransactionRlpAccessListDescription"></span>)</span> <span id="selectedTransactionRlpAccessList"></span></td>
                         </tr>
                         <tr>
                             <td class="kvKey">V</td>
-                            <td class="kvValue"><span id="selectedTransactionVLength"></span> <span id="selectedTransactionV"></span> <span class="description">(<span id="selectedTransactionVDescription"></span>)</span></td>
+                            <td class="kvValue"><span id="selectedTransactionRlpVLength"></span> <span id="selectedTransactionRlpV"></span> <span class="description">(<span id="selectedTransactionRlpVDescription"></span>)</span></td>
                         </tr>
                         <tr>
                             <td class="kvKey">R</td>
-                            <td class="kvValue"><span id="selectedTransactionRLength"></span> <span id="selectedTransactionR"></span></td>
+                            <td class="kvValue"><span id="selectedTransactionRlpRLength"></span> <span id="selectedTransactionRlpR"></span></td>
                         </tr>
                         <tr>
                             <td class="kvKey">S</td>
-                            <td class="kvValue"><span id="selectedTransactionSLength"></span> <span id="selectedTransactionS"></span></td>
+                            <td class="kvValue"><span id="selectedTransactionRlpSLength"></span> <span id="selectedTransactionRlpS"></span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -593,8 +593,8 @@
             assert(false);
         }
 
-        function visualizeTransaction(transactionHash, transactionBytes) {
-            document.getElementById('selectedTransactionHash').innerHTML =
+        function visualizeTransactionRlp(transactionHash, transactionBytes) {
+            document.getElementById('selectedTransactionRlpHash').innerHTML =
                 '<a href="https://etherscan.io/tx/' + transactionHash + '" target="_blank">' +
                 transactionHash + '</a>';
 
@@ -603,19 +603,19 @@
             const eip2718Type = bytes[0];
 
             if (eip2718Type === 0x02) {
-                document.getElementById('selectedTransactionHasEip2718Type').hidden = false;
-                document.getElementById('selectedTransactionEip2718Type').innerText = byteToHexString(eip2718Type);
-                document.getElementById('selectedTransactionEip2718TypeDescription').innerHTML =
+                document.getElementById('selectedTransactionRlpHasEip2718Type').hidden = false;
+                document.getElementById('selectedTransactionRlpEip2718Type').innerText = byteToHexString(eip2718Type);
+                document.getElementById('selectedTransactionRlpEip2718TypeDescription').innerHTML =
                     '<a href="https://eips.ethereum.org/EIPS/eip-1559" target="_blank">EIP-1559</a>';
                 bytes = bytes.slice(1);
             } else if (eip2718Type === 0x01) {
-                document.getElementById('selectedTransactionHasEip2718Type').hidden = false;
-                document.getElementById('selectedTransactionEip2718Type').innerText = byteToHexString(eip2718Type);
-                document.getElementById('selectedTransactionEip2718TypeDescription').innerHTML =
+                document.getElementById('selectedTransactionRlpHasEip2718Type').hidden = false;
+                document.getElementById('selectedTransactionRlpEip2718Type').innerText = byteToHexString(eip2718Type);
+                document.getElementById('selectedTransactionRlpEip2718TypeDescription').innerHTML =
                     '<a href="https://eips.ethereum.org/EIPS/eip-2930" target="_blank">EIP-2930</a>';
                 bytes = bytes.slice(1);
             } else if (eip2718Type >= 0xc0 && eip2718Type <= 0xfe) {
-                document.getElementById('selectedTransactionHasEip2718Type').hidden = true;
+                document.getElementById('selectedTransactionRlpHasEip2718Type').hidden = true;
             } else {
                 assert(false);
             }
@@ -625,8 +625,8 @@
             assert(lengthInfo.offset + lengthInfo.dataLen === bytes.length);
             const length = bytes.slice(0, lengthInfo.offset);
             bytes = bytes.slice(lengthInfo.offset);
-            document.getElementById('selectedTransactionLength').innerText = arrayToHexString(length);
-            document.getElementById('selectedTransactionLengthDescription').innerText = lengthInfo.dataLen + ' bytes';
+            document.getElementById('selectedTransactionRlpLength').innerText = arrayToHexString(length);
+            document.getElementById('selectedTransactionRlpLengthDescription').innerText = lengthInfo.dataLen + ' bytes';
 
             if (eip2718Type === 0x02 || eip2718Type === 0x01) {
                 const chainIdInfo = decodeRlpLength(bytes);
@@ -635,11 +635,11 @@
                 bytes = bytes.slice(chainIdInfo.offset);
                 const chainId = bytes.slice(0, chainIdInfo.dataLen);
                 bytes = bytes.slice(chainIdInfo.dataLen);
-                document.getElementById('selectedTransactionHasChainId').hidden = false;
-                document.getElementById('selectedTransactionChainIdLength').innerText = arrayToHexString(chainIdLength);
-                document.getElementById('selectedTransactionChainId').innerText = arrayToHexString(chainId);
+                document.getElementById('selectedTransactionRlpHasChainId').hidden = false;
+                document.getElementById('selectedTransactionRlpChainIdLength').innerText = arrayToHexString(chainIdLength);
+                document.getElementById('selectedTransactionRlpChainId').innerText = arrayToHexString(chainId);
             } else {
-                document.getElementById('selectedTransactionHasChainId').hidden = true;
+                document.getElementById('selectedTransactionRlpHasChainId').hidden = true;
             }
 
             const nonceInfo = decodeRlpLength(bytes);
@@ -648,9 +648,9 @@
             bytes = bytes.slice(nonceInfo.offset);
             const nonce = bytes.slice(0, nonceInfo.dataLen);
             bytes = bytes.slice(nonceInfo.dataLen);
-            document.getElementById('selectedTransactionNonceLength').innerText = arrayToHexString(nonceLength);
-            document.getElementById('selectedTransactionNonce').innerText = arrayToHexString(nonce);
-            document.getElementById('selectedTransactionNonceDescription').innerText = arrayToDecString(nonce);
+            document.getElementById('selectedTransactionRlpNonceLength').innerText = arrayToHexString(nonceLength);
+            document.getElementById('selectedTransactionRlpNonce').innerText = arrayToHexString(nonce);
+            document.getElementById('selectedTransactionRlpNonceDescription').innerText = arrayToDecString(nonce);
 
             if (eip2718Type === 0x02) {
                 const maxPriorityFeePerGasInfo = decodeRlpLength(bytes);
@@ -659,12 +659,12 @@
                 bytes = bytes.slice(maxPriorityFeePerGasInfo.offset);
                 const maxPriorityFeePerGas = bytes.slice(0, maxPriorityFeePerGasInfo.dataLen);
                 bytes = bytes.slice(maxPriorityFeePerGasInfo.dataLen);
-                document.getElementById('selectedTransactionHasMaxPriorityFeePerGas').hidden = false;
-                document.getElementById('selectedTransactionMaxPriorityFeePerGasLength').innerText = arrayToHexString(maxPriorityFeePerGasLength);
-                document.getElementById('selectedTransactionMaxPriorityFeePerGas').innerText = arrayToHexString(maxPriorityFeePerGas);
-                document.getElementById('selectedTransactionMaxPriorityFeePerGasDescription').innerText = arrayToGweiString(maxPriorityFeePerGas) + ' Gwei';
+                document.getElementById('selectedTransactionRlpHasMaxPriorityFeePerGas').hidden = false;
+                document.getElementById('selectedTransactionRlpMaxPriorityFeePerGasLength').innerText = arrayToHexString(maxPriorityFeePerGasLength);
+                document.getElementById('selectedTransactionRlpMaxPriorityFeePerGas').innerText = arrayToHexString(maxPriorityFeePerGas);
+                document.getElementById('selectedTransactionRlpMaxPriorityFeePerGasDescription').innerText = arrayToGweiString(maxPriorityFeePerGas) + ' Gwei';
             } else {
-                document.getElementById('selectedTransactionHasMaxPriorityFeePerGas').hidden = true;
+                document.getElementById('selectedTransactionRlpHasMaxPriorityFeePerGas').hidden = true;
             }
 
             const maxFeePerGasInfo = decodeRlpLength(bytes);
@@ -673,9 +673,9 @@
             bytes = bytes.slice(maxFeePerGasInfo.offset);
             const maxFeePerGas = bytes.slice(0, maxFeePerGasInfo.dataLen);
             bytes = bytes.slice(maxFeePerGasInfo.dataLen);
-            document.getElementById('selectedTransactionMaxFeePerGasLength').innerText = arrayToHexString(maxFeePerGasLength);
-            document.getElementById('selectedTransactionMaxFeePerGas').innerText = arrayToHexString(maxFeePerGas);
-            document.getElementById('selectedTransactionMaxFeePerGasDescription').innerText = arrayToGweiString(maxFeePerGas) + ' Gwei';
+            document.getElementById('selectedTransactionRlpMaxFeePerGasLength').innerText = arrayToHexString(maxFeePerGasLength);
+            document.getElementById('selectedTransactionRlpMaxFeePerGas').innerText = arrayToHexString(maxFeePerGas);
+            document.getElementById('selectedTransactionRlpMaxFeePerGasDescription').innerText = arrayToGweiString(maxFeePerGas) + ' Gwei';
 
             const gasInfo = decodeRlpLength(bytes);
             assert(gasInfo.type === 'str');
@@ -683,9 +683,9 @@
             bytes = bytes.slice(gasInfo.offset);
             const gas = bytes.slice(0, gasInfo.dataLen);
             bytes = bytes.slice(gasInfo.dataLen);
-            document.getElementById('selectedTransactionGasLength').innerText = arrayToHexString(gasLength);
-            document.getElementById('selectedTransactionGas').innerText = arrayToHexString(gas);
-            document.getElementById('selectedTransactionGasDescription').innerText = toHumanReadableNumberString(Number(arrayToDecString(gas)));
+            document.getElementById('selectedTransactionRlpGasLength').innerText = arrayToHexString(gasLength);
+            document.getElementById('selectedTransactionRlpGas').innerText = arrayToHexString(gas);
+            document.getElementById('selectedTransactionRlpGasDescription').innerText = toHumanReadableNumberString(Number(arrayToDecString(gas)));
 
             const toInfo = decodeRlpLength(bytes);
             assert(toInfo.type === 'str');
@@ -693,14 +693,14 @@
             bytes = bytes.slice(toInfo.offset);
             const to = bytes.slice(0, toInfo.dataLen);
             bytes = bytes.slice(toInfo.dataLen);
-            document.getElementById('selectedTransactionToLength').innerText = arrayToHexString(toLength);
-            document.getElementById('selectedTransactionTo').innerText = arrayToHexString(to);
+            document.getElementById('selectedTransactionRlpToLength').innerText = arrayToHexString(toLength);
+            document.getElementById('selectedTransactionRlpTo').innerText = arrayToHexString(to);
             if (to.length > 0) {
-                document.getElementById('selectedTransactionToDescription').innerHTML =
+                document.getElementById('selectedTransactionRlpToDescription').innerHTML =
                     '<a href="https://etherscan.io/address/0x' + arrayToHexString(to) + '" target="_blank">' +
                     'Destination' + '</a>';
             } else {
-                document.getElementById('selectedTransactionToDescription').innerText = 'Create';
+                document.getElementById('selectedTransactionRlpToDescription').innerText = 'Create';
             }
 
             const valueInfo = decodeRlpLength(bytes);
@@ -709,9 +709,9 @@
             bytes = bytes.slice(valueInfo.offset);
             const value = bytes.slice(0, valueInfo.dataLen);
             bytes = bytes.slice(valueInfo.dataLen);
-            document.getElementById('selectedTransactionValueLength').innerText = arrayToHexString(valueLength);
-            document.getElementById('selectedTransactionValue').innerText = arrayToHexString(value);
-            document.getElementById('selectedTransactionValueDescription').innerText = arrayToEthString(value) + ' ETH';
+            document.getElementById('selectedTransactionRlpValueLength').innerText = arrayToHexString(valueLength);
+            document.getElementById('selectedTransactionRlpValue').innerText = arrayToHexString(value);
+            document.getElementById('selectedTransactionRlpValueDescription').innerText = arrayToEthString(value) + ' ETH';
 
             const inputInfo = decodeRlpLength(bytes);
             assert(inputInfo.type === 'str');
@@ -719,14 +719,14 @@
             bytes = bytes.slice(inputInfo.offset);
             const input = bytes.slice(0, inputInfo.dataLen);
             bytes = bytes.slice(inputInfo.dataLen);
-            document.getElementById('selectedTransactionInputLength').innerText = arrayToHexString(inputLength);
+            document.getElementById('selectedTransactionRlpInputLength').innerText = arrayToHexString(inputLength);
             if (inputInfo.dataLen > 0) {
-                document.getElementById('selectedTransactionInput').innerHTML =
+                document.getElementById('selectedTransactionRlpInput').innerHTML =
                     '<br />' + (arrayToHexString(input).match(/.{1,64}/g) ?? []).join('<br />');
             } else {
-                document.getElementById('selectedTransactionInput').innerText = arrayToHexString(input);
+                document.getElementById('selectedTransactionRlpInput').innerText = arrayToHexString(input);
             }
-            document.getElementById('selectedTransactionInputDescription').innerText = toHumanReadableByteCountString(inputInfo.dataLen);
+            document.getElementById('selectedTransactionRlpInputDescription').innerText = toHumanReadableByteCountString(inputInfo.dataLen);
 
             if (eip2718Type === 0x02 || eip2718Type === 0x01) {
                 const accessListInfo = decodeRlpLength(bytes);
@@ -735,11 +735,11 @@
                 bytes = bytes.slice(accessListInfo.offset);
                 let accessList = bytes.slice(0, accessListInfo.dataLen);
                 bytes = bytes.slice(accessListInfo.dataLen);
-                document.getElementById('selectedTransactionHasAccessList').hidden = false;
-                document.getElementById('selectedTransactionAccessListLength').innerText = arrayToHexString(accessListLength);
-                document.getElementById('selectedTransactionAccessListDescription').innerHTML = toHumanReadableByteCountString(accessListInfo.dataLen);
-                document.getElementById('selectedTransactionAccessList').innerHTML = '';
-                document.getElementById('selectedTransactionAccessListLabel').innerHTML = '';
+                document.getElementById('selectedTransactionRlpHasAccessList').hidden = false;
+                document.getElementById('selectedTransactionRlpAccessListLength').innerText = arrayToHexString(accessListLength);
+                document.getElementById('selectedTransactionRlpAccessListDescription').innerHTML = toHumanReadableByteCountString(accessListInfo.dataLen);
+                document.getElementById('selectedTransactionRlpAccessList').innerHTML = '';
+                document.getElementById('selectedTransactionRlpAccessListLabel').innerHTML = '';
 
                 let accessTupleIndex = 0;
                 while (accessList.length) {
@@ -749,10 +749,10 @@
                     accessList = accessList.slice(accessTupleInfo.offset);
                     let accessTuple = accessList.slice(0, accessTupleInfo.dataLen);
                     accessList = accessList.slice(accessTupleInfo.dataLen);
-                    document.getElementById('selectedTransactionAccessList').innerHTML +=
+                    document.getElementById('selectedTransactionRlpAccessList').innerHTML +=
                         '<br /><span>' + arrayToHexString(accessTupleLength) + '</span> ' +
                         '<span class="description">(' + toHumanReadableByteCountString(accessTupleInfo.dataLen) + ')</span>';
-                    document.getElementById('selectedTransactionAccessListLabel').innerHTML +=
+                    document.getElementById('selectedTransactionRlpAccessListLabel').innerHTML +=
                         '<br /><span>[' + accessTupleIndex + ']</span>';
 
                     const addressInfo = decodeRlpLength(accessTuple);
@@ -761,10 +761,10 @@
                     accessTuple = accessTuple.slice(addressInfo.offset);
                     const address = accessTuple.slice(0, addressInfo.dataLen);
                     accessTuple = accessTuple.slice(addressInfo.dataLen);
-                    document.getElementById('selectedTransactionAccessList').innerHTML +=
+                    document.getElementById('selectedTransactionRlpAccessList').innerHTML +=
                         '<br /><span>' + arrayToHexString(addressLength) + '</span> ' +
                         '<span>' + arrayToHexString(address) + '</span>';
-                    document.getElementById('selectedTransactionAccessListLabel').innerHTML +=
+                    document.getElementById('selectedTransactionRlpAccessListLabel').innerHTML +=
                         '<br /><span><a href="https://etherscan.io/address/0x' + arrayToHexString(address) + '" target="_blank">Address</a></span>';
 
                     const storageKeysInfo = decodeRlpLength(accessTuple);
@@ -773,10 +773,10 @@
                     accessTuple = accessTuple.slice(storageKeysInfo.offset);
                     let storageKeys = accessTuple.slice(0, storageKeysInfo.dataLen);
                     accessTuple = accessTuple.slice(storageKeysInfo.dataLen);
-                    document.getElementById('selectedTransactionAccessList').innerHTML +=
+                    document.getElementById('selectedTransactionRlpAccessList').innerHTML +=
                         '<br /><span>' + arrayToHexString(storageKeysLength) + '</span> ' +
                         '<span class="description">(' + toHumanReadableByteCountString(storageKeysInfo.dataLen) + ')</span>';
-                    document.getElementById('selectedTransactionAccessListLabel').innerHTML +=
+                    document.getElementById('selectedTransactionRlpAccessListLabel').innerHTML +=
                         '<br /><span>Storage keys</span>';
 
                     while (storageKeys.length) {
@@ -786,17 +786,17 @@
                         storageKeys = storageKeys.slice(storageKeyInfo.offset);
                         const storageKey = storageKeys.slice(0, storageKeyInfo.dataLen);
                         storageKeys = storageKeys.slice(storageKeyInfo.dataLen);
-                        document.getElementById('selectedTransactionAccessList').innerHTML +=
+                        document.getElementById('selectedTransactionRlpAccessList').innerHTML +=
                             '<br /><span>' + arrayToHexString(storageKeyLength) + '</span> ' +
                             '<span>' + arrayToHexString(storageKey) + '</span>';
-                        document.getElementById('selectedTransactionAccessListLabel').innerHTML += '<br />';
+                        document.getElementById('selectedTransactionRlpAccessListLabel').innerHTML += '<br />';
                     }
 
                     assert(accessTuple.length === 0);
                     accessTupleIndex++;
                 }
             } else {
-                document.getElementById('selectedTransactionHasAccessList').hidden = true;
+                document.getElementById('selectedTransactionRlpHasAccessList').hidden = true;
             }
 
             const vInfo = decodeRlpLength(bytes);
@@ -805,24 +805,24 @@
             bytes = bytes.slice(vInfo.offset);
             const v = bytes.slice(0, vInfo.dataLen);
             bytes = bytes.slice(vInfo.dataLen);
-            document.getElementById('selectedTransactionVLength').innerText = arrayToHexString(vLength);
-            document.getElementById('selectedTransactionV').innerText = arrayToHexString(v);
+            document.getElementById('selectedTransactionRlpVLength').innerText = arrayToHexString(vLength);
+            document.getElementById('selectedTransactionRlpV').innerText = arrayToHexString(v);
             const vNumber = Number(arrayToDecString(v));
             let yParity;
             if (eip2718Type === 0x02 || eip2718Type === 0x01) {
                 assert(vNumber === 0x00 || vNumber === 0x01);
                 yParity = vNumber;
-                document.getElementById('selectedTransactionVDescription').innerText =
+                document.getElementById('selectedTransactionRlpVDescription').innerText =
                     'Y parity: ' + yParity.toString(16).padStart(2, '0');
             } else {
                 yParity = 1 - (vNumber & 0x1);
                 if (vNumber === 27 || vNumber === 28) {
-                    document.getElementById('selectedTransactionVDescription').innerText =
+                    document.getElementById('selectedTransactionRlpVDescription').innerText =
                         'Y parity: ' + yParity.toString(16).padStart(2, '0') +
                         ' - No replay protection';
                 } else {
                     const recoveredChainId = Math.floor((vNumber - 35) / 2);
-                    document.getElementById('selectedTransactionVDescription').innerText =
+                    document.getElementById('selectedTransactionRlpVDescription').innerText =
                         'Y parity: ' + yParity.toString(16).padStart(2, '0') +
                         ' - Chain ID: ' + recoveredChainId.toString(16).padStart(2, '0');
                 }
@@ -834,8 +834,8 @@
             bytes = bytes.slice(rInfo.offset);
             const r = bytes.slice(0, rInfo.dataLen);
             bytes = bytes.slice(rInfo.dataLen);
-            document.getElementById('selectedTransactionRLength').innerText = arrayToHexString(rLength);
-            document.getElementById('selectedTransactionR').innerText = arrayToHexString(r);
+            document.getElementById('selectedTransactionRlpRLength').innerText = arrayToHexString(rLength);
+            document.getElementById('selectedTransactionRlpR').innerText = arrayToHexString(r);
 
             const sInfo = decodeRlpLength(bytes);
             assert(sInfo.type === 'str');
@@ -843,11 +843,10 @@
             bytes = bytes.slice(sInfo.offset);
             const s = bytes.slice(0, sInfo.dataLen);
             bytes = bytes.slice(sInfo.dataLen);
-            document.getElementById('selectedTransactionSLength').innerText = arrayToHexString(sLength);
-            document.getElementById('selectedTransactionS').innerText = arrayToHexString(s);
+            document.getElementById('selectedTransactionRlpSLength').innerText = arrayToHexString(sLength);
+            document.getElementById('selectedTransactionRlpS').innerText = arrayToHexString(s);
 
             assert(bytes.length === 0);
-            document.getElementById('selectedTransactionDetail').hidden = false;
         }
 
         function visualizeHeader(prefix, header) {
@@ -958,7 +957,7 @@
                             const numTransactionBytes = Module.HEAPU32[numTransactionBytesPtr >>> 2];
                             const transactionBytesArray = toArray(transactionBytes, numTransactionBytes);
 
-                            const detailsButtonId = `detailsButton_transaction_${transactionHashString}`;
+                            const rlpButtonId = `rlpButton_transaction_${transactionHashString}_rlp`;
                             const transactionDiv = document.createElement('div');
                             transactionDiv.id = `txMaster_${transactionHashString}`;
                             transactionDiv.className = 'headerMaster';
@@ -1007,16 +1006,17 @@
                                 '        </tr>' +
                                 '        <tr>' +
                                 '            <td colspan="4"><input type="button" id="' +
-                                detailsButtonId +
-                                '" value="Details" /></td>' +
+                                rlpButtonId +
+                                '" value="RLP (' + toHumanReadableByteCountString(transactionBytesArray.length) + ')" /></td>' +
                                 '        </tr>' +
                                 '    </table>' +
                                 '</div>';
 
                             document.getElementById(prefix + 'TransactionList').appendChild(transactionDiv);
 
-                            document.getElementById(detailsButtonId).onclick = function () {
-                                visualizeTransaction(transactionHashString, transactionBytesArray);
+                            document.getElementById(rlpButtonId).onclick = function () {
+                                visualizeTransactionRlp(transactionHashString, transactionBytesArray);
+                                document.getElementById('selectedTransactionRlpDetail').hidden = false;
                             };
                         }
                         Module._free(numTransactionBytesPtr);
@@ -1087,7 +1087,7 @@
                     const executionTimestamp = Module._ETHExecutionPayloadHeaderGetTimestamp(execution);
                     const executionBaseFeePerGas = Module._ETHExecutionPayloadHeaderGetBaseFeePerGas(execution);
 
-                    const detailsButtonId = `detailsButton_header_${beaconRoot}`;
+                    const transactionsButtonId = `transactionsButton_header_${beaconRoot}`;
                     let headerDiv = document.createElement('div');
                     headerDiv.id = `headerMaster_${beaconRoot}`;
                     headerDiv.dataset.beaconRoot = beaconRoot;
@@ -1137,8 +1137,8 @@
                         '        </tr>' +
                         '        <tr>' +
                         '            <td colspan="4"><input type="button" id="' +
-                        detailsButtonId +
-                        '" value="Details" /></td>' +
+                        transactionsButtonId +
+                        '" value="Transactions" /></td>' +
                         '        </tr>' +
                         '    </table>' +
                         '</div>';
@@ -1146,7 +1146,7 @@
                     headerList.insertBefore(headerDiv, oldHeaderDiv);
                     i++;
 
-                    document.getElementById(detailsButtonId).onclick = function () {
+                    document.getElementById(transactionsButtonId).onclick = function () {
                         const header = headers.get(beaconRoot);
                         if (header) {
                             selectedHeader = beaconRoot;
