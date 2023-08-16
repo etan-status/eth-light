@@ -93,6 +93,286 @@
             text-align: left;
         }
 
+        .tree {
+            font-family: 'm_1mmedium', monospace;
+            text-align: right;
+        }
+
+        .tree td {
+            position: relative;
+        }
+
+        .unused {
+            font-family: 'm_1mlight', monospace;
+            color: #797979;
+        }
+
+        .tree .node-right {
+            padding-right: 30px;
+        }
+
+        .tree .node-left {
+            padding-left: 30px;
+        }
+
+        .tree .node-right::after {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border: 1px solid #000;
+            background-color: #fff;
+            z-index: 1;
+            border-radius: 50%;
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .tree .node-bottom {
+            text-align: center;
+        }
+
+        .tree .node-bottom::after {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border: 1px solid #000;
+            background-color: #fff;
+            z-index: 1;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .tree .node-left {
+            text-align: left;
+        }
+
+        .tree .node-left::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border: 1px solid #000;
+            background-color: #fff;
+            z-index: 1;
+            border-radius: 50%;
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .tree .lines {
+            background-color: #000;
+            position: absolute;
+        }
+
+        .tree .node-right .lines {
+            left: -15px;
+            height: 1px;
+            transform-origin: left;
+        }
+
+        .tree .node-right .lines:nth-child(1) {
+            top: 25%;
+        }
+
+        .tree .node-right .lines:nth-child(2) {
+            top: 75%;
+        }
+
+        .tree .node-right[rowspan="2"] .lines {
+            width: 100%;
+        }
+
+        .tree .node-right[rowspan="2"] .lines:nth-child(1) {
+            transform: rotate(17deg) translateY(-50%);
+        }
+
+        .tree .node-right[rowspan="2"] .lines:nth-child(2) {
+            transform: rotate(-17deg) translateY(-50%);
+        }
+
+        .tree .node-right[rowspan="4"] .lines {
+            width: 110%;
+        }
+
+        .tree .node-right[rowspan="4"] .lines:nth-child(1) {
+            transform: rotate(35deg) translateY(-50%);
+        }
+
+        .tree .node-right[rowspan="4"] .lines:nth-child(2) {
+            transform: rotate(-35deg) translateY(-50%);
+        }
+
+        .tree .node-right[rowspan="8"] .lines {
+            width: 170%;
+        }
+
+        .tree .node-right[rowspan="8"] .lines:nth-child(1) {
+            transform: rotate(54deg) translateY(-50%);
+        }
+
+        .tree .node-right[rowspan="8"] .lines:nth-child(2) {
+            transform: rotate(-54deg) translateY(-50%);
+        }
+
+        .tree .node-right[rowspan="16"] .lines {
+            width: 290%;
+        }
+
+        .tree .node-right[rowspan="16"] .lines:nth-child(1) {
+            transform: rotate(71deg) translateY(-50%);
+        }
+
+        .tree .node-right[rowspan="16"] .lines:nth-child(2) {
+            transform: rotate(-71deg) translateY(-50%);
+        }
+
+        .tree .node-right[rowspan="17"] .lines {
+            width: 220%;
+        }
+
+        .tree .node-right[rowspan="17"] .lines:nth-child(1) {
+            top: 0%;
+            transform: rotate(63deg) translateY(-50%);
+        }
+
+        .tree .node-right[rowspan="17"] .lines:nth-child(2) {
+            width: 210%;
+            top: 97%;
+            transform: rotate(-62deg) translateY(-50%);
+        }
+
+        .tree .node-right[rowspan="32"] .lines {
+            width: 540%;
+        }
+
+        .tree .node-right[rowspan="32"] .lines:nth-child(1) {
+            transform: rotate(80deg) translateY(-50%);
+        }
+
+        .tree .node-right[rowspan="32"] .lines:nth-child(2) {
+            transform: rotate(-80deg) translateY(-50%);
+        }
+
+        .tree .node-bottom .lines {
+            bottom: -15px;
+            height: 1px;
+            width: 85px;
+            transform-origin: top;
+        }
+
+        .tree .node-bottom .lines:nth-child(1) {
+            left: 10%;
+            bottom: 23%;
+        }
+
+        .tree .node-bottom .lines:nth-child(2) {
+            left: 43%;
+            bottom: -12%;
+        }
+
+        .tree .node-bottom[rowspan="4"] .lines:nth-child(1) {
+            transform: rotate(-36deg) translateX(-50%);
+        }
+
+        .tree .node-bottom[rowspan="4"] .lines:nth-child(2) {
+            transform: rotate(36deg) translateY(-50%);
+        }
+
+        .tree .node-left .lines {
+            right: -15px;
+            height: 1px;
+            transform-origin: right;
+        }
+
+        .tree .node-left .lines:nth-child(1) {
+            top: 25%;
+        }
+
+        .tree .node-left .lines:nth-child(2) {
+            top: 75%;
+        }
+
+        .tree .node-left[rowspan="2"] .lines {
+            width: 100%;
+        }
+
+        .tree .node-left[rowspan="2"] .lines:nth-child(1) {
+            transform: rotate(-17deg) translateY(-50%);
+        }
+
+        .tree .node-left[rowspan="2"] .lines:nth-child(2) {
+            transform: rotate(17deg) translateY(-50%);
+        }
+
+        .tree .node-left[rowspan="4"] .lines {
+            width: 110%;
+        }
+
+        .tree .node-left[rowspan="4"] .lines:nth-child(1) {
+            transform: rotate(-35deg) translateY(-50%);
+        }
+
+        .tree .node-left[rowspan="4"] .lines:nth-child(2) {
+            transform: rotate(35deg) translateY(-50%);
+        }
+
+        .tree .node-left[rowspan="8"] .lines {
+            width: 170%;
+        }
+
+        .tree .node-left[rowspan="8"] .lines:nth-child(1) {
+            transform: rotate(-54deg) translateY(-50%);
+        }
+
+        .tree .node-left[rowspan="8"] .lines:nth-child(2) {
+            transform: rotate(54deg) translateY(-50%);
+        }
+
+        .tree .node-left[rowspan="16"] .lines {
+            width: 290%;
+        }
+
+        .tree .node-left[rowspan="16"] .lines:nth-child(1) {
+            transform: rotate(-71deg) translateY(-50%);
+        }
+
+        .tree .node-left[rowspan="16"] .lines:nth-child(2) {
+            transform: rotate(71deg) translateY(-50%);
+        }
+
+        .tree .node-left[rowspan="17"] .lines {
+            width: 180%;
+        }
+
+        .tree .node-left[rowspan="17"] .lines:nth-child(1) {
+            top: 0%;
+            width: 190%;
+            transform: rotate(-59deg) translateY(-50%);
+        }
+
+        .tree .node-left[rowspan="17"] .lines:nth-child(2) {
+            top: 97%;
+            transform: rotate(57deg) translateY(-50%);
+        }
+
+        .tree .node-left[rowspan="32"] .lines {
+            width: 540%;
+        }
+
+        .tree .node-left[rowspan="32"] .lines:nth-child(1) {
+            transform: rotate(-80deg) translateY(-50%);
+        }
+
+        .tree .node-left[rowspan="32"] .lines:nth-child(2) {
+            transform: rotate(80deg) translateY(-50%);
+        }
+
         .fas {
             width: 12px;
             text-align: center;
@@ -237,7 +517,7 @@
                 <table class="kv" style="width: 100%;">
                     <thead style="border-bottom: 1px solid #d9d9d9;">
                         <tr>
-                            <td class="kvKey" style="padding-bottom: 10px;">Root</td>
+                            <td class="kvKey" style="padding-bottom: 10px;"><a href="https://eips.ethereum.org/EIPS/eip-6404" target="_blank">EIP-6404</a> root</td>
                             <td class="kvValue"><div id="selectedTransactionEip6404Root"></div></td>
                         </tr>
                     </thead>
@@ -315,6 +595,179 @@
                             <td class="kvValue"><span id="selectedTransactionEip6404SignatureEip2718Type"></span> <span class="description">(<span id="selectedTransactionEip6404SignatureEip2718TypeDescription"></span>)</span></td>
                         </tr>
                     </tbody>
+                </table>
+            </div>
+            <div style="width: 100%;">
+                <table class="tree" style="margin: 0 auto;">
+                    <tr>
+                        <td class="node-right">nonce</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="16"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="32"><div class="lines"></div><div class="lines"></div></td>
+                        <td rowspan="16"></td>
+                        <td rowspan="19"></td>
+                        <td rowspan="16"></td>
+                        <td class="node-left" rowspan="32"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left" rowspan="16"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left" rowspan="2">from</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right">max_fee_per_gas</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right">gas</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left" rowspan="2">ecdsa_signature</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right">to</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right">value</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left" rowspan="2">no_replay_protection</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right">input</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right">access_list</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left" rowspan="2">type</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right">max_priority_fee_per_gas</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right">max_fee_per_blob_gas</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left unused" rowspan="2">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right">blob_versioned_hashes</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left unused" rowspan="2">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left unused" rowspan="2">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left unused" rowspan="2">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="16"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="17"><div class="lines"></div><div class="lines"></div><div>payload</div></td>
+                        <td class="node-left" rowspan="17"><div class="lines"></div><div class="lines"></div><div>signature</div></td>
+                        <td class="node-left" rowspan="16"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left unused" rowspan="2">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left unused" rowspan="2">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-bottom" rowspan="4" style="width: 100px;"><div class="lines"></div><div class="lines"></div>root</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left unused" rowspan="2">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left unused" rowspan="2">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td rowspan="12"></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left unused" rowspan="2">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left unused" rowspan="2">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left unused" rowspan="2">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-left unused" rowspan="2">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right" colspan="6">active_fields</td>
+                        <td class="node-left" colspan="5">active_fields</td>
+                    </tr>
                 </table>
             </div>
         </div>
@@ -1202,7 +1655,7 @@
                 document.getElementById('selectedTransactionEip6404SignatureFrom').innerText = arrayToHexString(signatureFrom);
                 document.getElementById('selectedTransactionEip6404SignatureFromDescription').innerHTML =
                     '<a href="https://etherscan.io/address/0x' + arrayToHexString(signatureFrom) + '" target="_blank">' +
-                    'Destination' + '</a>';
+                    'Origin' + '</a>';
             } else {
                 document.getElementById('selectedTransactionEip6404SignatureHasFrom').hidden = true;
             }
