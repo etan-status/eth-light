@@ -433,7 +433,7 @@
                             <td colspan="4"><span class="fas fa-hand-holding-usd"></span> <span id="selectedExecutionFeeRecipient" style="display: inline-block; transform: scaleX(1.015); transform-origin: left;"></span></td>
                         </tr>
                         <tr>
-                            <td colspan="4"><input type="button" id="backButton" value="Back" /></td>
+                            <td colspan="4"><input type="button" id="backButton" value="Back" /> <div id="selectedTransactionInfo" style="display: inline-block; width: 81.5%; text-align: right;"></div></td>
                         </tr>
                     </table>
                 </div>
@@ -1765,19 +1765,22 @@
 
             function fillExecutionInfo() {
                 if (executionHash == zeroHash) {
+                    document.getElementById(prefix + 'TransactionInfo').innerHTML = '';
                     document.getElementById(prefix + 'TransactionList').innerHTML = '';
                 } else {
+                    document.getElementById(prefix + 'TransactionInfo').innerHTML = 'Loading transactions&hellip;';
                     document.getElementById(prefix + 'TransactionList').innerHTML = '';
 
                     const executionBlockFut = fetchExecutionBlock(header);
                     executionBlockFut.then((executionBlock) => {
                         if (document.getElementById(prefix + 'BeaconRoot').dataset.beaconRoot !== beaconRoot) return;
                         if (!executionBlock) {
+                            document.getElementById(prefix + 'TransactionInfo').innerHTML = '';
                             document.getElementById(prefix + 'TransactionList').innerHTML =
-                                '<div class="headerMaster">' +
+                            '<div class="headerMaster">' +
                                 '   <div class="headerMasterBeaconRoot">Failed to validate transactions</div>' +
                                 '   <div class="headerMasterInfo">' +
-                                '       <table style="width: 100%">' +
+                                    '       <table style="width: 100%">' +
                                 '           <tr>' +
                                 '               <td><input type="button" id="' +
                                 prefix + 'ExecutionReloadButton' +
@@ -1795,6 +1798,7 @@
                         const executionWithdrawalsRoot = Module._ETHExecutionBlockHeaderGetWithdrawalsRoot(executionBlockHeader);
 
                         const numTransactions = Module._ETHTransactionsGetCount(transactions);
+                        document.getElementById(prefix + 'TransactionInfo').innerHTML = '';
                         document.getElementById(prefix + 'TransactionList').innerHTML = '';
                         const numTransactionInputBytesPtr = Module._malloc(4);
                         assert(numTransactionInputBytesPtr);
@@ -1802,6 +1806,8 @@
                         assert(numTransactionBytesPtr);
                         const numTransactionEip6404BytesPtr = Module._malloc(4);
                         assert(numTransactionEip6404BytesPtr);
+                        let totalRlpBytes = 0;
+                        let totalEip6404SnappyBytes = 0;
                         for (let transactionIndex = 0; transactionIndex < numTransactions; transactionIndex++) {
                             const transaction = Module._ETHTransactionsGet(transactions, transactionIndex);
 
@@ -1827,6 +1833,8 @@
                             const transactionEip6404BytesArray = toArray(transactionEip6404Bytes, numTransactionEip6404Bytes);
                             const numTransactionEip6404SnappyBytes = Module._ETHTransactionGetNumEip6404SnappyBytes(transaction);
                             const transactionBytesDiffPercentage = Math.floor((numTransactionEip6404SnappyBytes / transactionBytesArray.length - 1.0) * 100.0);
+                            totalRlpBytes += numTransactionEip6404Bytes;
+                            totalEip6404SnappyBytes += numTransactionEip6404SnappyBytes;
 
                             const rlpButtonId = `rlpButton_transaction_${transactionHashString}`;
                             const eip6404ButtonId = `eip6404Button_transaction_${transactionHashString}`;
@@ -1906,6 +1914,11 @@
                         Module._free(numTransactionEip6404BytesPtr);
                         Module._free(numTransactionBytesPtr);
                         Module._free(numTransactionInputBytesPtr);
+                        const totalTransactionBytesDiffPercentage = Math.floor((totalEip6404SnappyBytes / totalRlpBytes - 1.0) * 100.0);
+                        document.getElementById(prefix + 'TransactionInfo').innerHTML =
+                            'RLP ' + toHumanReadableByteCountString(totalRlpBytes) +
+                            ' | SSZ ' + toHumanReadableByteCountString(totalEip6404SnappyBytes) +
+                            ' (' + (totalTransactionBytesDiffPercentage < 0 ? '' : '+') + totalTransactionBytesDiffPercentage + '%' + ')';
                     });
                 }
             }
