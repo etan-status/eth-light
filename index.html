@@ -402,7 +402,7 @@
                         <td><span class="fas fa-satellite-dish"></span> <input id="beaconApiBase" value="https://beacon-api.eth-light.xyz" /></td>
                     </tr>
                     <tr>
-                        <td><span class="fas fa-cogs"></span> <input id="executionApiBase" value="https://mainnet.infura.io/v3/d0366f5631e045198d9bb487228a6ec7" /></td>
+                        <td><span class="fas fa-cogs"></span> <input id="executionApiBase" value="https://execution-api.eth-light.xyz/v1/mainnet" /></td>
                     </tr>
                     <tr>
                         <td><span class="fas fa-shield-alt"></span> <input id="trustedBlockRoot" value="0x15cf56ebf887ede9cf3fc10a26ec83828628932c100e42c98c84f83da710c863" /></td>
@@ -600,7 +600,7 @@
             <div style="width: 100%;">
                 <table class="tree" style="margin: 0 auto;">
                     <tr>
-                        <td class="node-right">nonce</td>
+                        <td class="node-right" style="width: 200px;"><span id="selectedTransactionEip6404PayloadHasNonceMerkleization"></span></td>
                         <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
@@ -613,39 +613,39 @@
                         <td class="node-left" rowspan="16"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-left" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="2">from</td>
+                        <td class="node-left" style="width: 200px;" rowspan="2"><span id="selectedTransactionEip6404SignatureHasFromMerkleization"></span></td>
                     </tr>
                     <tr>
-                        <td class="node-right">max_fee_per_gas</td>
+                        <td class="node-right"><span id="selectedTransactionEip6404PayloadHasMaxFeePerGasMerkleization"></span></td>
                     </tr>
                     <tr>
-                        <td class="node-right">gas</td>
+                        <td class="node-right"><span id="selectedTransactionEip6404PayloadHasGasMerkleization"></span></td>
                         <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="2">ecdsa_signature</td>
+                        <td class="node-left" rowspan="2"><span id="selectedTransactionEip6404SignatureHasEcdsaSignatureMerkleization"></span></td>
                     </tr>
                     <tr>
-                        <td class="node-right">to</td>
+                        <td class="node-right"><span id="selectedTransactionEip6404PayloadHasToMerkleization"></span></td>
                     </tr>
                     <tr>
-                        <td class="node-right">value</td>
+                        <td class="node-right"><span id="selectedTransactionEip6404PayloadHasValueMerkleization"></span></td>
                         <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="2">no_replay_protection</td>
+                        <td class="node-left" rowspan="2"><span id="selectedTransactionEip6404SignatureHasNoReplayProtectionMerkleization"></span></td>
                     </tr>
                     <tr>
-                        <td class="node-right">input</td>
+                        <td class="node-right"><span id="selectedTransactionEip6404PayloadHasInputMerkleization"></span></td>
                     </tr>
                     <tr>
-                        <td class="node-right">access_list</td>
+                        <td class="node-right"><span id="selectedTransactionEip6404PayloadHasAccessListMerkleization"></span></td>
                         <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="2">type</td>
+                        <td class="node-left" rowspan="2"><span id="selectedTransactionEip6404SignatureHasEip2718TypeMerkleization"></span></td>
                     </tr>
                     <tr>
-                        <td class="node-right">max_priority_fee_per_gas</td>
+                        <td class="node-right"><span id="selectedTransactionEip6404PayloadHasMaxPriorityFeePerGasMerkleization"></span></td>
                     </tr>
                     <tr>
-                        <td class="node-right">max_fee_per_blob_gas</td>
+                        <td class="node-right unused">0</td>
                         <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
@@ -654,7 +654,7 @@
                         <td class="node-left unused" rowspan="2">0</td>
                     </tr>
                     <tr>
-                        <td class="node-right">blob_versioned_hashes</td>
+                        <td class="node-right unused">0</td>
                     </tr>
                     <tr>
                         <td class="node-right unused">0</td>
@@ -1433,10 +1433,12 @@
                 const payloadNonce = payload.slice(0, 8);
                 payload = payload.slice(8);
                 document.getElementById('selectedTransactionEip6404PayloadHasNonce').hidden = false;
+                document.getElementById('selectedTransactionEip6404PayloadHasNonceMerkleization').innerText = 'nonce';
                 document.getElementById('selectedTransactionEip6404PayloadNonce').innerText = arrayToHexString(payloadNonce);
                 document.getElementById('selectedTransactionEip6404PayloadNonceDescription').innerText = arrayToDecString(payloadNonce.reverse());
             } else {
                 document.getElementById('selectedTransactionEip6404PayloadHasNonce').hidden = true;
+                document.getElementById('selectedTransactionEip6404PayloadHasNonceMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (payloadActiveFields[0] & 0x02) {
@@ -1444,10 +1446,12 @@
                 const payloadMaxFeePerGas = payload.slice(0, 32);
                 payload = payload.slice(32);
                 document.getElementById('selectedTransactionEip6404PayloadHasMaxFeePerGas').hidden = false;
+                document.getElementById('selectedTransactionEip6404PayloadHasMaxFeePerGasMerkleization').innerText = 'max_fee_per_gas';
                 document.getElementById('selectedTransactionEip6404PayloadMaxFeePerGas').innerText = arrayToHexString(payloadMaxFeePerGas);
                 document.getElementById('selectedTransactionEip6404PayloadMaxFeePerGasDescription').innerText = arrayToGweiString(payloadMaxFeePerGas.reverse()) + ' Gwei';
             } else {
                 document.getElementById('selectedTransactionEip6404PayloadHasMaxFeePerGas').hidden = true;
+                document.getElementById('selectedTransactionEip6404PayloadHasMaxFeePerGasMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (payloadActiveFields[0] & 0x04) {
@@ -1455,10 +1459,12 @@
                 const payloadGas = payload.slice(0, 8);
                 payload = payload.slice(8);
                 document.getElementById('selectedTransactionEip6404PayloadHasGas').hidden = false;
+                document.getElementById('selectedTransactionEip6404PayloadHasGasMerkleization').innerText = 'gas';
                 document.getElementById('selectedTransactionEip6404PayloadGas').innerText = arrayToHexString(payloadGas);
                 document.getElementById('selectedTransactionEip6404PayloadGasDescription').innerText = toHumanReadableNumberString(Number(arrayToDecString(payloadGas.reverse())));
             } else {
                 document.getElementById('selectedTransactionEip6404PayloadHasGas').hidden = true;
+                document.getElementById('selectedTransactionEip6404PayloadHasGasMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (payloadActiveFields[0] & 0x08) {
@@ -1466,12 +1472,14 @@
                 const payloadTo = payload.slice(0, 20);
                 payload = payload.slice(20);
                 document.getElementById('selectedTransactionEip6404PayloadHasTo').hidden = false;
+                document.getElementById('selectedTransactionEip6404PayloadHasToMerkleization').innerText = 'to';
                 document.getElementById('selectedTransactionEip6404PayloadTo').innerText = arrayToHexString(payloadTo);
                 document.getElementById('selectedTransactionEip6404PayloadToDescription').innerHTML =
                     '<a href="https://etherscan.io/address/0x' + arrayToHexString(payloadTo) + '" target="_blank">' +
                     'Destination' + '</a>';
             } else {
                 document.getElementById('selectedTransactionEip6404PayloadHasTo').hidden = true;
+                document.getElementById('selectedTransactionEip6404PayloadHasToMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (payloadActiveFields[0] & 0x10) {
@@ -1479,10 +1487,12 @@
                 const payloadValue = payload.slice(0, 32);
                 payload = payload.slice(32);
                 document.getElementById('selectedTransactionEip6404PayloadHasValue').hidden = false;
+                document.getElementById('selectedTransactionEip6404PayloadHasValueMerkleization').innerText = 'value';
                 document.getElementById('selectedTransactionEip6404PayloadValue').innerText = arrayToHexString(payloadValue);
                 document.getElementById('selectedTransactionEip6404PayloadValueDescription').innerText = arrayToEthString(payloadValue.reverse()) + ' ETH';
             } else {
                 document.getElementById('selectedTransactionEip6404PayloadHasValue').hidden = true;
+                document.getElementById('selectedTransactionEip6404PayloadHasValueMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (payloadActiveFields[0] & 0x20) {
@@ -1490,11 +1500,13 @@
                 const payloadInputOffset = payload.slice(0, 4);
                 payload = payload.slice(4);
                 document.getElementById('selectedTransactionEip6404PayloadHasInputOffset').hidden = false;
+                document.getElementById('selectedTransactionEip6404PayloadHasInputMerkleization').innerText = 'input';
                 document.getElementById('selectedTransactionEip6404PayloadInputOffset').innerText = arrayToHexString(payloadInputOffset);
                 document.getElementById('selectedTransactionEip6404PayloadInputOffsetDescription').innerText = arrayToDecString(payloadInputOffset.reverse());
                 payloadOffsets.push(Number(arrayToDecString(payloadInputOffset)));
             } else {
                 document.getElementById('selectedTransactionEip6404PayloadHasInputOffset').hidden = true;
+                document.getElementById('selectedTransactionEip6404PayloadHasInputMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (payloadActiveFields[0] & 0x40) {
@@ -1502,11 +1514,13 @@
                 const payloadAccessListOffset = payload.slice(0, 4);
                 payload = payload.slice(4);
                 document.getElementById('selectedTransactionEip6404PayloadHasAccessListOffset').hidden = false;
+                document.getElementById('selectedTransactionEip6404PayloadHasAccessListMerkleization').innerText = 'access_list';
                 document.getElementById('selectedTransactionEip6404PayloadAccessListOffset').innerText = arrayToHexString(payloadAccessListOffset);
                 document.getElementById('selectedTransactionEip6404PayloadAccessListOffsetDescription').innerText = arrayToDecString(payloadAccessListOffset.reverse());
                 payloadOffsets.push(Number(arrayToDecString(payloadAccessListOffset)));
             } else {
                 document.getElementById('selectedTransactionEip6404PayloadHasAccessListOffset').hidden = true;
+                document.getElementById('selectedTransactionEip6404PayloadHasAccessListMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (payloadActiveFields[0] & 0x80) {
@@ -1514,10 +1528,12 @@
                 const payloadMaxPriorityFeePerGas = payload.slice(0, 32);
                 payload = payload.slice(32);
                 document.getElementById('selectedTransactionEip6404PayloadHasMaxPriorityFeePerGas').hidden = false;
+                document.getElementById('selectedTransactionEip6404PayloadHasMaxPriorityFeePerGasMerkleization').innerText = 'max_priority_fee_per_gas';
                 document.getElementById('selectedTransactionEip6404PayloadMaxPriorityFeePerGas').innerText = arrayToHexString(payloadMaxPriorityFeePerGas);
                 document.getElementById('selectedTransactionEip6404PayloadMaxPriorityFeePerGasDescription').innerText = arrayToGweiString(payloadMaxPriorityFeePerGas.reverse()) + ' Gwei';
             } else {
                 document.getElementById('selectedTransactionEip6404PayloadHasMaxPriorityFeePerGas').hidden = true;
+                document.getElementById('selectedTransactionEip6404PayloadHasMaxPriorityFeePerGasMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             assert(payloadActiveFields[1] === 0x00);
@@ -1652,12 +1668,14 @@
                 const signatureFrom = signature.slice(0, 20);
                 signature = signature.slice(20);
                 document.getElementById('selectedTransactionEip6404SignatureHasFrom').hidden = false;
+                document.getElementById('selectedTransactionEip6404SignatureHasFromMerkleization').innerText = 'from';
                 document.getElementById('selectedTransactionEip6404SignatureFrom').innerText = arrayToHexString(signatureFrom);
                 document.getElementById('selectedTransactionEip6404SignatureFromDescription').innerHTML =
                     '<a href="https://etherscan.io/address/0x' + arrayToHexString(signatureFrom) + '" target="_blank">' +
                     'Origin' + '</a>';
             } else {
                 document.getElementById('selectedTransactionEip6404SignatureHasFrom').hidden = true;
+                document.getElementById('selectedTransactionEip6404SignatureHasFromMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (signatureActiveFields[0] & 0x02) {
@@ -1665,10 +1683,12 @@
                 const signatureEcdsaSignature = signature.slice(0, 65);
                 signature = signature.slice(65);
                 document.getElementById('selectedTransactionEip6404SignatureHasEcdsaSignature').hidden = false;
+                document.getElementById('selectedTransactionEip6404SignatureHasEcdsaSignatureMerkleization').innerText = 'ecdsa_signature';
                 document.getElementById('selectedTransactionEip6404SignatureEcdsaSignature').innerHTML =
                     (arrayToHexString(signatureEcdsaSignature).match(/.{1,64}/g) ?? []).join('<br />');
             } else {
                 document.getElementById('selectedTransactionEip6404SignatureHasEcdsaSignature').hidden = true;
+                document.getElementById('selectedTransactionEip6404SignatureHasEcdsaSignatureMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (signatureActiveFields[0] & 0x04) {
@@ -1676,11 +1696,13 @@
                 const signatureNoReplayProtection = signature.slice(0, 1);
                 signature = signature.slice(1);
                 document.getElementById('selectedTransactionEip6404SignatureHasNoReplayProtection').hidden = false;
+                document.getElementById('selectedTransactionEip6404SignatureHasNoReplayProtectionMerkleization').innerText = 'no_replay_protection';
                 document.getElementById('selectedTransactionEip6404SignatureNoReplayProtection').innerText = arrayToHexString(signatureNoReplayProtection);
                 document.getElementById('selectedTransactionEip6404SignatureNoReplayProtectionDescription').innerText =
                     (signatureNoReplayProtection[0] ? 'May be replayed across chains' : 'Chain ID locked');
             } else {
                 document.getElementById('selectedTransactionEip6404SignatureHasNoReplayProtection').hidden = true;
+                document.getElementById('selectedTransactionEip6404SignatureHasNoReplayProtectionMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (signatureActiveFields[0] & 0x08) {
@@ -1688,6 +1710,7 @@
                 const signatureEip2718Type = signature.slice(0, 1);
                 signature = signature.slice(1);
                 document.getElementById('selectedTransactionEip6404SignatureHasEip2718Type').hidden = false;
+                document.getElementById('selectedTransactionEip6404SignatureHasEip2718TypeMerkleization').innerText = 'type';
                 document.getElementById('selectedTransactionEip6404SignatureEip2718Type').innerText = arrayToHexString(signatureEip2718Type);
                 if (signatureEip2718Type[0] === 0x02) {
                     document.getElementById('selectedTransactionEip6404SignatureEip2718TypeDescription').innerHTML =
@@ -1703,6 +1726,7 @@
                 }
             } else {
                 document.getElementById('selectedTransactionEip6404SignatureHasEip2718Type').hidden = true;
+                document.getElementById('selectedTransactionEip6404SignatureHasEip2718TypeMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             assert(signatureActiveFields[0] < 0x10);
