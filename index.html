@@ -508,6 +508,10 @@
                             <td class="kvKey">S</td>
                             <td class="kvValue"><span id="selectedTransactionRlpSLength"></span> <span id="selectedTransactionRlpS"></span></td>
                         </tr>
+                        <tr>
+                            <td class="kvKey">&nbsp;</td>
+                            <td class="kvValue"><input type="button" id="copyRlpButton" value="Copy" /></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -593,6 +597,10 @@
                         <tr id="selectedTransactionEip6404SignatureHasEip2718Type">
                             <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-2718" target="_blank">EIP-2718</a> type</td>
                             <td class="kvValue"><span id="selectedTransactionEip6404SignatureEip2718Type"></span> <span class="description">(<span id="selectedTransactionEip6404SignatureEip2718TypeDescription"></span>)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="kvKey">&nbsp;</td>
+                            <td class="kvValue"><input type="button" id="copyEip6404Button" value="Copy" /></td>
                         </tr>
                     </tbody>
                 </table>
@@ -1140,6 +1148,10 @@
         }
 
         function visualizeTransactionRlp(transactionHash, transactionBytes) {
+            document.getElementById('copyRlpButton').onclick = function() {
+                navigator.clipboard.writeText(arrayToHexString(transactionBytes));
+            };
+
             document.getElementById('selectedTransactionRlpHash').innerHTML =
                 '<a href="https://etherscan.io/tx/' + transactionHash + '" target="_blank">' +
                 transactionHash + '</a>';
@@ -1396,6 +1408,10 @@
         }
 
         function visualizeTransactionEip6404(transactionEip6404Root, transactionEip6404Bytes) {
+            document.getElementById('copyEip6404Button').onclick = function() {
+                navigator.clipboard.writeText(arrayToHexString(transactionEip6404Bytes));
+            };
+
             document.getElementById('selectedTransactionEip6404Root').innerText = transactionEip6404Root;
 
             let bytes = transactionEip6404Bytes;
