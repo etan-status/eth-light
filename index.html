@@ -496,6 +496,14 @@
                             <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-2930" target="_blank">Access list</a><span id="selectedTransactionRlpAccessListLabel"></span></td>
                             <td class="kvValue"><span id="selectedTransactionRlpAccessListLength"></span> <span class="description">(<span id="selectedTransactionRlpAccessListDescription"></span>)</span> <span id="selectedTransactionRlpAccessList"></span></td>
                         </tr>
+                        <tr id="selectedTransactionRlpHasMaxFeePerBlobGas">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">Max fee per blob gas</a></td>
+                            <td class="kvValue"><span id="selectedTransactionRlpMaxFeePerBlobGasLength"></span> <span id="selectedTransactionRlpMaxFeePerBlobGas"></span> <span class="description">(<span id="selectedTransactionRlpMaxFeePerBlobGasDescription"></span>)</span></td>
+                        </tr>
+                        <tr id="selectedTransactionRlpHasBlobVersionedHashes">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">Blob versioned hashes</a></td>
+                            <td class="kvValue"><span id="selectedTransactionRlpBlobVersionedHashesLength"></span> <span class="description">(<span id="selectedTransactionRlpBlobVersionedHashesDescription"></span>)</span> <span id="selectedTransactionRlpBlobVersionedHashes"></span></td>
+                        </tr>
                         <tr>
                             <td class="kvKey">V</td>
                             <td class="kvValue"><span id="selectedTransactionRlpVLength"></span> <span id="selectedTransactionRlpV"></span> <span class="description">(<span id="selectedTransactionRlpVDescription"></span>)</span></td>
@@ -1160,7 +1168,13 @@
             assert(bytes.length > 0);
             const eip2718Type = bytes[0];
 
-            if (eip2718Type === 0x02) {
+            if (eip2718Type === 0x03) {
+                document.getElementById('selectedTransactionRlpHasEip2718Type').hidden = false;
+                document.getElementById('selectedTransactionRlpEip2718Type').innerText = byteToHexString(eip2718Type);
+                document.getElementById('selectedTransactionRlpEip2718TypeDescription').innerHTML =
+                    '<a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">EIP-4844</a>';
+                bytes = bytes.slice(1);
+            } else if (eip2718Type === 0x02) {
                 document.getElementById('selectedTransactionRlpHasEip2718Type').hidden = false;
                 document.getElementById('selectedTransactionRlpEip2718Type').innerText = byteToHexString(eip2718Type);
                 document.getElementById('selectedTransactionRlpEip2718TypeDescription').innerHTML =
@@ -1186,7 +1200,7 @@
             document.getElementById('selectedTransactionRlpLength').innerText = arrayToHexString(length);
             document.getElementById('selectedTransactionRlpLengthDescription').innerText = lengthInfo.dataLen + ' bytes';
 
-            if (eip2718Type === 0x02 || eip2718Type === 0x01) {
+            if (eip2718Type === 0x03 || eip2718Type === 0x02 || eip2718Type === 0x01) {
                 const chainIdInfo = decodeRlpLength(bytes);
                 assert(chainIdInfo.type === 'str');
                 const chainIdLength = bytes.slice(0, chainIdInfo.offset);
@@ -1210,7 +1224,7 @@
             document.getElementById('selectedTransactionRlpNonce').innerText = arrayToHexString(nonce);
             document.getElementById('selectedTransactionRlpNonceDescription').innerText = arrayToDecString(nonce);
 
-            if (eip2718Type === 0x02) {
+            if (eip2718Type === 0x03 || eip2718Type === 0x02) {
                 const maxPriorityFeePerGasInfo = decodeRlpLength(bytes);
                 assert(maxPriorityFeePerGasInfo.type === 'str');
                 const maxPriorityFeePerGasLength = bytes.slice(0, maxPriorityFeePerGasInfo.offset);
@@ -1286,7 +1300,7 @@
             }
             document.getElementById('selectedTransactionRlpInputDescription').innerText = toHumanReadableByteCountString(inputInfo.dataLen);
 
-            if (eip2718Type === 0x02 || eip2718Type === 0x01) {
+            if (eip2718Type === 0x03 || eip2718Type === 0x02 || eip2718Type === 0x01) {
                 const accessListInfo = decodeRlpLength(bytes);
                 assert(accessListInfo.type === 'list');
                 const accessListLength = bytes.slice(0, accessListInfo.offset);
@@ -1357,6 +1371,48 @@
                 document.getElementById('selectedTransactionRlpHasAccessList').hidden = true;
             }
 
+            if (eip2718Type === 0x03) {
+                const maxFeePerBlobGasInfo = decodeRlpLength(bytes);
+                assert(maxFeePerBlobGasInfo.type === 'str');
+                const maxFeePerBlobGasLength = bytes.slice(0, maxFeePerBlobGasInfo.offset);
+                bytes = bytes.slice(maxFeePerBlobGasInfo.offset);
+                const maxFeePerBlobGas = bytes.slice(0, maxFeePerBlobGasInfo.dataLen);
+                bytes = bytes.slice(maxFeePerBlobGasInfo.dataLen);
+                document.getElementById('selectedTransactionRlpHasMaxFeePerBlobGas').hidden = false;
+                document.getElementById('selectedTransactionRlpMaxFeePerBlobGasLength').innerText = arrayToHexString(maxFeePerBlobGasLength);
+                document.getElementById('selectedTransactionRlpMaxFeePerBlobGas').innerText = arrayToHexString(maxFeePerBlobGas);
+                document.getElementById('selectedTransactionRlpMaxFeePerBlobGasDescription').innerText = arrayToGweiString(maxFeePerBlobGas) + ' Gwei';
+            } else {
+                document.getElementById('selectedTransactionRlpHasMaxFeePerBlobGas').hidden = true;
+            }
+
+            if (eip2718Type === 0x03) {
+                const blobVersionedHashesInfo = decodeRlpLength(accessTuple);
+                assert(blobVersionedHashesInfo.type === 'list');
+                const blobVersionedHashesLength = bytes.slice(0, blobVersionedHashesInfo.offset);
+                bytes = bytes.slice(blobVersionedHashesInfo.offset);
+                let blobVersionedHashes = bytes.slice(0, blobVersionedHashesInfo.dataLen);
+                bytes = bytes.slice(blobVersionedHashesInfo.dataLen);
+                document.getElementById('selectedTransactionRlpHasBlobVersionedHashes').hidden = false;
+                document.getElementById('selectedTransactionRlpBlobVersionedHashesLength').innerText = arrayToHexString(blobVersionedHashesLength);
+                document.getElementById('selectedTransactionRlpBlobVersionedHashes').innerHTML = '';
+                document.getElementById('selectedTransactionRlpBlobVersionedHashesDescription').innerText = toHumanReadableByteCountString(blobVersionedHashesInfo.dataLen);
+
+                while (blobVersionedHashes.length) {
+                    const blobVersionedHashInfo = decodeRlpLength(blobVersionedHashes);
+                    assert(blobVersionedHashInfo.type === 'str');
+                    const blobVersionedHashLength = blobVersionedHashes.slice(0, blobVersionedHashInfo.offset);
+                    blobVersionedHashes = blobVersionedHashes.slice(blobVersionedHashInfo.offset);
+                    const blobVersionedHash = blobVersionedHashes.slice(0, blobVersionedHashInfo.dataLen);
+                    blobVersionedHashes = blobVersionedHashes.slice(blobVersionedHashInfo.dataLen);
+                    document.getElementById('selectedTransactionRlpBlobVersionedHashes').innerHTML +=
+                        '<br /><span>' + arrayToHexString(blobVersionedHashLength) + '</span> ' +
+                        '<span>' + arrayToHexString(blobVersionedHash) + '</span>';
+                }
+            } else {
+                document.getElementById('selectedTransactionRlpHasBlobVersionedHashes').hidden = true;
+            }
+
             const vInfo = decodeRlpLength(bytes);
             assert(vInfo.type === 'str');
             const vLength = bytes.slice(0, vInfo.offset);
@@ -1367,7 +1423,7 @@
             document.getElementById('selectedTransactionRlpV').innerText = arrayToHexString(v);
             const vNumber = Number(arrayToDecString(v));
             let yParity;
-            if (eip2718Type === 0x02 || eip2718Type === 0x01) {
+            if (eip2718Type === 0x03 || eip2718Type === 0x02 || eip2718Type === 0x01) {
                 assert(vNumber === 0x00 || vNumber === 0x01);
                 yParity = vNumber;
                 document.getElementById('selectedTransactionRlpVDescription').innerText =
