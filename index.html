@@ -433,10 +433,10 @@
                             <td colspan="4"><span class="fas fa-hand-holding-usd"></span> <span id="selectedExecutionFeeRecipient" style="display: inline-block; transform: scaleX(1.015); transform-origin: left;"></span></td>
                         </tr>
                         <tr>
-                            <td colspan="4">Transactions: <span id="selectedTransactionInfo" style="float: right;"></span></td>
+                            <td colspan="4">Transactions <span id="selectedTransactionInfo" style="float: right;"></span></td>
                         </tr>
                         <tr>
-                            <td colspan="4">Receipts: <span id="selectedReceiptInfo" style="float: right;"></span></td>
+                            <td colspan="4">Receipts <span id="selectedReceiptInfo" style="float: right;"></span></td>
                         </tr>
                         <tr>
                             <td colspan="4"><input type="button" id="backButton" value="Back" /> <span style="float: right;">(SSZ with Snappy)</span></td>
@@ -536,7 +536,7 @@
                     <thead style="border-bottom: 1px solid #d9d9d9;">
                         <tr>
                             <td class="kvKey" style="padding-bottom: 10px;">Transaction hash</td>
-                            <td class="kvValue"><div id="selectedReceiptRlpHash"></div></td>
+                            <td class="kvValue"><div id="selectedReceiptRlpTransactionHash"></div></td>
                         </tr>
                     </thead>
                     <tbody>
@@ -839,6 +839,60 @@
                 </table>
             </div>
         </div>
+        <div id="selectedReceiptEip6466Detail" hidden="hidden" style="text-align: center;">
+            <div class="headerMaster" style="width: 1000px; margin-top: 57px; margin-bottom: 57px; margin-left: auto; margin-right: auto;">
+                <table class="kv" style="width: 100%;">
+                    <thead style="border-bottom: 1px solid #d9d9d9;">
+                        <tr>
+                            <td class="kvKey" style="padding-bottom: 10px;"><a href="https://eips.ethereum.org/EIPS/eip-6404" target="_blank">EIP-6404</a> transaction root</td>
+                            <td class="kvValue"><div id="selectedReceiptEip6466TransactionRoot"></div></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="kvKey">Active fields</td>
+                            <td class="kvValue"><span id="selectedReceiptEip6466ActiveFields"></span> <span class="description">(<span id="selectedReceiptEip6466ActiveFieldsDescription"></span>)</span></td>
+                        </tr>
+                        <tr id="selectedReceiptEip6466HasRoot">
+                            <td class="kvKey">Root</td>
+                            <td class="kvValue"><span id="selectedReceiptEip6466Root"></span></td>
+                        </tr>
+                        <tr id="selectedReceiptEip6466HasGasUsed">
+                            <td class="kvKey">Gas used</td>
+                            <td class="kvValue"><span id="selectedReceiptEip6466GasUsed"></span> <span class="description">(<span id="selectedReceiptEip6466GasUsedDescription"></span>)</span></td>
+                        </tr>
+                        <tr id="selectedReceiptEip6466HasContractAddress">
+                            <td class="kvKey">Contract address</td>
+                            <td class="kvValue"><span id="selectedReceiptEip6466ContractAddress"></span> <span class="description">(<span id="selectedReceiptEip6466ContractAddressDescription"></span>)</span></td>
+                        </tr>
+                        <tr id="selectedReceiptEip6466HasLogsBloom">
+                            <td class="kvKey">Logs Bloom</td>
+                            <td class="kvValue"><span id="selectedReceiptEip6466LogsBloom"></span></td>
+                        </tr>
+                        <tr id="selectedReceiptEip6466HasLogsOffset">
+                            <td class="kvKey">Logs offset</td>
+                            <td class="kvValue"><span id="selectedReceiptEip6466LogsOffset"></span> <span class="description">(data +<span id="selectedReceiptEip6466LogsOffsetDescription"></span>)</span></td>
+                        </tr>
+                        <tr id="selectedReceiptEip6466HasStatus">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-658" target="_blank">Status</a></td>
+                            <td class="kvValue"><span id="selectedReceiptEip6466Status"></span> <span class="description">(<span id="selectedReceiptEip6466StatusDescription"></span>)</span></td>
+                        </tr>
+                        <tr id="selectedReceiptEip6466HasEip2718Type">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-2718" target="_blank">EIP-2718</a> type</td>
+                            <td class="kvValue"><span id="selectedReceiptEip6466Eip2718Type"></span> <span class="description">(<span id="selectedReceiptEip6466Eip2718TypeDescription"></span>)</span></td>
+                        </tr>
+                        <tr id="selectedReceiptEip6466HasLogs">
+                            <td class="kvKey">Logs<span id="selectedReceiptEip6466LogsLabel"></span></td>
+                            <td class="kvValue"><span id="selectedReceiptEip6466LogsStart"></span> <span class="description">(<span id="selectedReceiptEip6466LogsDescription"></span>)</span> <span id="selectedReceiptEip6466Logs"></span></td>
+                        </tr>
+                        <tr>
+                            <td class="kvKey">&nbsp;</td>
+                            <td class="kvValue"><input type="button" id="copyReceiptEip6466Button" value="Copy" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -947,25 +1001,25 @@
 
         function toHumanReadableNumberString(number) {
             if (number >= 1e12) {
-                return (number / 1e12).toFixed(1) + 'T';
+                return (number / 1e12).toFixed(1) + 't';
             }
             if (number >= 1e11) {
-                return (number / 1e9).toFixed(0) + 'T';
+                return (number / 1e9).toFixed(0) + 'b';
             }
             if (number >= 1e9) {
-                return (number / 1e9).toFixed(1) + 'B';
+                return (number / 1e9).toFixed(1) + 'b';
             }
             if (number >= 1e8) {
-                return (number / 1e6).toFixed(0) + 'M';
+                return (number / 1e6).toFixed(0) + 'm';
             }
             if (number >= 1e6) {
-                return (number / 1e6).toFixed(1) + 'M';
+                return (number / 1e6).toFixed(1) + 'm';
             }
             if (number >= 1e5) {
-                return (number / 1e3).toFixed(0) + 'K';
+                return (number / 1e3).toFixed(0) + 'k';
             }
             if (number >= 1e3) {
-                return (number / 1e3).toFixed(1) + 'K';
+                return (number / 1e3).toFixed(1) + 'k';
             }
             return number.toString();
         }
@@ -1174,7 +1228,7 @@
                 const execution = Module._ETHLightClientHeaderGetExecution(header);
                 const executionReceiptsRoot = Module._ETHExecutionPayloadHeaderGetReceiptsRoot(execution);
                 const receiptsJson = Module.stringToNewUTF8(JSON.stringify(receiptsData));
-                const receipts = Module._ETHReceiptsCreateFromJson(executionReceiptsRoot, receiptsJson);
+                const receipts = Module._ETHReceiptsCreateFromJson(executionReceiptsRoot, receiptsJson, transactions);
                 Module._free(receiptsJson);
                 if (!receipts) {
                     Module._ETHTransactionsDestroy(transactions);
@@ -1560,7 +1614,7 @@
                 navigator.clipboard.writeText(arrayToHexString(receiptRlpBytes));
             };
 
-            document.getElementById('selectedReceiptRlpHash').innerHTML =
+            document.getElementById('selectedReceiptRlpTransactionHash').innerHTML =
                 '<a href="https://etherscan.io/tx/' + transactionHash + '" target="_blank">' +
                 transactionHash + '</a>';
 
@@ -1622,7 +1676,7 @@
                 document.getElementById('selectedReceiptRlpHasStatus').hidden = false;
                 document.getElementById('selectedReceiptRlpStatusLength').innerText = arrayToHexString(statusLength);
                 document.getElementById('selectedReceiptRlpStatus').innerText = arrayToHexString(status);
-                document.getElementById('selectedReceiptRlpStatusDescription').innerText = (status ? 'Success' : 'Failure');
+                document.getElementById('selectedReceiptRlpStatusDescription').innerText = ((statusInfo.dataLen && status[0]) ? 'Success' : 'Failure');
             }
 
             const cumulativeGasUsedInfo = decodeRlpLength(bytes);
@@ -2051,7 +2105,10 @@
                 document.getElementById('selectedTransactionEip6404SignatureHasEip2718Type').hidden = false;
                 document.getElementById('selectedTransactionEip6404SignatureHasEip2718TypeMerkleization').innerText = 'type';
                 document.getElementById('selectedTransactionEip6404SignatureEip2718Type').innerText = arrayToHexString(signatureEip2718Type);
-                if (signatureEip2718Type[0] === 0x02) {
+                if (signatureEip2718Type[0] === 0x03) {
+                    document.getElementById('selectedTransactionEip6404SignatureEip2718TypeDescription').innerHTML =
+                        '<a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">EIP-4844</a>';
+                } else if (signatureEip2718Type[0] === 0x02) {
                     document.getElementById('selectedTransactionEip6404SignatureEip2718TypeDescription').innerHTML =
                         '<a href="https://eips.ethereum.org/EIPS/eip-1559" target="_blank">EIP-1559</a>';
                 } else if (signatureEip2718Type[0] === 0x01) {
@@ -2072,6 +2129,274 @@
             assert(signatureActiveFields[1] === 0);
 
             assert(signature.length === 0);
+        }
+
+        function visualizeReceiptEip6466(transactionEip6404Root, receiptEip6466Bytes) {
+            document.getElementById('copyReceiptEip6466Button').onclick = function() {
+                navigator.clipboard.writeText(arrayToHexString(receiptEip6466Bytes));
+            };
+
+            document.getElementById('selectedReceiptEip6466TransactionRoot').innerText = transactionEip6404Root;
+
+            let bytes = receiptEip6466Bytes;
+
+            assert(bytes.length >= 4);
+            const activeFields = bytes.slice(0, 4);
+            bytes = bytes.slice(4);
+            document.getElementById('selectedReceiptEip6466ActiveFields').innerText = arrayToHexString(activeFields);
+            document.getElementById('selectedReceiptEip6466ActiveFieldsDescription').innerText = '0b' + arrayToBinString(activeFields);
+
+            const numBytes = bytes.length;
+
+            const offsets = [];
+
+            if (activeFields[0] & 0x01) {
+                assert(bytes.length >= 32);
+                const root = bytes.slice(0, 32);
+                bytes = bytes.slice(32);
+                document.getElementById('selectedReceiptEip6466HasRoot').hidden = false;
+                document.getElementById('selectedReceiptEip6466Root').innerText = arrayToHexString(root);
+            } else {
+                document.getElementById('selectedReceiptEip6466HasRoot').hidden = true;
+            }
+
+            if (activeFields[0] & 0x02) {
+                assert(bytes.length >= 8);
+                const gasUsed = bytes.slice(0, 8);
+                bytes = bytes.slice(8);
+                document.getElementById('selectedReceiptEip6466HasGasUsed').hidden = false;
+                document.getElementById('selectedReceiptEip6466GasUsed').innerText = arrayToHexString(gasUsed);
+                document.getElementById('selectedReceiptEip6466GasUsedDescription').innerText = toHumanReadableNumberString(Number(arrayToDecString(gasUsed.reverse())));
+            } else {
+                document.getElementById('selectedReceiptEip6466HasGasUsed').hidden = true;
+            }
+
+            if (activeFields[0] & 0x04) {
+                assert(bytes.length >= 32);
+                const contractAddress = bytes.slice(0, 32);
+                bytes = bytes.slice(32);
+                document.getElementById('selectedReceiptEip6466HasContractAddress').hidden = false;
+                document.getElementById('selectedReceiptEip6466ContractAddress').innerText = arrayToHexString(contractAddress);
+                document.getElementById('selectedReceiptEip6466ContractAddressDescription').innerHTML =
+                    '<a href="https://etherscan.io/address/0x' + arrayToHexString(contractAddress) + '" target="_blank">' +
+                    'Contract' + '</a>';
+            } else {
+                document.getElementById('selectedReceiptEip6466HasContractAddress').hidden = true;
+            }
+
+            if (activeFields[0] & 0x08) {
+                assert(bytes.length >= 256);
+                const logsBloom = bytes.slice(0, 256);
+                bytes = bytes.slice(256);
+                document.getElementById('selectedReceiptEip6466HasLogsBloom').hidden = false;
+                document.getElementById('selectedReceiptEip6466LogsBloom').innerHTML =
+                    (arrayToHexString(logsBloom).match(/.{1,64}/g) ?? []).join('<br />');
+            } else {
+                document.getElementById('selectedReceiptEip6466HasLogsBloom').hidden = true;
+            }
+
+            if (activeFields[0] & 0x10) {
+                assert(bytes.length >= 4);
+                const logsOffset = bytes.slice(0, 4);
+                bytes = bytes.slice(4);
+                document.getElementById('selectedReceiptEip6466HasLogsOffset').hidden = false;
+                document.getElementById('selectedReceiptEip6466LogsOffset').innerText = arrayToHexString(logsOffset);
+                document.getElementById('selectedReceiptEip6466LogsOffsetDescription').innerText = arrayToDecString(logsOffset.reverse());
+                offsets.push(Number(arrayToDecString(logsOffset)));
+            } else {
+                document.getElementById('selectedReceiptEip6466HasLogsOffset').hidden = true;
+            }
+
+            if (activeFields[0] & 0x20) {
+                assert(bytes.length >= 1);
+                const status = bytes.slice(0, 1);
+                bytes = bytes.slice(1);
+                document.getElementById('selectedReceiptEip6466HasStatus').hidden = false;
+                document.getElementById('selectedReceiptEip6466Status').innerText = arrayToHexString(status);
+                document.getElementById('selectedReceiptEip6466StatusDescription').innerText = (status[0] ? 'Success' : 'Failure');
+            } else {
+                document.getElementById('selectedReceiptEip6466HasGasUsed').hidden = true;
+            }
+
+            if (activeFields[0] & 0x40) {
+                assert(bytes.length >= 1);
+                const eip2718Type = bytes.slice(0, 1);
+                bytes = bytes.slice(1);
+                document.getElementById('selectedReceiptEip6466HasEip2718Type').hidden = false;
+                document.getElementById('selectedReceiptEip6466Eip2718Type').innerText = arrayToHexString(eip2718Type);
+                if (eip2718Type[0] === 0x03) {
+                    document.getElementById('selectedReceiptEip6466Eip2718TypeDescription').innerHTML =
+                        '<a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">EIP-4844</a>';
+                } else if (eip2718Type[0] === 0x02) {
+                    document.getElementById('selectedReceiptEip6466Eip2718TypeDescription').innerHTML =
+                        '<a href="https://eips.ethereum.org/EIPS/eip-1559" target="_blank">EIP-1559</a>';
+                } else if (eip2718Type[0] === 0x01) {
+                    document.getElementById('selectedReceiptEip6466Eip2718TypeDescription').innerHTML =
+                        '<a href="https://eips.ethereum.org/EIPS/eip-2930" target="_blank">EIP-2930</a>';
+                } else if (eip2718Type[0] === 0x00) {
+                    document.getElementById('selectedReceiptEip6466Eip2718TypeDescription').innerHTML =
+                        'Legacy';
+                } else {
+                    assert(false);
+                }
+            } else {
+                document.getElementById('selectedReceiptEip6466HasEip2718Type').hidden = true;
+            }
+
+            assert(activeFields[0] < 0x80);
+            assert(activeFields[1] === 0x00);
+            assert(activeFields[2] === 0x00);
+            assert(activeFields[3] === 0x00);
+
+            if (activeFields[0] & 0x10) {
+                let numLogsBytes;
+                if (offsets.length > 1) {
+                    numLogsBytes = offsets[1] - offsets[0];
+                } else {
+                    numLogsBytes = numBytes - offsets[0];
+                }
+                offsets.shift();
+                assert(bytes.length >= numLogsBytes);
+                let logs = bytes.slice(0, numLogsBytes);
+                bytes = bytes.slice(numLogsBytes);
+                document.getElementById('selectedReceiptEip6466HasLogs').hidden = false;
+
+                document.getElementById('selectedReceiptEip6466LogsStart').innerHTML = '';
+                document.getElementById('selectedReceiptEip6466LogsDescription').innerHTML = '';
+                document.getElementById('selectedReceiptEip6466Logs').innerHTML = '';
+                document.getElementById('selectedReceiptEip6466LogsLabel').innerHTML = '';
+
+                if (!logs.length) {
+                    document.getElementById('selectedReceipt$ip6466LogsDescription').innerText = 'empty';
+                }
+
+                let numLogs = 0;
+                const logsOffsets = [];
+                if (logs.length) {
+                    assert(logs.length >= 4);
+                    const logOffset = logs.slice(0, 4);
+                    logs = logs.slice(4);
+                    document.getElementById('selectedReceiptEip6466LogsStart').innerText = arrayToHexString(logOffset);
+                    document.getElementById('selectedReceiptEip6466LogsDescription').innerText = 'logs +' + arrayToDecString(logOffset.reverse());
+                    document.getElementById('selectedReceiptEip6466LogsLabel').innerHTML =
+                        ' <span>[0] offset</span>';
+                    logsOffsets.push(Number(arrayToDecString(logOffset)));
+                    numLogs = Number(arrayToDecString(logOffset));
+                    assert(numLogs % 4 === 0);
+                    numLogs /= 4;
+                }
+                for (let logIndex = 1; logIndex < numLogs; logIndex++) {
+                    assert(logs.length >= 4);
+                    const logOffset = logs.slice(0, 4);
+                    logs = logs.slice(4);
+                    document.getElementById('selectedReceiptEip6466Logs').innerHTML +=
+                        '<br /><span>' + arrayToHexString(logOffset) + '</span> ' +
+                        '<span class="description">(logs +' + arrayToDecString(logOffset.reverse()) +')</span>';
+                    document.getElementById('selectedReceiptEip6466LogsLabel').innerHTML +=
+                        '<br /><span>[' + logIndex + '] offset</span>';
+                    logsOffsets.push(Number(arrayToDecString(logOffset)));
+                }
+                for (let logIndex = 0; logIndex < numLogs; logIndex++) {
+                    let numLogBytes;
+                    if (logsOffsets.length > 1) {
+                        numLogBytes = logsOffsets[1] - logsOffsets[0];
+                    } else {
+                        numLogBytes = numLogsBytes - logsOffsets[0];
+                    }
+                    logsOffsets.shift();
+                    assert(logs.length >= numLogBytes);
+                    let log = logs.slice(0, numLogBytes);
+                    logs = logs.slice(numLogBytes);
+
+                    const logOffsets = [];
+
+                    assert(log.length >= 20);
+                    const address = log.slice(0, 20);
+                    log = log.slice(20);
+                    document.getElementById('selectedReceiptEip6466Logs').innerHTML +=
+                        '<br /><span>' + arrayToHexString(address) + '</span>';
+                    document.getElementById('selectedReceiptEip6466LogsLabel').innerHTML +=
+                        '<br /><span>[' + logIndex + '] <a href="https://etherscan.io/address/0x' + arrayToHexString(address) + '" target="_blank">Address</a></span>';
+
+                    assert(log.length >= 4);
+                    const topicsOffset = log.slice(0, 4);
+                    log = log.slice(4);
+                    document.getElementById('selectedReceiptEip6466Logs').innerHTML +=
+                        '<br /><span>' + arrayToHexString(topicsOffset) + '</span> ' +
+                        '<span class="description">(log +' + arrayToDecString(topicsOffset.reverse()) +')</span>';
+                    document.getElementById('selectedReceiptEip6466LogsLabel').innerHTML +=
+                        '<br /><span>[' + logIndex + '] Topics offset</span>';
+                    logOffsets.push(Number(arrayToDecString(topicsOffset)));
+
+                    assert(log.length >= 4);
+                    const dataOffset = log.slice(0, 4);
+                    log = log.slice(4);
+                    document.getElementById('selectedReceiptEip6466Logs').innerHTML +=
+                        '<br /><span>' + arrayToHexString(dataOffset) + '</span> ' +
+                        '<span class="description">(log +' + arrayToDecString(dataOffset.reverse()) +')</span>';
+                    document.getElementById('selectedReceiptEip6466LogsLabel').innerHTML +=
+                        '<br /><span>[' + logIndex + '] Data offset</span>';
+                    logOffsets.push(Number(arrayToDecString(dataOffset)));
+
+                    let numTopicsBytes;
+                    if (logOffsets.length > 1) {
+                        numTopicsBytes = logOffsets[1] - logOffsets[0];
+                    } else {
+                        numTopicsBytes = numLogBytes - logOffsets[0];
+                    }
+                    logOffsets.shift();
+                    assert(log.length >= numTopicsBytes);
+                    let topics = log.slice(0, numTopicsBytes);
+                    log = log.slice(numTopicsBytes);
+
+                    let isFirstTopic = true;
+                    while (topics.length) {
+                        assert(topics.length >= 32);
+                        const topic = topics.slice(0, 32);
+                        topics = topics.slice(32);
+                        document.getElementById('selectedReceiptEip6466Logs').innerHTML +=
+                            '<br /><span>' + arrayToHexString(topic) + '</span>';
+                        if (isFirstTopic) {
+                            document.getElementById('selectedReceiptEip6466LogsLabel').innerHTML +=
+                                '<br /><span>[' + logIndex + '] Topics</span>';
+                            isFirstTopic = false;
+                        } else {
+                            document.getElementById('selectedReceiptEip6466LogsLabel').innerHTML +=
+                                '<br />';
+                        }
+                    }
+                    if (isFirstTopic) {
+                        document.getElementById('selectedReceiptEip6466Logs').innerHTML +=
+                            '<br /><span class="description">(empty)</span>';
+                        document.getElementById('selectedReceiptEip6466LogsLabel').innerHTML +=
+                            '<br /><span>[' + logIndex + '] Topics</span>';
+                    }
+
+                    let numDataBytes;
+                    if (logOffsets.length > 1) {
+                        numDataBytes = logOffsets[1] - logOffsets[0];
+                    } else {
+                        numDataBytes = numLogBytes - logOffsets[0];
+                    }
+                    logOffsets.shift();
+                    assert(log.length >= numDataBytes);
+                    const data = log.slice(0, numDataBytes);
+                    log = log.slice(numDataBytes);
+                    document.getElementById('selectedReceiptEip6466Logs').innerHTML +=
+                        '<br />' + (arrayToHexString(data).match(/.{1,64}/g) ?? []).join('<br />') +
+                        ' <span class="description">(' + toHumanReadableByteCountString(data.length) + ')</span>';
+                    document.getElementById('selectedReceiptEip6466LogsLabel').innerHTML +=
+                        '<br /><span>[' + logIndex + '] Data</span>' +
+                        (arrayToHexString(data).match(/.{1,64}/g) ?? []).fill('<br />').slice(1).join('');
+
+                    assert(log.length === 0);
+                }
+                assert(logs.length === 0);
+            } else {
+                document.getElementById('selectedReceiptEip6466HasLogs').hidden = true;
+            }
+
+            assert(bytes.length === 0);
         }
 
         function visualizeHeader(prefix, header) {
@@ -2172,6 +2497,7 @@
                         let totalTransactionRlpBytes = 0;
                         let totalTransactionEip6404SnappyBytes = 0;
                         let totalReceiptRlpBytes = 0;
+                        let totalReceiptEip6466SnappyBytes = 0;
                         for (let transactionIndex = 0; transactionIndex < numTransactions; transactionIndex++) {
                             const transaction = Module._ETHTransactionsGet(transactions, transactionIndex);
                             const receipt = Module._ETHReceiptsGet(receipts, transactionIndex);
@@ -2204,11 +2530,17 @@
                             const receiptBytes = Module._ETHReceiptGetBytes(receipt, numBytesPtr);
                             const numReceiptBytes = Module.HEAPU32[numBytesPtr >>> 2];
                             const receiptBytesArray = toArray(receiptBytes, numReceiptBytes);
+                            const receiptEip6466Bytes = Module._ETHReceiptGetEip6466Bytes(receipt, numBytesPtr);
+                            const numReceiptEip6466Bytes = Module.HEAPU32[numBytesPtr >>> 2];
+                            const receiptEip6466BytesArray = toArray(receiptEip6466Bytes, numReceiptEip6466Bytes);
+                            const numReceiptEip6466SnappyBytes = Module._ETHReceiptGetNumEip6466SnappyBytes(receipt);
                             totalReceiptRlpBytes += numReceiptBytes;
+                            totalReceiptEip6466SnappyBytes += numReceiptEip6466SnappyBytes;
 
                             const transactionRlpButtonId = `rlpButton_transaction_${transactionHashString}`;
                             const receiptRlpButtonId = `rlpButton_receipt_${transactionHashString}`;
                             const transactionEip6404ButtonId = `eip6404Button_transaction_${transactionHashString}`;
+                            const receiptEip6466ButtonId = `eip6466Button_receipt_${transactionHashString}`;
                             const transactionDiv = document.createElement('div');
                             transactionDiv.id = `txMaster_${transactionHashString}`;
                             transactionDiv.className = 'headerMaster';
@@ -2256,9 +2588,6 @@
                                 '</span></td>' +
                                 '        </tr>' +
                                 '        <tr>' +
-                                '            <td colspan="4">Transaction <span style="float: right;">Receipt</span></td>' +
-                                '        </tr>' +
-                                '        <tr>' +
                                 '            <td colspan="4"><input type="button" id="' +
                                 transactionRlpButtonId +
                                 '" value="RLP (' + toHumanReadableByteCountString(transactionBytesArray.length) + ')" />' +
@@ -2269,8 +2598,13 @@
                                 '        <tr>' +
                                 '            <td colspan="4"><input type="button" id="' +
                                 transactionEip6404ButtonId +
-                                '" value="SSZ (' + toHumanReadableByteCountString(numTransactionEip6404SnappyBytes) +
-                                ')" /></td>' +
+                                '" value="SSZ (' + toHumanReadableByteCountString(numTransactionEip6404SnappyBytes) + ')" />' +
+                                '<span style="float: right;"><input type="button" id="' +
+                                receiptEip6466ButtonId +
+                                '" value="SSZ (' + toHumanReadableByteCountString(numReceiptEip6466SnappyBytes) + ')" /></span></td>' +
+                                '        </tr>' +
+                                '        <tr>' +
+                                '            <td colspan="4">Transaction <span style="float: right;">Receipt</span></td>' +
                                 '        </tr>' +
                                 '    </table>' +
                                 '</div>';
@@ -2281,6 +2615,7 @@
                                 visualizeTransactionRlp(transactionHashString, transactionBytesArray);
                                 document.getElementById('selectedReceiptRlpDetail').hidden = true;
                                 document.getElementById('selectedTransactionEip6404Detail').hidden = true;
+                                document.getElementById('selectedReceiptEip6466Detail').hidden = true;
                                 document.getElementById('selectedTransactionRlpDetail').hidden = false;
                             };
 
@@ -2288,6 +2623,7 @@
                                 visualizeReceiptRlp(transactionHashString, receiptBytesArray, receiptHasStatus);
                                 document.getElementById('selectedTransactionRlpDetail').hidden = true;
                                 document.getElementById('selectedTransactionEip6404Detail').hidden = true;
+                                document.getElementById('selectedReceiptEip6466Detail').hidden = true;
                                 document.getElementById('selectedReceiptRlpDetail').hidden = false;
                             };
 
@@ -2295,17 +2631,31 @@
                                 visualizeTransactionEip6404(transactionEip6404RootString, transactionEip6404BytesArray);
                                 document.getElementById('selectedTransactionRlpDetail').hidden = true;
                                 document.getElementById('selectedReceiptRlpDetail').hidden = true;
+                                document.getElementById('selectedReceiptEip6466Detail').hidden = true;
                                 document.getElementById('selectedTransactionEip6404Detail').hidden = false;
+                            };
+
+                            document.getElementById(receiptEip6466ButtonId).onclick = function () {
+                                visualizeReceiptEip6466(transactionEip6404RootString, receiptEip6466BytesArray);
+                                document.getElementById('selectedTransactionRlpDetail').hidden = true;
+                                document.getElementById('selectedReceiptRlpDetail').hidden = true;
+                                document.getElementById('selectedTransactionEip6404Detail').hidden = true;
+                                document.getElementById('selectedReceiptEip6466Detail').hidden = false;
                             };
                         }
                         Module._free(numBytesPtr);
+
                         const totalTransactionBytesDiffPercentage = Math.floor((totalTransactionEip6404SnappyBytes / totalTransactionRlpBytes - 1.0) * 100.0);
                         document.getElementById(prefix + 'TransactionInfo').innerHTML =
-                            'RLP ' + toHumanReadableByteCountString(totalTransactionRlpBytes) +
-                            ' | SSZ ' + toHumanReadableByteCountString(totalTransactionEip6404SnappyBytes) +
-                            ' (' + (totalTransactionBytesDiffPercentage < 0 ? '' : '+') + totalTransactionBytesDiffPercentage + '%' + ')';
+                        'RLP ' + toHumanReadableByteCountString(totalTransactionRlpBytes) +
+                        ' | SSZ ' + toHumanReadableByteCountString(totalTransactionEip6404SnappyBytes) +
+                        ' (' + (totalTransactionBytesDiffPercentage < 0 ? '' : '+') + totalTransactionBytesDiffPercentage + '%' + ')';
+
+                        const totalReceiptBytesDiffPercentage = Math.floor((totalReceiptEip6466SnappyBytes / totalReceiptRlpBytes - 1.0) * 100.0);
                         document.getElementById(prefix + 'ReceiptInfo').innerHTML =
-                            'RLP ' + toHumanReadableByteCountString(totalReceiptRlpBytes);
+                            'RLP ' + toHumanReadableByteCountString(totalReceiptRlpBytes) +
+                            ' | SSZ ' + toHumanReadableByteCountString(totalReceiptEip6466SnappyBytes) +
+                            ' (' + (totalReceiptBytesDiffPercentage < 0 ? '' : '+') + totalReceiptBytesDiffPercentage + '%' + ')';
                     });
                 }
             }
