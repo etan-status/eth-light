@@ -524,7 +524,53 @@
                         </tr>
                         <tr>
                             <td class="kvKey">&nbsp;</td>
-                            <td class="kvValue"><input type="button" id="copyRlpButton" value="Copy" /></td>
+                            <td class="kvValue"><input type="button" id="copyTransactionRlpButton" value="Copy" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="selectedReceiptRlpDetail" hidden="hidden" style="text-align: center;">
+            <div class="headerMaster" style="width: 1000px; margin-top: 57px; margin-bottom: 57px; margin-left: auto; margin-right: auto;">
+                <table class="kv" style="width: 100%;">
+                    <thead style="border-bottom: 1px solid #d9d9d9;">
+                        <tr>
+                            <td class="kvKey" style="padding-bottom: 10px;">Transaction hash</td>
+                            <td class="kvValue"><div id="selectedReceiptRlpHash"></div></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="selectedReceiptRlpHasEip2718Type">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-2718" target="_blank">EIP-2718</a> type</td>
+                            <td class="kvValue"><span id="selectedReceiptRlpEip2718Type"></span> <span class="description">(<span id="selectedReceiptRlpEip2718TypeDescription"></span>)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="kvKey">Payload length</td>
+                            <td class="kvValue"><span id="selectedReceiptRlpLength"></span> <span class="description">(<span id="selectedReceiptRlpLengthDescription"></span>)</span></td>
+                        </tr>
+                        <tr id="selectedReceiptRlpHasRoot">
+                            <td class="kvKey">Root</td>
+                            <td class="kvValue"><span id="selectedReceiptRlpRootLength"></span> <span id="selectedReceiptRlpRoot"></span></td>
+                        </tr>
+                        <tr id="selectedReceiptRlpHasStatus">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-658" target="_blank">Status</a></td>
+                            <td class="kvValue"><span id="selectedReceiptRlpStatusLength"></span> <span id="selectedReceiptRlpStatus"></span> <span class="description">(<span id="selectedReceiptRlpStatusDescription"></span>)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="kvKey">Cumulative gas used</td>
+                            <td class="kvValue"><span id="selectedReceiptRlpCumulativeGasUsedLength"></span> <span id="selectedReceiptRlpCumulativeGasUsed"></span> <span class="description">(<span id="selectedReceiptRlpCumulativeGasUsedDescription"></span>)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="kvKey">Logs Bloom</td>
+                            <td class="kvValue"><span id="selectedReceiptRlpLogsBloomLength"></span> <span id="selectedReceiptRlpLogsBloom"></span></td>
+                        </tr>
+                        <tr>
+                            <td class="kvKey">Logs<span id="selectedReceiptRlpLogsLabel"></span></td>
+                            <td class="kvValue"><span id="selectedReceiptRlpLogsLength"></span> <span class="description">(<span id="selectedReceiptRlpLogsDescription"></span>)</span> <span id="selectedReceiptRlpLogs"></span></td>
+                        </tr>
+                        <tr>
+                            <td class="kvKey">&nbsp;</td>
+                            <td class="kvValue"><input type="button" id="copyReceiptRlpButton" value="Copy" /></td>
                         </tr>
                     </tbody>
                 </table>
@@ -614,7 +660,7 @@
                         </tr>
                         <tr>
                             <td class="kvKey">&nbsp;</td>
-                            <td class="kvValue"><input type="button" id="copyEip6404Button" value="Copy" /></td>
+                            <td class="kvValue"><input type="button" id="copyTransactionEip6404Button" value="Copy" /></td>
                         </tr>
                     </tbody>
                 </table>
@@ -1202,7 +1248,7 @@
         }
 
         function visualizeTransactionRlp(transactionHash, transactionBytes) {
-            document.getElementById('copyRlpButton').onclick = function() {
+            document.getElementById('copyTransactionRlpButton').onclick = function() {
                 navigator.clipboard.writeText(arrayToHexString(transactionBytes));
             };
 
@@ -1509,8 +1555,183 @@
             assert(bytes.length === 0);
         }
 
+        function visualizeReceiptRlp(transactionHash, receiptRlpBytes, receiptHasStatus) {
+            document.getElementById('copyReceiptRlpButton').onclick = function() {
+                navigator.clipboard.writeText(arrayToHexString(receiptRlpBytes));
+            };
+
+            document.getElementById('selectedReceiptRlpHash').innerHTML =
+                '<a href="https://etherscan.io/tx/' + transactionHash + '" target="_blank">' +
+                transactionHash + '</a>';
+
+            let bytes = receiptRlpBytes;
+            assert(bytes.length > 0);
+            const eip2718Type = bytes[0];
+
+            if (eip2718Type === 0x03) {
+                document.getElementById('selectedReceiptRlpHasEip2718Type').hidden = false;
+                document.getElementById('selectedReceiptRlpEip2718Type').innerText = byteToHexString(eip2718Type);
+                document.getElementById('selectedReceiptRlpEip2718TypeDescription').innerHTML =
+                    '<a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">EIP-4844</a>';
+                bytes = bytes.slice(1);
+            } else if (eip2718Type === 0x02) {
+                document.getElementById('selectedReceiptRlpHasEip2718Type').hidden = false;
+                document.getElementById('selectedReceiptRlpEip2718Type').innerText = byteToHexString(eip2718Type);
+                document.getElementById('selectedReceiptRlpEip2718TypeDescription').innerHTML =
+                    '<a href="https://eips.ethereum.org/EIPS/eip-1559" target="_blank">EIP-1559</a>';
+                bytes = bytes.slice(1);
+            } else if (eip2718Type === 0x01) {
+                document.getElementById('selectedReceiptRlpHasEip2718Type').hidden = false;
+                document.getElementById('selectedReceiptRlpEip2718Type').innerText = byteToHexString(eip2718Type);
+                document.getElementById('selectedReceiptRlpEip2718TypeDescription').innerHTML =
+                    '<a href="https://eips.ethereum.org/EIPS/eip-2930" target="_blank">EIP-2930</a>';
+                bytes = bytes.slice(1);
+            } else if (eip2718Type >= 0xc0 && eip2718Type <= 0xfe) {
+                document.getElementById('selectedReceiptRlpHasEip2718Type').hidden = true;
+            } else {
+                assert(false);
+            }
+
+            const lengthInfo = decodeRlpLength(bytes);
+            assert(lengthInfo.type === 'list');
+            assert(lengthInfo.offset + lengthInfo.dataLen === bytes.length);
+            const length = bytes.slice(0, lengthInfo.offset);
+            bytes = bytes.slice(lengthInfo.offset);
+            document.getElementById('selectedReceiptRlpLength').innerText = arrayToHexString(length);
+            document.getElementById('selectedReceiptRlpLengthDescription').innerText = lengthInfo.dataLen + ' bytes';
+
+            if (!receiptHasStatus) {
+                document.getElementById('selectedReceiptRlpHasStatus').hidden = true;
+                const rootInfo = decodeRlpLength(bytes);
+                assert(rootInfo.type === 'str');
+                const rootLength = bytes.slice(0, rootInfo.offset);
+                bytes = bytes.slice(rootInfo.offset);
+                const root = bytes.slice(0, rootInfo.dataLen);
+                bytes = bytes.slice(rootInfo.dataLen);
+                document.getElementById('selectedReceiptRlpHasRoot').hidden = false;
+                document.getElementById('selectedReceiptRlpRootLength').innerText = arrayToHexString(rootLength);
+                document.getElementById('selectedReceiptRlpRoot').innerText = arrayToHexString(root);
+            } else {
+                document.getElementById('selectedReceiptRlpHasRoot').hidden = true;
+                const statusInfo = decodeRlpLength(bytes);
+                assert(statusInfo.type === 'str');
+                const statusLength = bytes.slice(0, statusInfo.offset);
+                bytes = bytes.slice(statusInfo.offset);
+                const status = bytes.slice(0, statusInfo.dataLen);
+                bytes = bytes.slice(statusInfo.dataLen);
+                document.getElementById('selectedReceiptRlpHasStatus').hidden = false;
+                document.getElementById('selectedReceiptRlpStatusLength').innerText = arrayToHexString(statusLength);
+                document.getElementById('selectedReceiptRlpStatus').innerText = arrayToHexString(status);
+                document.getElementById('selectedReceiptRlpStatusDescription').innerText = (status ? 'Success' : 'Failure');
+            }
+
+            const cumulativeGasUsedInfo = decodeRlpLength(bytes);
+            assert(cumulativeGasUsedInfo.type === 'str');
+            const cumulativeGasUsedLength = bytes.slice(0, cumulativeGasUsedInfo.offset);
+            bytes = bytes.slice(cumulativeGasUsedInfo.offset);
+            const cumulativeGasUsed = bytes.slice(0, cumulativeGasUsedInfo.dataLen);
+            bytes = bytes.slice(cumulativeGasUsedInfo.dataLen);
+            document.getElementById('selectedReceiptRlpCumulativeGasUsedLength').innerText = arrayToHexString(cumulativeGasUsedLength);
+            document.getElementById('selectedReceiptRlpCumulativeGasUsed').innerText = arrayToHexString(cumulativeGasUsed);
+            document.getElementById('selectedReceiptRlpCumulativeGasUsedDescription').innerText = toHumanReadableNumberString(Number(arrayToDecString(cumulativeGasUsed)));
+
+            const logsBloomInfo = decodeRlpLength(bytes);
+            assert(logsBloomInfo.type === 'str');
+            const logsBloomLength = bytes.slice(0, logsBloomInfo.offset);
+            bytes = bytes.slice(logsBloomInfo.offset);
+            const logsBloom = bytes.slice(0, logsBloomInfo.dataLen);
+            bytes = bytes.slice(logsBloomInfo.dataLen);
+            document.getElementById('selectedReceiptRlpLogsBloomLength').innerText = arrayToHexString(logsBloomLength);
+            document.getElementById('selectedReceiptRlpLogsBloom').innerHTML =
+                '<br />' + (arrayToHexString(logsBloom).match(/.{1,64}/g) ?? []).join('<br />');
+
+            const logsInfo = decodeRlpLength(bytes);
+            assert(logsInfo.type === 'list');
+            const logsLength = bytes.slice(0, logsInfo.offset);
+            bytes = bytes.slice(logsInfo.offset);
+            let logs = bytes.slice(0, logsInfo.dataLen);
+            bytes = bytes.slice(logsInfo.dataLen);
+            document.getElementById('selectedReceiptRlpLogsLength').innerText = arrayToHexString(logsLength);
+            document.getElementById('selectedReceiptRlpLogsDescription').innerHTML = toHumanReadableByteCountString(logsInfo.dataLen);
+            document.getElementById('selectedReceiptRlpLogs').innerHTML = '';
+            document.getElementById('selectedReceiptRlpLogsLabel').innerHTML = '';
+
+            let logIndex = 0;
+            while (logs.length) {
+                const logInfo = decodeRlpLength(logs);
+                assert(logInfo.type === 'list');
+                const logLength = logs.slice(0, logInfo.offset);
+                logs = logs.slice(logInfo.offset);
+                let log = logs.slice(0, logInfo.dataLen);
+                logs = logs.slice(logInfo.dataLen);
+                document.getElementById('selectedReceiptRlpLogs').innerHTML +=
+                    '<br /><span>' + arrayToHexString(logLength) + '</span> ' +
+                    '<span class="description">(' + toHumanReadableByteCountString(logInfo.dataLen) + ')</span>';;
+                document.getElementById('selectedReceiptRlpLogsLabel').innerHTML +=
+                    '<br /><span>[' + logIndex + ']</span>';
+
+                const addressInfo = decodeRlpLength(log);
+                assert(addressInfo.type === 'str');
+                const addressLength = log.slice(0, addressInfo.offset);
+                log = log.slice(addressInfo.offset);
+                const address = log.slice(0, addressInfo.dataLen);
+                log = log.slice(addressInfo.dataLen);
+                document.getElementById('selectedReceiptRlpLogs').innerHTML +=
+                    '<br /><span>' + arrayToHexString(addressLength) + '</span> ' +
+                    '<span>' + arrayToHexString(address) + '</span>';
+                document.getElementById('selectedReceiptRlpLogsLabel').innerHTML +=
+                    '<br /><span><a href="https://etherscan.io/address/0x' + arrayToHexString(address) + '" target="_blank">Address</a></span>';
+
+                const topicsInfo = decodeRlpLength(log);
+                assert(topicsInfo.type === 'list');
+                const topicsLength = log.slice(0, topicsInfo.offset);
+                log = log.slice(topicsInfo.offset);
+                let topics = log.slice(0, topicsInfo.dataLen);
+                log = log.slice(topicsInfo.dataLen);
+                document.getElementById('selectedReceiptRlpLogs').innerHTML +=
+                    '<br /><span>' + arrayToHexString(topicsLength) + '</span> ' +
+                    '<span class="description">(' + toHumanReadableByteCountString(topicsInfo.dataLen) + ')</span>';
+                document.getElementById('selectedReceiptRlpLogsLabel').innerHTML +=
+                    '<br /><span>Topics</span>';
+
+                while (topics.length) {
+                    const topicInfo = decodeRlpLength(topics);
+                    assert(topicInfo.type === 'str');
+                    const topicLength = topics.slice(0, topicInfo.offset);
+                    topics = topics.slice(topicInfo.offset);
+                    const topic = topics.slice(0, topicInfo.dataLen);
+                    topics = topics.slice(topicInfo.dataLen);
+                    document.getElementById('selectedReceiptRlpLogs').innerHTML +=
+                        '<br /><span>' + arrayToHexString(topicLength) + '</span> ' +
+                        '<span>' + arrayToHexString(topic) + '</span>';
+                    document.getElementById('selectedReceiptRlpLogsLabel').innerHTML += '<br />';
+                }
+
+                const dataInfo = decodeRlpLength(log);
+                assert(dataInfo.type === 'str');
+                const dataLength = log.slice(0, dataInfo.offset);
+                log = log.slice(dataInfo.offset);
+                const data = log.slice(0, dataInfo.dataLen);
+                log = log.slice(dataInfo.dataLen);
+                document.getElementById('selectedReceiptRlpLogs').innerHTML +=
+                    '<br /><span>' + arrayToHexString(dataLength) + '</span> ' +
+                    '<span class="description">(' + toHumanReadableByteCountString(dataInfo.dataLen) + ')</span>';
+                document.getElementById('selectedReceiptRlpLogsLabel').innerHTML +=
+                    '<br /><span>Data</span>';
+                document.getElementById('selectedReceiptRlpLogs').innerHTML +=
+                    '<br />' + (arrayToHexString(data).match(/.{1,64}/g) ?? []).join('<br />');
+                document.getElementById('selectedReceiptRlpLogsLabel').innerHTML +=
+                    (arrayToHexString(data).match(/.{1,64}/g) ?? []).fill('<br />').join('');
+
+                assert(log.length === 0);
+                logIndex++;
+            }
+
+            assert(bytes.length === 0);
+        }
+
         function visualizeTransactionEip6404(transactionEip6404Root, transactionEip6404Bytes) {
-            document.getElementById('copyEip6404Button').onclick = function() {
+            document.getElementById('copyTransactionEip6404Button').onclick = function() {
                 navigator.clipboard.writeText(arrayToHexString(transactionEip6404Bytes));
             };
 
@@ -1979,6 +2200,7 @@
                             totalTransactionRlpBytes += numTransactionBytes;
                             totalTransactionEip6404SnappyBytes += numTransactionEip6404SnappyBytes;
 
+                            const receiptHasStatus = Module._ETHReceiptHasStatus(receipt);
                             const receiptBytes = Module._ETHReceiptGetBytes(receipt, numBytesPtr);
                             const numReceiptBytes = Module.HEAPU32[numBytesPtr >>> 2];
                             const receiptBytesArray = toArray(receiptBytes, numReceiptBytes);
@@ -2040,7 +2262,7 @@
                                 '            <td colspan="4"><input type="button" id="' +
                                 transactionRlpButtonId +
                                 '" value="RLP (' + toHumanReadableByteCountString(transactionBytesArray.length) + ')" />' +
-                                '<span style="float: right;"><input type="button" disabled="disabled" id="' +
+                                '<span style="float: right;"><input type="button" id="' +
                                 receiptRlpButtonId +
                                 '" value="RLP (' + toHumanReadableByteCountString(receiptBytesArray.length) + ')" /></span></td>' +
                                 '        </tr>' +
@@ -2057,13 +2279,22 @@
 
                             document.getElementById(transactionRlpButtonId).onclick = function () {
                                 visualizeTransactionRlp(transactionHashString, transactionBytesArray);
+                                document.getElementById('selectedReceiptRlpDetail').hidden = true;
                                 document.getElementById('selectedTransactionEip6404Detail').hidden = true;
                                 document.getElementById('selectedTransactionRlpDetail').hidden = false;
+                            };
+
+                            document.getElementById(receiptRlpButtonId).onclick = function () {
+                                visualizeReceiptRlp(transactionHashString, receiptBytesArray, receiptHasStatus);
+                                document.getElementById('selectedTransactionRlpDetail').hidden = true;
+                                document.getElementById('selectedTransactionEip6404Detail').hidden = true;
+                                document.getElementById('selectedReceiptRlpDetail').hidden = false;
                             };
 
                             document.getElementById(transactionEip6404ButtonId).onclick = function () {
                                 visualizeTransactionEip6404(transactionEip6404RootString, transactionEip6404BytesArray);
                                 document.getElementById('selectedTransactionRlpDetail').hidden = true;
+                                document.getElementById('selectedReceiptRlpDetail').hidden = true;
                                 document.getElementById('selectedTransactionEip6404Detail').hidden = false;
                             };
                         }
