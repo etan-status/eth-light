@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <title>Ethereum Light</title>
+    <base href="https://eth-light.xyz/" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous"/>
     <style>
         @font-face {
@@ -390,7 +391,10 @@
             <div class="headerMasterInfo">
                 <table style="width: 100%">
                     <tr>
-                        <td><input type="button" id="settingsButton" value="Settings" /></td>
+                        <td>
+                            <input type="button" id="settingsButton" value="Settings" />
+                            <span style="float: right;"><input type="button" id="specsButton" value="Specs" /></span>
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -448,6 +452,74 @@
         </div>
     </div>
     <div id="mdDetail">
+        <div id="specsDetail" style="text-align: center;">
+            <div class="headerMaster" style="width: 1000px; margin-top: 57px; margin-bottom: 57px; margin-left: auto; margin-right: auto;">
+                <table class="kv" style="width: 100%;">
+                    <thead style="border-bottom: 1px solid #d9d9d9;">
+                        <tr>
+                            <td class="kvKey" style="padding-bottom: 10px;">&nbsp;</td>
+                            <td class="kvValue">All displayed data is validated against the trusted checkpoint beacon block root (settings)</td>
+                        </tr>
+                    </thead>
+                    <tr>
+                        <td class="kvKey">Consensus light client</td>
+                        <td class="kvValue">
+                            <a href="https://www.youtube.com/watch?v=ZHNrAXf3RDE" target="_blank">Overview (video)</a><br />
+                            <a href="https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/light-client/light-client.md" target="_blank">Sync process</a><br />
+                            <a href="https://github.com/status-im/nimbus-eth2/blob/stable/beacon_chain/libnimbus_lc/libnimbus_lc.h" target="_blank">Wasm library</a><br />
+                            <a href="https://github.com/eth-clients/eth2-networks/tree/master/shared/mainnet" target="_blank">Mainnet network config</a><br />
+                            <a href="https://ethereum.github.io/beacon-APIs/#/Beacon/getLightClientBootstrap" target="_blank">/eth/v1/beacon/light_client/bootstrap/{block_root}</a><br />
+                            <a href="https://ethereum.github.io/beacon-APIs/#/Beacon/getLightClientUpdatesByRange" target="_blank">/eth/v1/beacon/light_client/updates</a><br />
+                            <a href="https://ethereum.github.io/beacon-APIs/#/Beacon/getLightClientFinalityUpdate" target="_blank">/eth/v1/beacon/light_client/finality_update</a><br />
+                            <a href="https://ethereum.github.io/beacon-APIs/#/Beacon/getLightClientOptimisticUpdate" target="_blank">/eth/v1/beacon/light_client/optimistic_update</a><br />
+                            <a href="https://ethereum.github.io/beacon-APIs/#/Events/eventstream" target="_blank">/eth/v1/events</a><br />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kvKey">Execution APIs</td>
+                        <td class="kvValue">
+                            <a href="https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_getblockbyhash" target="_blank">eth_getBlockByHash</a><br />
+                            <a href="https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_gettransactionreceipt" target="_blank">eth_getTransactionReceipt</a><br />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kvKey">Transactions</td>
+                        <td class="kvValue">
+                            <a href="https://eips.ethereum.org/EIPS/eip-155" target="_blank">Replay protection (EIP-155)</a><br />
+                            <a href="https://eips.ethereum.org/EIPS/eip-2718" target="_blank">Typed transactions (EIP-2718)</a><br />
+                            <a href="https://eips.ethereum.org/EIPS/eip-2930" target="_blank">Access lists (EIP-2930)</a><br />
+                            <a href="https://eips.ethereum.org/EIPS/eip-1559" target="_blank">Priority fees (EIP-1559)</a><br />
+                            <a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">Blob transactions (EIP-4844)</a><br />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kvKey">Receipts</td>
+                        <td class="kvValue">
+                            <a href="https://eips.ethereum.org/EIPS/eip-658" target="_blank">Status code (EIP-658)</a><br />
+                            <a href="https://eips.ethereum.org/EIPS/eip-2718" target="_blank">Typed receipts (EIP-2718)</a><br />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kvKey">RLP</td>
+                        <td class="kvValue">
+                            <a href="https://ethereum.org/en/developers/docs/data-structures-and-encoding/rlp/" target="_blank">Serialization</a><br />
+                            <a href="https://ethereum.org/en/developers/docs/data-structures-and-encoding/patricia-merkle-trie/" target="_blank">Merkle Patricia Trie</a><br />
+                            <a href="https://github.com/ethereum/devp2p/blob/master/caps/eth.md" target="_blank">Networking</a><br />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="kvKey">SSZ</td>
+                        <td class="kvValue">
+                            <a href="https://ethereum.org/en/developers/docs/data-structures-and-encoding/ssz/" target="_blank">Overview</a><br />
+                            <a href="https://github.com/ethereum/consensus-specs/blob/dev/ssz/simple-serialize.md" target="_blank">Serialization</a><br />
+                            <a href="https://github.com/ethereum/consensus-specs/blob/dev/ssz/merkle-proofs.md" target="_blank">Merkleization</a><br />
+                            <a href="https://eips.ethereum.org/EIPS/eip-7495" target="_blank">PartialContainer (EIP-7495)</a><br />
+                            <a href="https://eips.ethereum.org/EIPS/eip-6493" target="_blank">SignedTransaction (EIP-6493)</a><br />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
         <div id="selectedTransactionRlpDetail" hidden="hidden" style="text-align: center;">
             <div class="headerMaster" style="width: 1000px; margin-top: 57px; margin-bottom: 57px; margin-left: auto; margin-right: auto;">
                 <table class="kv" style="width: 100%;">
@@ -662,10 +734,6 @@
                             <td class="kvKey">ECDSA signature</td>
                             <td class="kvValue"><span id="selectedTransactionEip6404SignatureEcdsaSignature"></span></td>
                         </tr>
-                        <tr id="selectedTransactionEip6404SignatureHasNoReplayProtection">
-                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-155" target="_blank">No replay protection</a></td>
-                            <td class="kvValue"><span id="selectedTransactionEip6404SignatureNoReplayProtection"></span> <span class="description">(<span id="selectedTransactionEip6404SignatureNoReplayProtectionDescription"></span>)</span></td>
-                        </tr>
                         <tr id="selectedTransactionEip6404SignatureHasEip2718Type">
                             <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-2718" target="_blank">EIP-2718</a> type</td>
                             <td class="kvValue"><span id="selectedTransactionEip6404SignatureEip2718Type"></span> <span class="description">(<span id="selectedTransactionEip6404SignatureEip2718TypeDescription"></span>)</span></td>
@@ -711,7 +779,7 @@
                         <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="2"><span id="selectedTransactionEip6404SignatureHasNoReplayProtectionMerkleization"></span></td>
+                        <td class="node-left" rowspan="2"><span id="selectedTransactionEip6404SignatureHasEip2718TypeMerkleization"></span></td>
                     </tr>
                     <tr>
                         <td class="node-right"><span id="selectedTransactionEip6404PayloadHasInputMerkleization"></span></td>
@@ -719,7 +787,7 @@
                     <tr>
                         <td class="node-right"><span id="selectedTransactionEip6404PayloadHasAccessListMerkleization"></span></td>
                         <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="2"><span id="selectedTransactionEip6404SignatureHasEip2718TypeMerkleization"></span></td>
+                        <td class="node-left unused" rowspan="2">0</td>
                     </tr>
                     <tr>
                         <td class="node-right"><span id="selectedTransactionEip6404PayloadHasMaxPriorityFeePerGasMerkleization"></span></td>
@@ -1755,6 +1823,12 @@
             document.getElementById('selectedTransactionRlpS').innerText = arrayToHexString(s);
 
             assert(bytes.length === 0);
+
+            document.getElementById('specsDetail').hidden = true;
+            document.getElementById('selectedReceiptRlpDetail').hidden = true;
+            document.getElementById('selectedTransactionEip6404Detail').hidden = true;
+            document.getElementById('selectedReceiptEip6466Detail').hidden = true;
+            document.getElementById('selectedTransactionRlpDetail').hidden = false;
         }
 
         function visualizeReceiptRlp(transactionHash, receiptRlpBytes, receiptHasStatus) {
@@ -1930,6 +2004,12 @@
             }
 
             assert(bytes.length === 0);
+
+            document.getElementById('specsDetail').hidden = true;
+            document.getElementById('selectedTransactionRlpDetail').hidden = true;
+            document.getElementById('selectedTransactionEip6404Detail').hidden = true;
+            document.getElementById('selectedReceiptEip6466Detail').hidden = true;
+            document.getElementById('selectedReceiptRlpDetail').hidden = false;
         }
 
         function visualizeTransactionEip6404(transactionEip6404Root, transactionEip6404Bytes) {
@@ -2295,20 +2375,6 @@
 
             if (signatureActiveFields[0] & 0x04) {
                 assert(signature.length >= 1);
-                const signatureNoReplayProtection = signature.slice(0, 1);
-                signature = signature.slice(1);
-                document.getElementById('selectedTransactionEip6404SignatureHasNoReplayProtection').hidden = false;
-                document.getElementById('selectedTransactionEip6404SignatureHasNoReplayProtectionMerkleization').innerText = 'no_replay_protection';
-                document.getElementById('selectedTransactionEip6404SignatureNoReplayProtection').innerText = arrayToHexString(signatureNoReplayProtection);
-                document.getElementById('selectedTransactionEip6404SignatureNoReplayProtectionDescription').innerText =
-                    (signatureNoReplayProtection[0] ? 'May be replayed across chains' : 'Chain ID locked');
-            } else {
-                document.getElementById('selectedTransactionEip6404SignatureHasNoReplayProtection').hidden = true;
-                document.getElementById('selectedTransactionEip6404SignatureHasNoReplayProtectionMerkleization').innerHTML = '<span class="unused">0</span>';
-            }
-
-            if (signatureActiveFields[0] & 0x08) {
-                assert(signature.length >= 1);
                 const signatureEip2718Type = signature.slice(0, 1);
                 signature = signature.slice(1);
                 document.getElementById('selectedTransactionEip6404SignatureHasEip2718Type').hidden = false;
@@ -2334,10 +2400,16 @@
                 document.getElementById('selectedTransactionEip6404SignatureHasEip2718TypeMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
-            assert(signatureActiveFields[0] < 0x10);
+            assert(signatureActiveFields[0] < 0x08);
             assert(signatureActiveFields[1] === 0);
 
             assert(signature.length === 0);
+
+            document.getElementById('specsDetail').hidden = true;
+            document.getElementById('selectedTransactionRlpDetail').hidden = true;
+            document.getElementById('selectedReceiptRlpDetail').hidden = true;
+            document.getElementById('selectedReceiptEip6466Detail').hidden = true;
+            document.getElementById('selectedTransactionEip6404Detail').hidden = false;
         }
 
         function visualizeReceiptEip6466(transactionEip6404Root, receiptEip6466Bytes) {
@@ -2620,6 +2692,12 @@
             }
 
             assert(bytes.length === 0);
+
+            document.getElementById('specsDetail').hidden = true;
+            document.getElementById('selectedTransactionRlpDetail').hidden = true;
+            document.getElementById('selectedReceiptRlpDetail').hidden = true;
+            document.getElementById('selectedTransactionEip6404Detail').hidden = true;
+            document.getElementById('selectedReceiptEip6466Detail').hidden = false;
         }
 
         function visualizeHeader(prefix, header) {
@@ -2835,35 +2913,23 @@
                             document.getElementById(prefix + 'TransactionList').appendChild(transactionDiv);
 
                             document.getElementById(transactionRlpButtonId).onclick = function () {
+                                history.replaceState(/* state: */ null, /* unused: */ "", document.baseURI + 'tx/' + transactionHashString + '#rlp');
                                 visualizeTransactionRlp(transactionHashString, transactionBytesArray);
-                                document.getElementById('selectedReceiptRlpDetail').hidden = true;
-                                document.getElementById('selectedTransactionEip6404Detail').hidden = true;
-                                document.getElementById('selectedReceiptEip6466Detail').hidden = true;
-                                document.getElementById('selectedTransactionRlpDetail').hidden = false;
                             };
 
                             document.getElementById(receiptRlpButtonId).onclick = function () {
+                                history.replaceState(/* state: */ null, /* unused: */ "", document.baseURI + 'tx/' + transactionHashString + '#receipt/rlp');
                                 visualizeReceiptRlp(transactionHashString, receiptBytesArray, receiptHasStatus);
-                                document.getElementById('selectedTransactionRlpDetail').hidden = true;
-                                document.getElementById('selectedTransactionEip6404Detail').hidden = true;
-                                document.getElementById('selectedReceiptEip6466Detail').hidden = true;
-                                document.getElementById('selectedReceiptRlpDetail').hidden = false;
                             };
 
                             document.getElementById(transactionEip6404ButtonId).onclick = function () {
+                                history.replaceState(/* state: */ null, /* unused: */ "", document.baseURI + 'tx/' + transactionHashString + '#ssz');
                                 visualizeTransactionEip6404(transactionEip6404RootString, transactionEip6404BytesArray);
-                                document.getElementById('selectedTransactionRlpDetail').hidden = true;
-                                document.getElementById('selectedReceiptRlpDetail').hidden = true;
-                                document.getElementById('selectedReceiptEip6466Detail').hidden = true;
-                                document.getElementById('selectedTransactionEip6404Detail').hidden = false;
                             };
 
                             document.getElementById(receiptEip6466ButtonId).onclick = function () {
+                                history.replaceState(/* state: */ null, /* unused: */ "", document.baseURI + 'tx/' + transactionHashString + '#receipt/ssz');
                                 visualizeReceiptEip6466(transactionEip6404RootString, receiptEip6466BytesArray);
-                                document.getElementById('selectedTransactionRlpDetail').hidden = true;
-                                document.getElementById('selectedReceiptRlpDetail').hidden = true;
-                                document.getElementById('selectedTransactionEip6404Detail').hidden = true;
-                                document.getElementById('selectedReceiptEip6466Detail').hidden = false;
                             };
                         }
                         Module._free(numBytesPtr);
@@ -2887,6 +2953,121 @@
 
         let selectedHeader = undefined;
 
+        const initialLocation = new URL(window.location.href).pathname.replace(new URL(document.baseURI).pathname, '');
+        if (initialLocation.startsWith('tx/')) {
+            document.getElementById('specsDetail').hidden = true;
+        }
+        async function loadInitialLocation() {
+            if (initialLocation.startsWith('tx/')) {
+                const transactionHashString = initialLocation.substring(3);
+                const transactionResponseFut = fetch(executionApiBase, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        id: 1,
+                        method: 'eth_getTransactionByHash',
+                        params: [transactionHashString]
+                    })
+                });
+                const receiptResponseFut = fetch(executionApiBase, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        id: 1,
+                        method: 'eth_getTransactionReceipt',
+                        params: [transactionHashString]
+                    })
+                });
+                let transactionsData = [];
+                try {
+                    const transactionResponse = await transactionResponseFut;
+                    if (!transactionResponse.ok) return;
+                    const transactionResponseJson = await transactionResponse.json();
+                    if (!transactionResponseJson.result) return;
+                    transactionsData.push(transactionResponseJson.result);
+                } catch {
+                    return;
+                }
+                let receiptsData = [];
+                try {
+                    const receiptResponse = await receiptResponseFut;
+                    if (!receiptResponse.ok) return;
+                    const receiptResponseJson = await receiptResponse.json();
+                    if (!receiptResponseJson.result) return;
+                    receiptsData.push(receiptResponseJson.result);
+                } catch {
+                    return;
+                }
+                if (initialLocation !== new URL(window.location.href).pathname.replace(new URL(document.baseURI).pathname, '')) {
+                    return;
+                }
+
+                transactionsData[0].transactionIndex = "0x0";
+
+                receiptsData[0].cumulativeGasUsed = receiptsData[0].gasUsed;
+                receiptsData[0].transactionIndex = "0x0";
+                for (logIndex in receiptsData[0].logs) {
+                    receiptsData[0].logs[logIndex].transactionIndex = "0x0";
+                    receiptsData[0].logs[logIndex].logIndex = "0x" + Number(logIndex).toString(16);
+                }
+
+                const transactionsJson = Module.stringToNewUTF8(JSON.stringify(transactionsData));
+                const transactions = Module._ETHTransactionsCreateFromJson(/* transactionsRoot: */ 0, transactionsJson);
+                Module._free(transactionsJson);
+                if (!transactions) {
+                    return;
+                }
+
+                const receiptsJson = Module.stringToNewUTF8(JSON.stringify(receiptsData));
+                const receipts = Module._ETHReceiptsCreateFromJson(/* receiptsRoot: */ 0, receiptsJson, transactions);
+                Module._free(transactionsJson);
+                if (!receipts) {
+                    Module._ETHTransactionsDestroy(transactions);
+                    return;
+                }
+
+                const transaction = Module._ETHTransactionsGet(transactions, /* transactionIndex: */ 0);
+                const receipt = Module._ETHReceiptsGet(receipts, /* receiptIndex: */ 0);
+                const numBytesPtr = Module._malloc(4);
+                if (!document.location.hash || document.location.hash === '#' || document.location.hash === '#rlp') {
+                    const transactionBytes = Module._ETHTransactionGetBytes(transaction, numBytesPtr);
+                    const numTransactionBytes = Module.HEAPU32[numBytesPtr >>> 2];
+                    const transactionBytesArray = toArray(transactionBytes, numTransactionBytes);
+                    visualizeTransactionRlp(transactionHashString, transactionBytesArray);
+                } else if (document.location.hash === '#receipt' || document.location.hash === '#receipt/rlp') {
+                    const receiptHasStatus = Module._ETHReceiptHasStatus(receipt);
+                    const receiptBytes = Module._ETHReceiptGetBytes(receipt, numBytesPtr);
+                    const numReceiptBytes = Module.HEAPU32[numBytesPtr >>> 2];
+                    const receiptBytesArray = toArray(receiptBytes, numReceiptBytes);
+                    visualizeReceiptRlp(transactionHashString, receiptBytesArray, receiptHasStatus);
+                } else if (document.location.hash === '#ssz') {
+                    const transactionEip6404Root = Module._ETHTransactionGetEip6404Root(transaction);
+                    const transactionEip6404RootString = toHexString(transactionEip6404Root, 32);
+                    const transactionEip6404Bytes = Module._ETHTransactionGetEip6404Bytes(transaction, numBytesPtr);
+                    const numTransactionEip6404Bytes = Module.HEAPU32[numBytesPtr >>> 2];
+                    const transactionEip6404BytesArray = toArray(transactionEip6404Bytes, numTransactionEip6404Bytes);
+                    visualizeTransactionEip6404(transactionEip6404RootString, transactionEip6404BytesArray);
+                } else if (document.location.hash === '#receipt/ssz') {
+                    const transactionEip6404Root = Module._ETHTransactionGetEip6404Root(transaction);
+                    const transactionEip6404RootString = toHexString(transactionEip6404Root, 32);
+                    const receiptEip6466Bytes = Module._ETHReceiptGetEip6466Bytes(receipt, numBytesPtr);
+                    const numReceiptEip6466Bytes = Module.HEAPU32[numBytesPtr >>> 2];
+                    const receiptEip6466BytesArray = toArray(receiptEip6466Bytes, numReceiptEip6466Bytes);
+                    visualizeReceiptEip6466(transactionEip6404RootString, receiptEip6466BytesArray);
+                }
+                Module._free(numBytesPtr);
+
+                Module._ETHReceiptsDestroy(receipts);
+                Module._ETHTransactionsDestroy(transactions);
+            }
+        }
+
         document.getElementById('settingsButton').onclick = function () {
             document.getElementById('masterTop').hidden = true;
             document.getElementById('headerList').hidden = true;
@@ -2898,6 +3079,15 @@
             selectedHeader = undefined;
             document.getElementById('selectedHeaderDetail').hidden = true;
             document.getElementById('headerList').hidden = false;
+        };
+
+        document.getElementById('specsButton').onclick = function () {
+            history.replaceState(/* state: */ null, /* unused: */ "", document.baseURI);
+            document.getElementById('selectedTransactionRlpDetail').hidden = true;
+            document.getElementById('selectedReceiptRlpDetail').hidden = true;
+            document.getElementById('selectedTransactionEip6404Detail').hidden = true;
+            document.getElementById('selectedReceiptEip6466Detail').hidden = true;
+            document.getElementById('specsDetail').hidden = false;
         };
 
         function cacheHeaders(store, cfg) {
@@ -3216,6 +3406,7 @@
 
                 beaconApiBase = document.getElementById('beaconApiBase').value;
                 executionApiBase = document.getElementById('executionApiBase').value;
+                loadInitialLocation();
                 const response = await fetch(beaconApiBase +
                     '/eth/v1/beacon/light_client/bootstrap/' + trustedBlockRootString, {
                         headers: {
