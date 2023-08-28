@@ -630,6 +630,14 @@
                             <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-1559" target="_blank">Max priority fee per gas</a></td>
                             <td class="kvValue"><span id="selectedTransactionEip6404PayloadMaxPriorityFeePerGas"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadMaxPriorityFeePerGasDescription"></span>)</span></td>
                         </tr>
+                        <tr id="selectedTransactionEip6404PayloadHasMaxFeePerBlobGas">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">Max fee per blob gas</a></td>
+                            <td class="kvValue"><span id="selectedTransactionEip6404PayloadMaxFeePerBlobGas"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadMaxFeePerBlobGasDescription"></span>)</span></td>
+                        </tr>
+                        <tr id="selectedTransactionEip6404PayloadHasBlobVersionedHashesOffset">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">Blob versioned hashes</a> offset</td>
+                            <td class="kvValue"><span id="selectedTransactionEip6404PayloadBlobVersionedHashesOffset"></span> <span class="description">(payload data +<span id="selectedTransactionEip6404PayloadBlobVersionedHashesOffsetDescription"></span>)</span></td>
+                        </tr>
                         <tr id="selectedTransactionEip6404PayloadHasInput">
                             <td class="kvKey">Input</td>
                             <td class="kvValue"><span id="selectedTransactionEip6404PayloadInput"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadInputDescription"></span>)</span></td>
@@ -637,6 +645,10 @@
                         <tr id="selectedTransactionEip6404PayloadHasAccessList">
                             <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-2930" target="_blank">Access list</a><span id="selectedTransactionEip6404PayloadAccessListLabel"></span></td>
                             <td class="kvValue"><span id="selectedTransactionEip6404PayloadAccessListStart"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadAccessListDescription"></span>)</span> <span id="selectedTransactionEip6404PayloadAccessList"></span></td>
+                        </tr>
+                        <tr id="selectedTransactionEip6404PayloadHasBlobVersionedHashes">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">Blob versioned hashes</a><span id="selectedTransactionEip6404PayloadBlobVersionedHashesLabel"></span></td>
+                            <td class="kvValue"><span id="selectedTransactionEip6404PayloadBlobVersionedHashes"></span></td>
                         </tr>
                         <tr>
                             <td class="kvKey">Signature active fields</td>
@@ -713,7 +725,7 @@
                         <td class="node-right"><span id="selectedTransactionEip6404PayloadHasMaxPriorityFeePerGasMerkleization"></span></td>
                     </tr>
                     <tr>
-                        <td class="node-right unused">0</td>
+                        <td class="node-right"><span id="selectedTransactionEip6404PayloadHasMaxFeePerBlobGasMerkleization"></span></td>
                         <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
@@ -722,7 +734,7 @@
                         <td class="node-left unused" rowspan="2">0</td>
                     </tr>
                     <tr>
-                        <td class="node-right unused">0</td>
+                        <td class="node-right"><span id="selectedTransactionEip6404PayloadHasBlobVersionedHashesMerkleization"></span></td>
                     </tr>
                     <tr>
                         <td class="node-right unused">0</td>
@@ -890,6 +902,142 @@
                             <td class="kvValue"><input type="button" id="copyReceiptEip6466Button" value="Copy" /></td>
                         </tr>
                     </tbody>
+                </table>
+            </div>
+            <div style="width: 100%;">
+                <table class="tree" style="margin: 0 auto;">
+                    <tr>
+                        <td class="node-right" style="width: 200px;"><span id="selectedReceiptEip6466HasRootMerkleization"></span></td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="16"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="32"><div class="lines"></div><div class="lines"></div></td>
+                        <td rowspan="16"></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right"><span id="selectedReceiptEip6466HasGasUsedMerkleization"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right"><span id="selectedReceiptEip6466HasContractAddressMerkleization"></span></td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right"><span id="selectedReceiptEip6466HasLogsBloomMerkleization"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right"><span id="selectedReceiptEip6466HasLogsMerkleization"></span></td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right"><span id="selectedReceiptEip6466HasStatusMerkleization"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right"><span id="selectedReceiptEip6466HasEip2718TypeMerkleization"></span></td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="16"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="17"><div class="lines"></div><div class="lines"></div><div>receipt</div></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
+                    </tr>
+                    <tr>
+                        <td class="node-right unused">0</td>
+                    </tr>
+                    <tr>
+                        <td class="node-right" colspan="6">active_fields</td>
+                    </tr>
                 </table>
             </div>
         </div>
@@ -1929,7 +2077,34 @@
                 document.getElementById('selectedTransactionEip6404PayloadHasMaxPriorityFeePerGasMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
-            assert(payloadActiveFields[1] === 0x00);
+            if (payloadActiveFields[1] & 0x01) {
+                assert(payload.length >= 32);
+                const payloadMaxFeePerBlobGas = payload.slice(0, 32);
+                payload = payload.slice(32);
+                document.getElementById('selectedTransactionEip6404PayloadHasMaxFeePerBlobGas').hidden = false;
+                document.getElementById('selectedTransactionEip6404PayloadHasMaxFeePerBlobGasMerkleization').innerText = 'max_fee_per_blob_gas';
+                document.getElementById('selectedTransactionEip6404PayloadMaxFeePerBlobGas').innerText = arrayToHexString(payloadMaxFeePerBlobGas);
+                document.getElementById('selectedTransactionEip6404PayloadMaxFeePerBlobGasDescription').innerText = arrayToGweiString(payloadMaxFeePerBlobGas.reverse()) + ' Gwei';
+            } else {
+                document.getElementById('selectedTransactionEip6404PayloadHasMaxFeePerBlobGas').hidden = true;
+                document.getElementById('selectedTransactionEip6404PayloadHasMaxFeePerBlobGasMerkleization').innerHTML = '<span class="unused">0</span>';
+            }
+
+            if (payloadActiveFields[1] & 0x02) {
+                assert(payload.length >= 4);
+                const payloadBlobVersionedHashesOffset = payload.slice(0, 4);
+                payload = payload.slice(4);
+                document.getElementById('selectedTransactionEip6404PayloadHasBlobVersionedHashesOffset').hidden = false;
+                document.getElementById('selectedTransactionEip6404PayloadHasBlobVersionedHashesMerkleization').innerText = 'blob_versioned_hashes';
+                document.getElementById('selectedTransactionEip6404PayloadBlobVersionedHashesOffset').innerText = arrayToHexString(payloadBlobVersionedHashesOffset);
+                document.getElementById('selectedTransactionEip6404PayloadBlobVersionedHashesOffsetDescription').innerText = arrayToDecString(payloadBlobVersionedHashesOffset.reverse());
+                payloadOffsets.push(Number(arrayToDecString(payloadBlobVersionedHashesOffset)));
+            } else {
+                document.getElementById('selectedTransactionEip6404PayloadHasBlobVersionedHashesOffset').hidden = true;
+                document.getElementById('selectedTransactionEip6404PayloadHasBlobVersionedHashesMerkleization').innerHTML = '<span class="unused">0</span>';
+            }
+
+            assert(payloadActiveFields[1] < 0x04);
             assert(payloadActiveFields[2] === 0x00);
             assert(payloadActiveFields[3] === 0x00);
 
@@ -2048,6 +2223,40 @@
                 document.getElementById('selectedTransactionEip6404PayloadHasAccessList').hidden = true;
             }
 
+            if (payloadActiveFields[1] & 0x02) {
+                let numPayloadBlobVersionedHashesBytes;
+                if (payloadOffsets.length > 1) {
+                    numPayloadBlobVersionedHashesBytes = payloadOffsets[1] - payloadOffsets[0];
+                } else {
+                    numPayloadBlobVersionedHashesBytes = numPayloadBytes - 4 - payloadOffsets[0];
+                }
+                payloadOffsets.shift();
+                assert(payload.length >= numPayloadBlobVersionedHashesBytes);
+                let blobVersionedHashes = payload.slice(0, numPayloadBlobVersionedHashesBytes);
+                payload = payload.slice(numPayloadBlobVersionedHashesBytes);
+                document.getElementById('selectedTransactionEip6404PayloadHasBlobVersionedHashes').hidden = false;
+
+                document.getElementById('selectedTransactionEip6404PayloadBlobVersionedHashes').innerHTML = '';
+                document.getElementById('selectedTransactionEip6404PayloadBlobVersionedHashesLabel').innerHTML = '';
+
+                if (!blobVersionedHashes.length) {
+                    document.getElementById('selectedTransactionEip6404PayloadBlobVersionedHashes').innerHTML +=
+                        '<span class="description">(empty)</span><br />';
+                }
+
+                while (blobVersionedHashes.length) {
+                    assert(accessTuple.length >= 32);
+                    const storageKey = accessTuple.slice(0, 32);
+                    accessTuple = accessTuple.slice(32);
+                    document.getElementById('selectedTransactionEip6404PayloadBlobVersionedHashes').innerHTML +=
+                        '<span>' + arrayToHexString(storageKey) + '</span><br />';
+                    document.getElementById('selectedTransactionEip6404PayloadBlobVersionedHashesLabel').innerHTML +=
+                        '<br />';
+                }
+            } else {
+                document.getElementById('selectedTransactionEip6404PayloadHasBlobVersionedHashes').hidden = true;
+            }
+
             assert(payload.length === 0);
 
             assert(signature.length >= 2);
@@ -2155,9 +2364,11 @@
                 const root = bytes.slice(0, 32);
                 bytes = bytes.slice(32);
                 document.getElementById('selectedReceiptEip6466HasRoot').hidden = false;
+                document.getElementById('selectedReceiptEip6466HasRootMerkleization').innerText = 'root';
                 document.getElementById('selectedReceiptEip6466Root').innerText = arrayToHexString(root);
             } else {
                 document.getElementById('selectedReceiptEip6466HasRoot').hidden = true;
+                document.getElementById('selectedReceiptEip6466HasRootMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (activeFields[0] & 0x02) {
@@ -2165,10 +2376,12 @@
                 const gasUsed = bytes.slice(0, 8);
                 bytes = bytes.slice(8);
                 document.getElementById('selectedReceiptEip6466HasGasUsed').hidden = false;
+                document.getElementById('selectedReceiptEip6466HasGasUsedMerkleization').innerText = 'gas_used'
                 document.getElementById('selectedReceiptEip6466GasUsed').innerText = arrayToHexString(gasUsed);
                 document.getElementById('selectedReceiptEip6466GasUsedDescription').innerText = toHumanReadableNumberString(Number(arrayToDecString(gasUsed.reverse())));
             } else {
                 document.getElementById('selectedReceiptEip6466HasGasUsed').hidden = true;
+                document.getElementById('selectedReceiptEip6466HasGasUsedMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (activeFields[0] & 0x04) {
@@ -2176,12 +2389,14 @@
                 const contractAddress = bytes.slice(0, 32);
                 bytes = bytes.slice(32);
                 document.getElementById('selectedReceiptEip6466HasContractAddress').hidden = false;
+                document.getElementById('selectedReceiptEip6466HasContractAddressMerkleization').innerText = 'contract_address';
                 document.getElementById('selectedReceiptEip6466ContractAddress').innerText = arrayToHexString(contractAddress);
                 document.getElementById('selectedReceiptEip6466ContractAddressDescription').innerHTML =
                     '<a href="https://etherscan.io/address/0x' + arrayToHexString(contractAddress) + '" target="_blank">' +
                     'Contract' + '</a>';
             } else {
                 document.getElementById('selectedReceiptEip6466HasContractAddress').hidden = true;
+                document.getElementById('selectedReceiptEip6466HasContractAddressMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (activeFields[0] & 0x08) {
@@ -2189,10 +2404,12 @@
                 const logsBloom = bytes.slice(0, 256);
                 bytes = bytes.slice(256);
                 document.getElementById('selectedReceiptEip6466HasLogsBloom').hidden = false;
+                document.getElementById('selectedReceiptEip6466HasLogsBloomMerkleization').innerText = 'logs_bloom';
                 document.getElementById('selectedReceiptEip6466LogsBloom').innerHTML =
                     (arrayToHexString(logsBloom).match(/.{1,64}/g) ?? []).join('<br />');
             } else {
                 document.getElementById('selectedReceiptEip6466HasLogsBloom').hidden = true;
+                document.getElementById('selectedReceiptEip6466HasLogsBloomMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (activeFields[0] & 0x10) {
@@ -2200,11 +2417,13 @@
                 const logsOffset = bytes.slice(0, 4);
                 bytes = bytes.slice(4);
                 document.getElementById('selectedReceiptEip6466HasLogsOffset').hidden = false;
+                document.getElementById('selectedReceiptEip6466HasLogsMerkleization').innerText = 'logs';
                 document.getElementById('selectedReceiptEip6466LogsOffset').innerText = arrayToHexString(logsOffset);
                 document.getElementById('selectedReceiptEip6466LogsOffsetDescription').innerText = arrayToDecString(logsOffset.reverse());
                 offsets.push(Number(arrayToDecString(logsOffset)));
             } else {
                 document.getElementById('selectedReceiptEip6466HasLogsOffset').hidden = true;
+                document.getElementById('selectedReceiptEip6466HasLogsMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (activeFields[0] & 0x20) {
@@ -2212,10 +2431,12 @@
                 const status = bytes.slice(0, 1);
                 bytes = bytes.slice(1);
                 document.getElementById('selectedReceiptEip6466HasStatus').hidden = false;
+                document.getElementById('selectedReceiptEip6466HasStatusMerkleization').innerText = 'status';
                 document.getElementById('selectedReceiptEip6466Status').innerText = arrayToHexString(status);
                 document.getElementById('selectedReceiptEip6466StatusDescription').innerText = (status[0] ? 'Success' : 'Failure');
             } else {
-                document.getElementById('selectedReceiptEip6466HasGasUsed').hidden = true;
+                document.getElementById('selectedReceiptEip6466HasStatus').hidden = true;
+                document.getElementById('selectedReceiptEip6466HasStatusMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (activeFields[0] & 0x40) {
@@ -2223,6 +2444,7 @@
                 const eip2718Type = bytes.slice(0, 1);
                 bytes = bytes.slice(1);
                 document.getElementById('selectedReceiptEip6466HasEip2718Type').hidden = false;
+                document.getElementById('selectedReceiptEip6466HasEip2718TypeMerkleization').innerText = 'type';
                 document.getElementById('selectedReceiptEip6466Eip2718Type').innerText = arrayToHexString(eip2718Type);
                 if (eip2718Type[0] === 0x03) {
                     document.getElementById('selectedReceiptEip6466Eip2718TypeDescription').innerHTML =
@@ -2241,6 +2463,7 @@
                 }
             } else {
                 document.getElementById('selectedReceiptEip6466HasEip2718Type').hidden = true;
+                document.getElementById('selectedReceiptEip6466HasEip2718TypeMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             assert(activeFields[0] < 0x80);
@@ -2267,7 +2490,7 @@
                 document.getElementById('selectedReceiptEip6466LogsLabel').innerHTML = '';
 
                 if (!logs.length) {
-                    document.getElementById('selectedReceipt$ip6466LogsDescription').innerText = 'empty';
+                    document.getElementById('selectedReceiptEip6466LogsDescription').innerText = 'empty';
                 }
 
                 let numLogs = 0;
