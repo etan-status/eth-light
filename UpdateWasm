@@ -61,6 +61,8 @@ nim c \
     -d:disableLTO \
     -d:emscripten \
     -d:release \
+    -d:useGcAssert \
+    -d:useSysAssert \
     --debuginfo:off \
     --nimcache:nimcache \
     --os:linux \

@@ -709,6 +709,10 @@
                             <td class="kvKey">Input offset</td>
                             <td class="kvValue"><span id="selectedTransactionEip6493PayloadInputOffset"></span> <span class="description">(payload data +<span id="selectedTransactionEip6493PayloadInputOffsetDescription"></span>)</span></td>
                         </tr>
+                        <tr id="selectedTransactionEip6493PayloadHasType">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-2718" target="_blank">EIP-2718</a> type</td>
+                            <td class="kvValue"><span id="selectedTransactionEip6493PayloadType"></span> <span class="description">(<span id="selectedTransactionEip6493PayloadTypeDescription"></span>)</span></td>
+                        </tr>
                         <tr id="selectedTransactionEip6493PayloadHasAccessListOffset">
                             <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-2930" target="_blank">Access list</a> offset</td>
                             <td class="kvValue"><span id="selectedTransactionEip6493PayloadAccessListOffset"></span> <span class="description">(payload data +<span id="selectedTransactionEip6493PayloadAccessListOffsetDescription"></span>)</span></td>
@@ -748,10 +752,6 @@
                         <tr id="selectedTransactionEip6493SignatureHasEcdsaSignature">
                             <td class="kvKey">ECDSA signature</td>
                             <td class="kvValue"><span id="selectedTransactionEip6493SignatureEcdsaSignature"></span></td>
-                        </tr>
-                        <tr id="selectedTransactionEip6493SignatureHasType">
-                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-2718" target="_blank">EIP-2718</a> type</td>
-                            <td class="kvValue"><span id="selectedTransactionEip6493SignatureType"></span> <span class="description">(<span id="selectedTransactionEip6493SignatureTypeDescription"></span>)</span></td>
                         </tr>
                         <tr>
                             <td class="kvKey">&nbsp;</td>
@@ -794,21 +794,21 @@
                         <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="2"><span id="selectedTransactionEip6493SignatureHasTypeMerkleization"></span></td>
+                        <td class="node-left unused" rowspan="2">0</td>
                     </tr>
                     <tr>
                         <td class="node-right"><span id="selectedTransactionEip6493PayloadHasInputMerkleization"></span></td>
                     </tr>
                     <tr>
-                        <td class="node-right"><span id="selectedTransactionEip6493PayloadHasAccessListMerkleization"></span></td>
+                        <td class="node-right"><span id="selectedTransactionEip6493PayloadHasTypeMerkleization"></span></td>
                         <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-left unused" rowspan="2">0</td>
                     </tr>
                     <tr>
-                        <td class="node-right"><span id="selectedTransactionEip6493PayloadHasMaxPriorityFeePerGasMerkleization"></span></td>
+                        <td class="node-right"><span id="selectedTransactionEip6493PayloadHasAccessListMerkleization"></span></td>
                     </tr>
                     <tr>
-                        <td class="node-right"><span id="selectedTransactionEip6493PayloadHasMaxFeePerBlobGasMerkleization"></span></td>
+                        <td class="node-right"><span id="selectedTransactionEip6493PayloadHasMaxPriorityFeePerGasMerkleization"></span></td>
                         <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
@@ -817,10 +817,10 @@
                         <td class="node-left unused" rowspan="2">0</td>
                     </tr>
                     <tr>
-                        <td class="node-right"><span id="selectedTransactionEip6493PayloadHasBlobVersionedHashesMerkleization"></span></td>
+                        <td class="node-right"><span id="selectedTransactionEip6493PayloadHasMaxFeePerBlobGasMerkleization"></span></td>
                     </tr>
                     <tr>
-                        <td class="node-right unused">0</td>
+                        <td class="node-right"><span id="selectedTransactionEip6493PayloadHasBlobVersionedHashesMerkleization"></span></td>
                         <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-left unused" rowspan="2">0</td>
                     </tr>
@@ -2142,6 +2142,33 @@
             }
 
             if (payloadActiveFields[0] & 0x40) {
+                assert(payload.length >= 1);
+                const payloadType = payload.slice(0, 1);
+                payload = payload.slice(1);
+                document.getElementById('selectedTransactionEip6493PayloadHasType').hidden = false;
+                document.getElementById('selectedTransactionEip6493PayloadHasTypeMerkleization').innerText = 'type';
+                document.getElementById('selectedTransactionEip6493PayloadType').innerText = arrayToHexString(payloadType);
+                if (payloadType[0] === 0x03) {
+                    document.getElementById('selectedTransactionEip6493PayloadTypeDescription').innerHTML =
+                        '<a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">EIP-4844</a>';
+                } else if (payloadType[0] === 0x02) {
+                    document.getElementById('selectedTransactionEip6493PayloadTypeDescription').innerHTML =
+                        '<a href="https://eips.ethereum.org/EIPS/eip-1559" target="_blank">EIP-1559</a>';
+                } else if (payloadType[0] === 0x01) {
+                    document.getElementById('selectedTransactionEip6493PayloadTypeDescription').innerHTML =
+                        '<a href="https://eips.ethereum.org/EIPS/eip-2930" target="_blank">EIP-2930</a>';
+                } else if (payloadType[0] === 0x00) {
+                    document.getElementById('selectedTransactionEip6493PayloadTypeDescription').innerHTML =
+                        'Legacy';
+                } else {
+                    assert(false);
+                }
+            } else {
+                document.getElementById('selectedTransactionEip6493PayloadHasType').hidden = true;
+                document.getElementById('selectedTransactionEip6493PayloadHasTypeMerkleization').innerHTML = '<span class="unused">0</span>';
+            }
+
+            if (payloadActiveFields[0] & 0x80) {
                 assert(payload.length >= 4);
                 const payloadAccessListOffset = payload.slice(0, 4);
                 payload = payload.slice(4);
@@ -2155,7 +2182,7 @@
                 document.getElementById('selectedTransactionEip6493PayloadHasAccessListMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
-            if (payloadActiveFields[0] & 0x80) {
+            if (payloadActiveFields[1] & 0x01) {
                 assert(payload.length >= 32);
                 const payloadMaxPriorityFeePerGas = payload.slice(0, 32);
                 payload = payload.slice(32);
@@ -2168,7 +2195,7 @@
                 document.getElementById('selectedTransactionEip6493PayloadHasMaxPriorityFeePerGasMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
-            if (payloadActiveFields[1] & 0x01) {
+            if (payloadActiveFields[1] & 0x02) {
                 assert(payload.length >= 32);
                 const payloadMaxFeePerBlobGas = payload.slice(0, 32);
                 payload = payload.slice(32);
@@ -2181,7 +2208,7 @@
                 document.getElementById('selectedTransactionEip6493PayloadHasMaxFeePerBlobGasMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
-            if (payloadActiveFields[1] & 0x02) {
+            if (payloadActiveFields[1] & 0x04) {
                 assert(payload.length >= 4);
                 const payloadBlobVersionedHashesOffset = payload.slice(0, 4);
                 payload = payload.slice(4);
@@ -2195,7 +2222,7 @@
                 document.getElementById('selectedTransactionEip6493PayloadHasBlobVersionedHashesMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
-            assert(payloadActiveFields[1] < 0x04);
+            assert(payloadActiveFields[1] < 0x08);
             assert(payloadActiveFields[2] === 0x00);
             assert(payloadActiveFields[3] === 0x00);
 
@@ -2222,7 +2249,7 @@
                 document.getElementById('selectedTransactionEip6493PayloadHasInput').hidden = true;
             }
 
-            if (payloadActiveFields[0] & 0x40) {
+            if (payloadActiveFields[0] & 0x80) {
                 let numPayloadAccessListBytes;
                 if (payloadOffsets.length > 1) {
                     numPayloadAccessListBytes = payloadOffsets[1] - payloadOffsets[0];
@@ -2314,7 +2341,7 @@
                 document.getElementById('selectedTransactionEip6493PayloadHasAccessList').hidden = true;
             }
 
-            if (payloadActiveFields[1] & 0x02) {
+            if (payloadActiveFields[1] & 0x04) {
                 let numPayloadBlobVersionedHashesBytes;
                 if (payloadOffsets.length > 1) {
                     numPayloadBlobVersionedHashesBytes = payloadOffsets[1] - payloadOffsets[0];
@@ -2384,34 +2411,7 @@
                 document.getElementById('selectedTransactionEip6493SignatureHasEcdsaSignatureMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
-            if (signatureActiveFields[0] & 0x04) {
-                assert(signature.length >= 1);
-                const signatureType = signature.slice(0, 1);
-                signature = signature.slice(1);
-                document.getElementById('selectedTransactionEip6493SignatureHasType').hidden = false;
-                document.getElementById('selectedTransactionEip6493SignatureHasTypeMerkleization').innerText = 'type';
-                document.getElementById('selectedTransactionEip6493SignatureType').innerText = arrayToHexString(signatureType);
-                if (signatureType[0] === 0x03) {
-                    document.getElementById('selectedTransactionEip6493SignatureTypeDescription').innerHTML =
-                        '<a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">EIP-4844</a>';
-                } else if (signatureType[0] === 0x02) {
-                    document.getElementById('selectedTransactionEip6493SignatureTypeDescription').innerHTML =
-                        '<a href="https://eips.ethereum.org/EIPS/eip-1559" target="_blank">EIP-1559</a>';
-                } else if (signatureType[0] === 0x01) {
-                    document.getElementById('selectedTransactionEip6493SignatureTypeDescription').innerHTML =
-                        '<a href="https://eips.ethereum.org/EIPS/eip-2930" target="_blank">EIP-2930</a>';
-                } else if (signatureType[0] === 0x00) {
-                    document.getElementById('selectedTransactionEip6493SignatureTypeDescription').innerHTML =
-                        'Legacy';
-                } else {
-                    assert(false);
-                }
-            } else {
-                document.getElementById('selectedTransactionEip6493SignatureHasType').hidden = true;
-                document.getElementById('selectedTransactionEip6493SignatureHasTypeMerkleization').innerHTML = '<span class="unused">0</span>';
-            }
-
-            assert(signatureActiveFields[0] < 0x08);
+            assert(signatureActiveFields[0] < 0x04);
             assert(signatureActiveFields[1] === 0);
 
             assert(signature.length === 0);
