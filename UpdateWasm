@@ -4,7 +4,7 @@ set -eu -o pipefail
 cd "$(dirname "$0")"
 
 rm -rf nimbus-eth2
-git clone -b "dev/etan/lc-wasm4" "https://github.com/status-im/nimbus-eth2"
+git clone -b "feat/eip-6493" "https://github.com/status-im/nimbus-eth2"
 
 ulimit -n 1024
 USE_SYSTEM_NIM='' make -C nimbus-eth2 -j update
