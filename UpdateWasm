@@ -10,11 +10,11 @@ ulimit -n 1024
 USE_SYSTEM_NIM='' make -C nimbus-eth2 -j update
 
 git -C nimbus-eth2/vendor/nimbus-build-system/vendor/Nim apply <<'EOF'
-diff --git a/lib/system/threads.nim b/lib/system/threads.nim
-index 4e27ba24e..bf154e874 100644
---- a/lib/system/threads.nim
-+++ b/lib/system/threads.nim
-@@ -383,6 +383,13 @@ when defined(windows):
+diff --git a/lib/system/threadids.nim b/lib/system/threadids.nim
+index 3a6eadcbb..6b7416ddc 100644
+--- a/lib/system/threadids.nim
++++ b/lib/system/threadids.nim
+@@ -20,6 +20,13 @@ when defined(windows):
        threadId = int(getCurrentThreadId())
      result = threadId
 
