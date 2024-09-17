@@ -679,8 +679,8 @@
                             <td class="kvValue"><span id="selectedTransactionEip6493PayloadOffset"></span> <span class="description">(start +<span id="selectedTransactionEip6493PayloadOffsetDescription"></span>)</span></td>
                         </tr>
                         <tr>
-                            <td class="kvKey">Signature offset</td>
-                            <td class="kvValue"><span id="selectedTransactionEip6493SignatureOffset"></span> <span class="description">(start +<span id="selectedTransactionEip6493SignatureOffsetDescription"></span>)</span></td>
+                            <td class="kvKey">From offset</td>
+                            <td class="kvValue"><span id="selectedTransactionEip6493FromOffset"></span> <span class="description">(start +<span id="selectedTransactionEip6493FromOffsetDescription"></span>)</span></td>
                         </tr>
                         <tr>
                             <td class="kvKey">Payload active fields</td>
@@ -767,16 +767,16 @@
                             <td class="kvValue"><span id="selectedTransactionEip6493PayloadBlobVersionedHashes"></span></td>
                         </tr>
                         <tr>
-                            <td class="kvKey">Signature active fields</td>
-                            <td class="kvValue"><span id="selectedTransactionEip6493SignatureActiveFields"></span> <span class="description">(<span id="selectedTransactionEip6493SignatureActiveFieldsDescription"></span>)</span></td>
+                            <td class="kvKey">From active fields</td>
+                            <td class="kvValue"><span id="selectedTransactionEip6493FromActiveFields"></span> <span class="description">(<span id="selectedTransactionEip6493FromActiveFieldsDescription"></span>)</span></td>
                         </tr>
-                        <tr id="selectedTransactionEip6493SignatureHasFrom">
-                            <td class="kvKey">From</td>
-                            <td class="kvValue"><span id="selectedTransactionEip6493SignatureFrom"></span> <span class="description">(<span id="selectedTransactionEip6493SignatureFromDescription"></span>)</span></td>
+                        <tr id="selectedTransactionEip6493FromHasAddress">
+                            <td class="kvKey">Address</td>
+                            <td class="kvValue"><span id="selectedTransactionEip6493FromAddress"></span> <span class="description">(<span id="selectedTransactionEip6493FromAddressDescription"></span>)</span></td>
                         </tr>
-                        <tr id="selectedTransactionEip6493SignatureHasEcdsaSignature">
-                            <td class="kvKey">ECDSA signature</td>
-                            <td class="kvValue"><span id="selectedTransactionEip6493SignatureEcdsaSignature"></span></td>
+                        <tr id="selectedTransactionEip6493FromHasSecp256k1Signature">
+                            <td class="kvKey">Secp256k1 signature</td>
+                            <td class="kvValue"><span id="selectedTransactionEip6493FromSecp256k1Signature"></span></td>
                         </tr>
                         <tr>
                             <td class="kvKey">&nbsp;</td>
@@ -801,7 +801,7 @@
                         <td class="node-left" rowspan="16"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-left" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" style="width: 200px;" rowspan="2"><span id="selectedTransactionEip6493SignatureHasFromMerkleization"></span></td>
+                        <td class="node-left" style="width: 200px;" rowspan="2"><span id="selectedTransactionEip6493FromHasAddressMerkleization"></span></td>
                     </tr>
                     <tr>
                         <td class="node-right"><span id="selectedTransactionEip6493PayloadHasChainIdMerkleization"></span></td>
@@ -809,7 +809,7 @@
                     <tr>
                         <td class="node-right"><span id="selectedTransactionEip6493PayloadHasNonceMerkleization"></span></td>
                         <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="2"><span id="selectedTransactionEip6493SignatureHasEcdsaSignatureMerkleization"></span></td>
+                        <td class="node-left" rowspan="2"><span id="selectedTransactionEip6493FromHasSecp256k1SignatureMerkleization"></span></td>
                     </tr>
                     <tr>
                         <td class="node-right"><span id="selectedTransactionEip6493PayloadHasMaxFeesPerGasMerkleization"></span></td>
@@ -877,7 +877,7 @@
                         <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-right" rowspan="16"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-right" rowspan="17"><div class="lines"></div><div class="lines"></div><div>payload</div></td>
-                        <td class="node-left" rowspan="17"><div class="lines"></div><div class="lines"></div><div>signature</div></td>
+                        <td class="node-left" rowspan="17"><div class="lines"></div><div class="lines"></div><div style="width: 72px;">from</div></td>
                         <td class="node-left" rowspan="16"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-left" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
                         <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
@@ -2064,17 +2064,17 @@
             document.getElementById('selectedTransactionEip6493PayloadOffsetDescription').innerText = arrayToDecString(payloadOffset.reverse());
 
             assert(bytes.length >= 4);
-            const signatureOffset = bytes.slice(0, 4);
+            const fromOffset = bytes.slice(0, 4);
             bytes = bytes.slice(4);
-            document.getElementById('selectedTransactionEip6493SignatureOffset').innerText = arrayToHexString(signatureOffset);
-            document.getElementById('selectedTransactionEip6493SignatureOffsetDescription').innerText = arrayToDecString(signatureOffset.reverse());
+            document.getElementById('selectedTransactionEip6493FromOffset').innerText = arrayToHexString(fromOffset);
+            document.getElementById('selectedTransactionEip6493FromOffsetDescription').innerText = arrayToDecString(fromOffset.reverse());
 
-            const numPayloadBytes = Number(arrayToDecString(signatureOffset)) - Number(arrayToDecString(payloadOffset));
+            const numPayloadBytes = Number(arrayToDecString(fromOffset)) - Number(arrayToDecString(payloadOffset));
             let payload = bytes.slice(0, numPayloadBytes);
             bytes = bytes.slice(numPayloadBytes);
-            const numSignatureBytes = bytes.length;
-            let signature = bytes.slice(0, numSignatureBytes);
-            bytes = bytes.slice(numSignatureBytes);
+            const numFromBytes = bytes.length;
+            let from = bytes.slice(0, numFromBytes);
+            bytes = bytes.slice(numFromBytes);
             assert(bytes.length === 0);
 
             const payloadOffsets = [];
@@ -2497,44 +2497,44 @@
 
             assert(payload.length === 0);
 
-            assert(signature.length >= 2);
-            const signatureActiveFields = signature.slice(0, 2);
-            signature = signature.slice(2);
-            document.getElementById('selectedTransactionEip6493SignatureActiveFields').innerText = arrayToHexString(signatureActiveFields);
-            document.getElementById('selectedTransactionEip6493SignatureActiveFieldsDescription').innerText = '0b' + arrayToBinString(signatureActiveFields);
+            assert(from.length >= 2);
+            const fromActiveFields = from.slice(0, 2);
+            from = from.slice(2);
+            document.getElementById('selectedTransactionEip6493FromActiveFields').innerText = arrayToHexString(fromActiveFields);
+            document.getElementById('selectedTransactionEip6493FromActiveFieldsDescription').innerText = '0b' + arrayToBinString(fromActiveFields);
 
-            if (signatureActiveFields[0] & 0x01) {
-                assert(signature.length >= 20);
-                const signatureFrom = signature.slice(0, 20);
-                signature = signature.slice(20);
-                document.getElementById('selectedTransactionEip6493SignatureHasFrom').hidden = false;
-                document.getElementById('selectedTransactionEip6493SignatureHasFromMerkleization').innerText = 'from';
-                document.getElementById('selectedTransactionEip6493SignatureFrom').innerText = arrayToHexString(signatureFrom);
-                document.getElementById('selectedTransactionEip6493SignatureFromDescription').innerHTML =
-                    '<a href="https://etherscan.io/address/0x' + arrayToHexString(signatureFrom) + '" target="_blank">' +
+            if (fromActiveFields[0] & 0x01) {
+                assert(from.length >= 20);
+                const fromAddress = from.slice(0, 20);
+                from = from.slice(20);
+                document.getElementById('selectedTransactionEip6493FromHasAddress').hidden = false;
+                document.getElementById('selectedTransactionEip6493FromHasAddressMerkleization').innerText = 'from';
+                document.getElementById('selectedTransactionEip6493FromAddress').innerText = arrayToHexString(fromAddress);
+                document.getElementById('selectedTransactionEip6493FromAddressDescription').innerHTML =
+                    '<a href="https://etherscan.io/address/0x' + arrayToHexString(fromAddress) + '" target="_blank">' +
                     'Origin' + '</a>';
             } else {
-                document.getElementById('selectedTransactionEip6493SignatureHasFrom').hidden = true;
-                document.getElementById('selectedTransactionEip6493SignatureHasFromMerkleization').innerHTML = '<span class="unused">0</span>';
+                document.getElementById('selectedTransactionEip6493FromHasAddress').hidden = true;
+                document.getElementById('selectedTransactionEip6493FromHasAddressMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
-            if (signatureActiveFields[0] & 0x02) {
-                assert(signature.length >= 65);
-                const signatureEcdsaSignature = signature.slice(0, 65);
-                signature = signature.slice(65);
-                document.getElementById('selectedTransactionEip6493SignatureHasEcdsaSignature').hidden = false;
-                document.getElementById('selectedTransactionEip6493SignatureHasEcdsaSignatureMerkleization').innerText = 'ecdsa_signature';
-                document.getElementById('selectedTransactionEip6493SignatureEcdsaSignature').innerHTML =
-                    (arrayToHexString(signatureEcdsaSignature).match(/.{1,64}/g) ?? []).join('<br />');
+            if (fromActiveFields[0] & 0x02) {
+                assert(from.length >= 65);
+                const fromSecp256k1Signature = from.slice(0, 65);
+                from = from.slice(65);
+                document.getElementById('selectedTransactionEip6493FromHasSecp256k1Signature').hidden = false;
+                document.getElementById('selectedTransactionEip6493FromHasSecp256k1SignatureMerkleization').innerText = 'ecdsa_signature';
+                document.getElementById('selectedTransactionEip6493FromSecp256k1Signature').innerHTML =
+                    (arrayToHexString(fromSecp256k1Signature).match(/.{1,64}/g) ?? []).join('<br />');
             } else {
-                document.getElementById('selectedTransactionEip6493SignatureHasEcdsaSignature').hidden = true;
-                document.getElementById('selectedTransactionEip6493SignatureHasEcdsaSignatureMerkleization').innerHTML = '<span class="unused">0</span>';
+                document.getElementById('selectedTransactionEip6493FromHasSecp256k1Signature').hidden = true;
+                document.getElementById('selectedTransactionEip6493FromHasSecp256k1SignatureMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
-            assert(signatureActiveFields[0] < 0x04);
-            assert(signatureActiveFields[1] === 0);
+            assert(fromActiveFields[0] < 0x04);
+            assert(fromActiveFields[1] === 0);
 
-            assert(signature.length === 0);
+            assert(from.length === 0);
 
             document.getElementById('specsDetail').hidden = true;
             document.getElementById('selectedTransactionRlpDetail').hidden = true;
