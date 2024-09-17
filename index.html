@@ -2508,7 +2508,7 @@
                 const fromAddress = from.slice(0, 20);
                 from = from.slice(20);
                 document.getElementById('selectedTransactionEip6404FromHasAddress').hidden = false;
-                document.getElementById('selectedTransactionEip6404FromHasAddressMerkleization').innerText = 'from';
+                document.getElementById('selectedTransactionEip6404FromHasAddressMerkleization').innerText = 'address';
                 document.getElementById('selectedTransactionEip6404FromAddress').innerText = arrayToHexString(fromAddress);
                 document.getElementById('selectedTransactionEip6404FromAddressDescription').innerHTML =
                     '<a href="https://etherscan.io/address/0x' + arrayToHexString(fromAddress) + '" target="_blank">' +
@@ -2523,7 +2523,7 @@
                 const fromSecp256k1Signature = from.slice(0, 65);
                 from = from.slice(65);
                 document.getElementById('selectedTransactionEip6404FromHasSecp256k1Signature').hidden = false;
-                document.getElementById('selectedTransactionEip6404FromHasSecp256k1SignatureMerkleization').innerText = 'ecdsa_signature';
+                document.getElementById('selectedTransactionEip6404FromHasSecp256k1SignatureMerkleization').innerText = 'secp256k1_signature';
                 document.getElementById('selectedTransactionEip6404FromSecp256k1Signature').innerHTML =
                     (arrayToHexString(fromSecp256k1Signature).match(/.{1,64}/g) ?? []).join('<br />');
             } else {
