@@ -2113,9 +2113,9 @@
             }
 
             if (payloadActiveFields[0] & 0x02) {
-                assert(payload.length >= 8);
-                const payloadChainId = payload.slice(0, 8);
-                payload = payload.slice(8);
+                assert(payload.length >= 32);
+                const payloadChainId = payload.slice(0, 32);
+                payload = payload.slice(32);
                 document.getElementById('selectedTransactionEip6404PayloadHasChainId').hidden = false;
                 document.getElementById('selectedTransactionEip6404PayloadHasChainIdMerkleization').innerText = 'chain_id';
                 document.getElementById('selectedTransactionEip6404PayloadChainId').innerText = arrayToHexString(payloadChainId);

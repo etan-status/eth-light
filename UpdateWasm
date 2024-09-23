@@ -70,7 +70,7 @@ nim c \
     --cc:clang \
     --clang.exe:emcc \
     --clang.linkerexe:emcc \
-    --gc:arc \
+    --mm:arc \
     --exceptions:goto \
     --define:noSignalHandler \
     --define:danger \
