@@ -94,286 +94,6 @@
             text-align: left;
         }
 
-        .tree {
-            font-family: 'm_1mmedium', monospace;
-            text-align: right;
-        }
-
-        .tree td {
-            position: relative;
-        }
-
-        .unused {
-            font-family: 'm_1mlight', monospace;
-            color: #797979;
-        }
-
-        .tree .node-right {
-            padding-right: 30px;
-        }
-
-        .tree .node-left {
-            padding-left: 30px;
-        }
-
-        .tree .node-right::after {
-            content: "";
-            width: 10px;
-            height: 10px;
-            border: 1px solid #000;
-            background-color: #fff;
-            z-index: 1;
-            border-radius: 50%;
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .tree .node-bottom {
-            text-align: center;
-        }
-
-        .tree .node-bottom::after {
-            content: "";
-            width: 10px;
-            height: 10px;
-            border: 1px solid #000;
-            background-color: #fff;
-            z-index: 1;
-            border-radius: 50%;
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .tree .node-left {
-            text-align: left;
-        }
-
-        .tree .node-left::before {
-            content: "";
-            width: 10px;
-            height: 10px;
-            border: 1px solid #000;
-            background-color: #fff;
-            z-index: 1;
-            border-radius: 50%;
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .tree .lines {
-            background-color: #000;
-            position: absolute;
-        }
-
-        .tree .node-right .lines {
-            left: -15px;
-            height: 1px;
-            transform-origin: left;
-        }
-
-        .tree .node-right .lines:nth-child(1) {
-            top: 25%;
-        }
-
-        .tree .node-right .lines:nth-child(2) {
-            top: 75%;
-        }
-
-        .tree .node-right[rowspan="2"] .lines {
-            width: 100%;
-        }
-
-        .tree .node-right[rowspan="2"] .lines:nth-child(1) {
-            transform: rotate(17deg) translateY(-50%);
-        }
-
-        .tree .node-right[rowspan="2"] .lines:nth-child(2) {
-            transform: rotate(-17deg) translateY(-50%);
-        }
-
-        .tree .node-right[rowspan="4"] .lines {
-            width: 110%;
-        }
-
-        .tree .node-right[rowspan="4"] .lines:nth-child(1) {
-            transform: rotate(35deg) translateY(-50%);
-        }
-
-        .tree .node-right[rowspan="4"] .lines:nth-child(2) {
-            transform: rotate(-35deg) translateY(-50%);
-        }
-
-        .tree .node-right[rowspan="8"] .lines {
-            width: 170%;
-        }
-
-        .tree .node-right[rowspan="8"] .lines:nth-child(1) {
-            transform: rotate(54deg) translateY(-50%);
-        }
-
-        .tree .node-right[rowspan="8"] .lines:nth-child(2) {
-            transform: rotate(-54deg) translateY(-50%);
-        }
-
-        .tree .node-right[rowspan="16"] .lines {
-            width: 290%;
-        }
-
-        .tree .node-right[rowspan="16"] .lines:nth-child(1) {
-            transform: rotate(71deg) translateY(-50%);
-        }
-
-        .tree .node-right[rowspan="16"] .lines:nth-child(2) {
-            transform: rotate(-71deg) translateY(-50%);
-        }
-
-        .tree .node-right[rowspan="17"] .lines {
-            width: 220%;
-        }
-
-        .tree .node-right[rowspan="17"] .lines:nth-child(1) {
-            top: 0%;
-            transform: rotate(63deg) translateY(-50%);
-        }
-
-        .tree .node-right[rowspan="17"] .lines:nth-child(2) {
-            width: 210%;
-            top: 97%;
-            transform: rotate(-62deg) translateY(-50%);
-        }
-
-        .tree .node-right[rowspan="32"] .lines {
-            width: 540%;
-        }
-
-        .tree .node-right[rowspan="32"] .lines:nth-child(1) {
-            transform: rotate(80deg) translateY(-50%);
-        }
-
-        .tree .node-right[rowspan="32"] .lines:nth-child(2) {
-            transform: rotate(-80deg) translateY(-50%);
-        }
-
-        .tree .node-bottom .lines {
-            bottom: -15px;
-            height: 1px;
-            width: 85px;
-            transform-origin: top;
-        }
-
-        .tree .node-bottom .lines:nth-child(1) {
-            left: 10%;
-            bottom: 23%;
-        }
-
-        .tree .node-bottom .lines:nth-child(2) {
-            left: 43%;
-            bottom: -12%;
-        }
-
-        .tree .node-bottom[rowspan="4"] .lines:nth-child(1) {
-            transform: rotate(-36deg) translateX(-50%);
-        }
-
-        .tree .node-bottom[rowspan="4"] .lines:nth-child(2) {
-            transform: rotate(36deg) translateY(-50%);
-        }
-
-        .tree .node-left .lines {
-            right: -15px;
-            height: 1px;
-            transform-origin: right;
-        }
-
-        .tree .node-left .lines:nth-child(1) {
-            top: 25%;
-        }
-
-        .tree .node-left .lines:nth-child(2) {
-            top: 75%;
-        }
-
-        .tree .node-left[rowspan="2"] .lines {
-            width: 100%;
-        }
-
-        .tree .node-left[rowspan="2"] .lines:nth-child(1) {
-            transform: rotate(-17deg) translateY(-50%);
-        }
-
-        .tree .node-left[rowspan="2"] .lines:nth-child(2) {
-            transform: rotate(17deg) translateY(-50%);
-        }
-
-        .tree .node-left[rowspan="4"] .lines {
-            width: 110%;
-        }
-
-        .tree .node-left[rowspan="4"] .lines:nth-child(1) {
-            transform: rotate(-35deg) translateY(-50%);
-        }
-
-        .tree .node-left[rowspan="4"] .lines:nth-child(2) {
-            transform: rotate(35deg) translateY(-50%);
-        }
-
-        .tree .node-left[rowspan="8"] .lines {
-            width: 170%;
-        }
-
-        .tree .node-left[rowspan="8"] .lines:nth-child(1) {
-            transform: rotate(-54deg) translateY(-50%);
-        }
-
-        .tree .node-left[rowspan="8"] .lines:nth-child(2) {
-            transform: rotate(54deg) translateY(-50%);
-        }
-
-        .tree .node-left[rowspan="16"] .lines {
-            width: 290%;
-        }
-
-        .tree .node-left[rowspan="16"] .lines:nth-child(1) {
-            transform: rotate(-71deg) translateY(-50%);
-        }
-
-        .tree .node-left[rowspan="16"] .lines:nth-child(2) {
-            transform: rotate(71deg) translateY(-50%);
-        }
-
-        .tree .node-left[rowspan="17"] .lines {
-            width: 180%;
-        }
-
-        .tree .node-left[rowspan="17"] .lines:nth-child(1) {
-            top: 0%;
-            width: 190%;
-            transform: rotate(-59deg) translateY(-50%);
-        }
-
-        .tree .node-left[rowspan="17"] .lines:nth-child(2) {
-            top: 97%;
-            transform: rotate(57deg) translateY(-50%);
-        }
-
-        .tree .node-left[rowspan="32"] .lines {
-            width: 540%;
-        }
-
-        .tree .node-left[rowspan="32"] .lines:nth-child(1) {
-            transform: rotate(-80deg) translateY(-50%);
-        }
-
-        .tree .node-left[rowspan="32"] .lines:nth-child(2) {
-            transform: rotate(80deg) translateY(-50%);
-        }
-
         .fas {
             width: 12px;
             text-align: center;
@@ -785,179 +505,6 @@
                     </tbody>
                 </table>
             </div>
-            <div style="width: 100%;">
-                <table class="tree" style="margin: 0 auto;">
-                    <tr>
-                        <td class="node-right" style="width: 200px;"><span id="selectedTransactionEip6404PayloadHasTypeMerkleization"></span></td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="16"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="32"><div class="lines"></div><div class="lines"></div></td>
-                        <td rowspan="16"></td>
-                        <td rowspan="19"></td>
-                        <td rowspan="16"></td>
-                        <td class="node-left" rowspan="32"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="16"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" style="width: 200px;" rowspan="2"><span id="selectedTransactionEip6404FromHasAddressMerkleization"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right"><span id="selectedTransactionEip6404PayloadHasChainIdMerkleization"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right"><span id="selectedTransactionEip6404PayloadHasNonceMerkleization"></span></td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="2"><span id="selectedTransactionEip6404FromHasSecp256k1SignatureMerkleization"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right"><span id="selectedTransactionEip6404PayloadHasMaxFeesPerGasMerkleization"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right"><span id="selectedTransactionEip6404PayloadHasGasMerkleization"></span></td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left unused" rowspan="2">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right"><span id="selectedTransactionEip6404PayloadHasToMerkleization"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right"><span id="selectedTransactionEip6404PayloadHasValueMerkleization"></span></td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left unused" rowspan="2">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right"><span id="selectedTransactionEip6404PayloadHasInputMerkleization"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right"><span id="selectedTransactionEip6404PayloadHasAccessListMerkleization"></span></td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left unused" rowspan="2">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right"><span id="selectedTransactionEip6404PayloadHasMaxPriorityFeesPerGasMerkleization"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right"><span id="selectedTransactionEip6404PayloadHasBlobVersionedHashesMerkleization"></span></td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left unused" rowspan="2">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left unused" rowspan="2">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left unused" rowspan="2">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="16"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="17"><div class="lines"></div><div class="lines"></div><div>payload</div></td>
-                        <td class="node-left" rowspan="17"><div class="lines"></div><div class="lines"></div><div style="width: 72px;">from</div></td>
-                        <td class="node-left" rowspan="16"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left unused" rowspan="2">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left unused" rowspan="2">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-bottom" rowspan="4" style="width: 100px;"><div class="lines"></div><div class="lines"></div>root</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left unused" rowspan="2">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left unused" rowspan="2">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td rowspan="12"></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left unused" rowspan="2">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left unused" rowspan="2">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left unused" rowspan="2">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-left unused" rowspan="2">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right" colspan="6">active_fields</td>
-                        <td class="node-left" colspan="5">active_fields</td>
-                    </tr>
-                </table>
-            </div>
         </div>
         <div id="selectedReceiptEip6466Detail" hidden="hidden" style="text-align: center;">
             <div class="headerMaster" style="width: 1000px; margin-top: 57px; margin-bottom: 57px; margin-left: auto; margin-right: auto;">
@@ -1006,142 +553,6 @@
                             <td class="kvValue"><input type="button" id="copyReceiptEip6466Button" value="Copy" /></td>
                         </tr>
                     </tbody>
-                </table>
-            </div>
-            <div style="width: 100%;">
-                <table class="tree" style="margin: 0 auto;">
-                    <tr>
-                        <td class="node-right" style="width: 200px;"><span id="selectedReceiptEip6466HasRootMerkleization"></span></td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="16"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="32"><div class="lines"></div><div class="lines"></div></td>
-                        <td rowspan="16"></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right"><span id="selectedReceiptEip6466HasGasUsedMerkleization"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right"><span id="selectedReceiptEip6466HasContractAddressMerkleization"></span></td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right"><span id="selectedReceiptEip6466HasLogsBloomMerkleization"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right"><span id="selectedReceiptEip6466HasLogsMerkleization"></span></td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right"><span id="selectedReceiptEip6466HasStatusMerkleization"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="16"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="17"><div class="lines"></div><div class="lines"></div><div>receipt</div></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="8"><div class="lines"></div><div class="lines"></div></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                        <td class="node-right" rowspan="4"><div class="lines"></div><div class="lines"></div></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                        <td class="node-right" rowspan="2"><div class="lines"></div><div class="lines"></div></td>
-                    </tr>
-                    <tr>
-                        <td class="node-right unused">0</td>
-                    </tr>
-                    <tr>
-                        <td class="node-right" colspan="6">active_fields</td>
-                    </tr>
                 </table>
             </div>
         </div>
@@ -2090,7 +1501,6 @@
                 const payloadType = payload.slice(0, 1);
                 payload = payload.slice(1);
                 document.getElementById('selectedTransactionEip6404PayloadHasType').hidden = false;
-                document.getElementById('selectedTransactionEip6404PayloadHasTypeMerkleization').innerText = 'type';
                 document.getElementById('selectedTransactionEip6404PayloadType').innerText = arrayToHexString(payloadType);
                 if (payloadType[0] === 0x03) {
                     document.getElementById('selectedTransactionEip6404PayloadTypeDescription').innerHTML =
@@ -2109,7 +1519,6 @@
                 }
             } else {
                 document.getElementById('selectedTransactionEip6404PayloadHasType').hidden = true;
-                document.getElementById('selectedTransactionEip6404PayloadHasTypeMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (payloadActiveFields[0] & 0x02) {
@@ -2117,11 +1526,9 @@
                 const payloadChainId = payload.slice(0, 32);
                 payload = payload.slice(32);
                 document.getElementById('selectedTransactionEip6404PayloadHasChainId').hidden = false;
-                document.getElementById('selectedTransactionEip6404PayloadHasChainIdMerkleization').innerText = 'chain_id';
                 document.getElementById('selectedTransactionEip6404PayloadChainId').innerText = arrayToHexString(payloadChainId);
             } else {
                 document.getElementById('selectedTransactionEip6404PayloadHasChainId').hidden = true;
-                document.getElementById('selectedTransactionEip6404PayloadHasChainIdMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (payloadActiveFields[0] & 0x04) {
@@ -2129,12 +1536,10 @@
                 const payloadNonce = payload.slice(0, 8);
                 payload = payload.slice(8);
                 document.getElementById('selectedTransactionEip6404PayloadHasNonce').hidden = false;
-                document.getElementById('selectedTransactionEip6404PayloadHasNonceMerkleization').innerText = 'nonce';
                 document.getElementById('selectedTransactionEip6404PayloadNonce').innerText = arrayToHexString(payloadNonce);
                 document.getElementById('selectedTransactionEip6404PayloadNonceDescription').innerText = arrayToDecString(payloadNonce.reverse());
             } else {
                 document.getElementById('selectedTransactionEip6404PayloadHasNonce').hidden = true;
-                document.getElementById('selectedTransactionEip6404PayloadHasNonceMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (payloadActiveFields[0] & 0x08) {
@@ -2142,13 +1547,11 @@
                 const payloadMaxFeesPerGasOffset = payload.slice(0, 4);
                 payload = payload.slice(4);
                 document.getElementById('selectedTransactionEip6404PayloadHasMaxFeesPerGasOffset').hidden = false;
-                document.getElementById('selectedTransactionEip6404PayloadHasMaxFeesPerGasMerkleization').innerText = 'max_fees_per_gas';
                 document.getElementById('selectedTransactionEip6404PayloadMaxFeesPerGasOffset').innerText = arrayToHexString(payloadMaxFeesPerGasOffset);
                 document.getElementById('selectedTransactionEip6404PayloadMaxFeesPerGasOffsetDescription').innerText = arrayToDecString(payloadMaxFeesPerGasOffset.reverse());
                 payloadOffsets.push(Number(arrayToDecString(payloadMaxFeesPerGasOffset)));
             } else {
                 document.getElementById('selectedTransactionEip6404PayloadHasMaxFeesPerGasOffset').hidden = true;
-                document.getElementById('selectedTransactionEip6404PayloadHasMaxFeesPerGasMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (payloadActiveFields[0] & 0x10) {
@@ -2156,12 +1559,10 @@
                 const payloadGas = payload.slice(0, 8);
                 payload = payload.slice(8);
                 document.getElementById('selectedTransactionEip6404PayloadHasGas').hidden = false;
-                document.getElementById('selectedTransactionEip6404PayloadHasGasMerkleization').innerText = 'gas';
                 document.getElementById('selectedTransactionEip6404PayloadGas').innerText = arrayToHexString(payloadGas);
                 document.getElementById('selectedTransactionEip6404PayloadGasDescription').innerText = toHumanReadableNumberString(Number(arrayToDecString(payloadGas.reverse())));
             } else {
                 document.getElementById('selectedTransactionEip6404PayloadHasGas').hidden = true;
-                document.getElementById('selectedTransactionEip6404PayloadHasGasMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (payloadActiveFields[0] & 0x20) {
@@ -2169,14 +1570,12 @@
                 const payloadTo = payload.slice(0, 20);
                 payload = payload.slice(20);
                 document.getElementById('selectedTransactionEip6404PayloadHasTo').hidden = false;
-                document.getElementById('selectedTransactionEip6404PayloadHasToMerkleization').innerText = 'to';
                 document.getElementById('selectedTransactionEip6404PayloadTo').innerText = arrayToHexString(payloadTo);
                 document.getElementById('selectedTransactionEip6404PayloadToDescription').innerHTML =
                     '<a href="https://etherscan.io/address/0x' + arrayToHexString(payloadTo) + '" target="_blank">' +
                     'Destination' + '</a>';
             } else {
                 document.getElementById('selectedTransactionEip6404PayloadHasTo').hidden = true;
-                document.getElementById('selectedTransactionEip6404PayloadHasToMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (payloadActiveFields[0] & 0x40) {
@@ -2184,12 +1583,10 @@
                 const payloadValue = payload.slice(0, 32);
                 payload = payload.slice(32);
                 document.getElementById('selectedTransactionEip6404PayloadHasValue').hidden = false;
-                document.getElementById('selectedTransactionEip6404PayloadHasValueMerkleization').innerText = 'value';
                 document.getElementById('selectedTransactionEip6404PayloadValue').innerText = arrayToHexString(payloadValue);
                 document.getElementById('selectedTransactionEip6404PayloadValueDescription').innerText = arrayToEthString(payloadValue.reverse()) + ' ETH';
             } else {
                 document.getElementById('selectedTransactionEip6404PayloadHasValue').hidden = true;
-                document.getElementById('selectedTransactionEip6404PayloadHasValueMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (payloadActiveFields[0] & 0x80) {
@@ -2197,13 +1594,11 @@
                 const payloadInputOffset = payload.slice(0, 4);
                 payload = payload.slice(4);
                 document.getElementById('selectedTransactionEip6404PayloadHasInputOffset').hidden = false;
-                document.getElementById('selectedTransactionEip6404PayloadHasInputMerkleization').innerText = 'input';
                 document.getElementById('selectedTransactionEip6404PayloadInputOffset').innerText = arrayToHexString(payloadInputOffset);
                 document.getElementById('selectedTransactionEip6404PayloadInputOffsetDescription').innerText = arrayToDecString(payloadInputOffset.reverse());
                 payloadOffsets.push(Number(arrayToDecString(payloadInputOffset)));
             } else {
                 document.getElementById('selectedTransactionEip6404PayloadHasInputOffset').hidden = true;
-                document.getElementById('selectedTransactionEip6404PayloadHasInputMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (payloadActiveFields[1] & 0x01) {
@@ -2211,13 +1606,11 @@
                 const payloadAccessListOffset = payload.slice(0, 4);
                 payload = payload.slice(4);
                 document.getElementById('selectedTransactionEip6404PayloadHasAccessListOffset').hidden = false;
-                document.getElementById('selectedTransactionEip6404PayloadHasAccessListMerkleization').innerText = 'access_list';
                 document.getElementById('selectedTransactionEip6404PayloadAccessListOffset').innerText = arrayToHexString(payloadAccessListOffset);
                 document.getElementById('selectedTransactionEip6404PayloadAccessListOffsetDescription').innerText = arrayToDecString(payloadAccessListOffset.reverse());
                 payloadOffsets.push(Number(arrayToDecString(payloadAccessListOffset)));
             } else {
                 document.getElementById('selectedTransactionEip6404PayloadHasAccessListOffset').hidden = true;
-                document.getElementById('selectedTransactionEip6404PayloadHasAccessListMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (payloadActiveFields[1] & 0x02) {
@@ -2225,13 +1618,11 @@
                 const payloadMaxPriorityFeesPerGasOffset = payload.slice(0, 4);
                 payload = payload.slice(4);
                 document.getElementById('selectedTransactionEip6404PayloadHasMaxPriorityFeesPerGasOffset').hidden = false;
-                document.getElementById('selectedTransactionEip6404PayloadHasMaxPriorityFeesPerGasMerkleization').innerText = 'max_priority_fees_per_gas';
                 document.getElementById('selectedTransactionEip6404PayloadMaxPriorityFeesPerGasOffset').innerText = arrayToHexString(payloadMaxPriorityFeesPerGasOffset);
                 document.getElementById('selectedTransactionEip6404PayloadMaxPriorityFeesPerGasOffsetDescription').innerText = arrayToDecString(payloadMaxPriorityFeesPerGasOffset.reverse());
                 payloadOffsets.push(Number(arrayToDecString(payloadMaxPriorityFeesPerGasOffset)));
             } else {
                 document.getElementById('selectedTransactionEip6404PayloadHasMaxPriorityFeesPerGasOffset').hidden = true;
-                document.getElementById('selectedTransactionEip6404PayloadHasMaxPriorityFeesPerGasMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (payloadActiveFields[1] & 0x04) {
@@ -2239,13 +1630,11 @@
                 const payloadBlobVersionedHashesOffset = payload.slice(0, 4);
                 payload = payload.slice(4);
                 document.getElementById('selectedTransactionEip6404PayloadHasBlobVersionedHashesOffset').hidden = false;
-                document.getElementById('selectedTransactionEip6404PayloadHasBlobVersionedHashesMerkleization').innerText = 'blob_versioned_hashes';
                 document.getElementById('selectedTransactionEip6404PayloadBlobVersionedHashesOffset').innerText = arrayToHexString(payloadBlobVersionedHashesOffset);
                 document.getElementById('selectedTransactionEip6404PayloadBlobVersionedHashesOffsetDescription').innerText = arrayToDecString(payloadBlobVersionedHashesOffset.reverse());
                 payloadOffsets.push(Number(arrayToDecString(payloadBlobVersionedHashesOffset)));
             } else {
                 document.getElementById('selectedTransactionEip6404PayloadHasBlobVersionedHashesOffset').hidden = true;
-                document.getElementById('selectedTransactionEip6404PayloadHasBlobVersionedHashesMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             assert(payloadActiveFields[1] < 0x08);
@@ -2508,14 +1897,12 @@
                 const fromAddress = from.slice(0, 20);
                 from = from.slice(20);
                 document.getElementById('selectedTransactionEip6404FromHasAddress').hidden = false;
-                document.getElementById('selectedTransactionEip6404FromHasAddressMerkleization').innerText = 'address';
                 document.getElementById('selectedTransactionEip6404FromAddress').innerText = arrayToHexString(fromAddress);
                 document.getElementById('selectedTransactionEip6404FromAddressDescription').innerHTML =
                     '<a href="https://etherscan.io/address/0x' + arrayToHexString(fromAddress) + '" target="_blank">' +
                     'Origin' + '</a>';
             } else {
                 document.getElementById('selectedTransactionEip6404FromHasAddress').hidden = true;
-                document.getElementById('selectedTransactionEip6404FromHasAddressMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (fromActiveFields[0] & 0x02) {
@@ -2523,12 +1910,10 @@
                 const fromSecp256k1Signature = from.slice(0, 65);
                 from = from.slice(65);
                 document.getElementById('selectedTransactionEip6404FromHasSecp256k1Signature').hidden = false;
-                document.getElementById('selectedTransactionEip6404FromHasSecp256k1SignatureMerkleization').innerText = 'secp256k1_signature';
                 document.getElementById('selectedTransactionEip6404FromSecp256k1Signature').innerHTML =
                     (arrayToHexString(fromSecp256k1Signature).match(/.{1,64}/g) ?? []).join('<br />');
             } else {
                 document.getElementById('selectedTransactionEip6404FromHasSecp256k1Signature').hidden = true;
-                document.getElementById('selectedTransactionEip6404FromHasSecp256k1SignatureMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             assert(fromActiveFields[0] < 0x04);
@@ -2567,11 +1952,9 @@
                 const root = bytes.slice(0, 32);
                 bytes = bytes.slice(32);
                 document.getElementById('selectedReceiptEip6466HasRoot').hidden = false;
-                document.getElementById('selectedReceiptEip6466HasRootMerkleization').innerText = 'root';
                 document.getElementById('selectedReceiptEip6466Root').innerText = arrayToHexString(root);
             } else {
                 document.getElementById('selectedReceiptEip6466HasRoot').hidden = true;
-                document.getElementById('selectedReceiptEip6466HasRootMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (activeFields[0] & 0x02) {
@@ -2579,12 +1962,10 @@
                 const gasUsed = bytes.slice(0, 8);
                 bytes = bytes.slice(8);
                 document.getElementById('selectedReceiptEip6466HasGasUsed').hidden = false;
-                document.getElementById('selectedReceiptEip6466HasGasUsedMerkleization').innerText = 'gas_used'
                 document.getElementById('selectedReceiptEip6466GasUsed').innerText = arrayToHexString(gasUsed);
                 document.getElementById('selectedReceiptEip6466GasUsedDescription').innerText = toHumanReadableNumberString(Number(arrayToDecString(gasUsed.reverse())));
             } else {
                 document.getElementById('selectedReceiptEip6466HasGasUsed').hidden = true;
-                document.getElementById('selectedReceiptEip6466HasGasUsedMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (activeFields[0] & 0x04) {
@@ -2592,14 +1973,12 @@
                 const contractAddress = bytes.slice(0, 32);
                 bytes = bytes.slice(32);
                 document.getElementById('selectedReceiptEip6466HasContractAddress').hidden = false;
-                document.getElementById('selectedReceiptEip6466HasContractAddressMerkleization').innerText = 'contract_address';
                 document.getElementById('selectedReceiptEip6466ContractAddress').innerText = arrayToHexString(contractAddress);
                 document.getElementById('selectedReceiptEip6466ContractAddressDescription').innerHTML =
                     '<a href="https://etherscan.io/address/0x' + arrayToHexString(contractAddress) + '" target="_blank">' +
                     'Contract' + '</a>';
             } else {
                 document.getElementById('selectedReceiptEip6466HasContractAddress').hidden = true;
-                document.getElementById('selectedReceiptEip6466HasContractAddressMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (activeFields[0] & 0x08) {
@@ -2607,12 +1986,10 @@
                 const logsBloom = bytes.slice(0, 256);
                 bytes = bytes.slice(256);
                 document.getElementById('selectedReceiptEip6466HasLogsBloom').hidden = false;
-                document.getElementById('selectedReceiptEip6466HasLogsBloomMerkleization').innerText = 'logs_bloom';
                 document.getElementById('selectedReceiptEip6466LogsBloom').innerHTML =
                     (arrayToHexString(logsBloom).match(/.{1,64}/g) ?? []).join('<br />');
             } else {
                 document.getElementById('selectedReceiptEip6466HasLogsBloom').hidden = true;
-                document.getElementById('selectedReceiptEip6466HasLogsBloomMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (activeFields[0] & 0x10) {
@@ -2620,13 +1997,11 @@
                 const logsOffset = bytes.slice(0, 4);
                 bytes = bytes.slice(4);
                 document.getElementById('selectedReceiptEip6466HasLogsOffset').hidden = false;
-                document.getElementById('selectedReceiptEip6466HasLogsMerkleization').innerText = 'logs';
                 document.getElementById('selectedReceiptEip6466LogsOffset').innerText = arrayToHexString(logsOffset);
                 document.getElementById('selectedReceiptEip6466LogsOffsetDescription').innerText = arrayToDecString(logsOffset.reverse());
                 offsets.push(Number(arrayToDecString(logsOffset)));
             } else {
                 document.getElementById('selectedReceiptEip6466HasLogsOffset').hidden = true;
-                document.getElementById('selectedReceiptEip6466HasLogsMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             if (activeFields[0] & 0x20) {
@@ -2634,12 +2009,10 @@
                 const status = bytes.slice(0, 1);
                 bytes = bytes.slice(1);
                 document.getElementById('selectedReceiptEip6466HasStatus').hidden = false;
-                document.getElementById('selectedReceiptEip6466HasStatusMerkleization').innerText = 'status';
                 document.getElementById('selectedReceiptEip6466Status').innerText = arrayToHexString(status);
                 document.getElementById('selectedReceiptEip6466StatusDescription').innerText = (status[0] ? 'Success' : 'Failure');
             } else {
                 document.getElementById('selectedReceiptEip6466HasStatus').hidden = true;
-                document.getElementById('selectedReceiptEip6466HasStatusMerkleization').innerHTML = '<span class="unused">0</span>';
             }
 
             assert(activeFields[0] < 0x40);
