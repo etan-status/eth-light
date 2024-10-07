@@ -211,6 +211,7 @@
                             <a href="https://eips.ethereum.org/EIPS/eip-2930" target="_blank">Access lists (EIP-2930)</a><br />
                             <a href="https://eips.ethereum.org/EIPS/eip-1559" target="_blank">Priority fees (EIP-1559)</a><br />
                             <a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">Blob transactions (EIP-4844)</a><br />
+                            <a href="https://eips.ethereum.org/EIPS/eip-7702" target="_blank">Set code transactions (EIP-7702)</a><br />
                         </td>
                     </tr>
                     <tr>
@@ -318,6 +319,10 @@
                             <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">Blob versioned hashes</a></td>
                             <td class="kvValue"><span id="selectedTransactionRlpBlobVersionedHashesLength"></span> <span class="description">(<span id="selectedTransactionRlpBlobVersionedHashesDescription"></span>)</span> <span id="selectedTransactionRlpBlobVersionedHashes"></span></td>
                         </tr>
+                        <tr id="selectedTransactionRlpHasAuthorizationList">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-7702" target="_blank">Authorization list</a><span id="selectedTransactionRlpAuthorizationListLabel"></span></td>
+                            <td class="kvValue"><span id="selectedTransactionRlpAuthorizationListLength"></span> <span class="description">(<span id="selectedTransactionRlpAuthorizationListDescription"></span>)</span> <span id="selectedTransactionRlpAuthorizationList"></span></td>
+                        </tr>
                         <tr>
                             <td class="kvKey">V</td>
                             <td class="kvValue"><span id="selectedTransactionRlpVLength"></span> <span id="selectedTransactionRlpV"></span> <span class="description">(<span id="selectedTransactionRlpVDescription"></span>)</span></td>
@@ -399,8 +404,8 @@
                             <td class="kvValue"><span id="selectedTransactionEip6404PayloadOffset"></span> <span class="description">(start +<span id="selectedTransactionEip6404PayloadOffsetDescription"></span>)</span></td>
                         </tr>
                         <tr>
-                            <td class="kvKey">From offset</td>
-                            <td class="kvValue"><span id="selectedTransactionEip6404FromOffset"></span> <span class="description">(start +<span id="selectedTransactionEip6404FromOffsetDescription"></span>)</span></td>
+                            <td class="kvKey">Signature offset</td>
+                            <td class="kvValue"><span id="selectedTransactionEip6404SignatureOffset"></span> <span class="description">(start +<span id="selectedTransactionEip6404SignatureOffsetDescription"></span>)</span></td>
                         </tr>
                         <tr>
                             <td class="kvKey">Payload active fields</td>
@@ -450,6 +455,10 @@
                             <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">Blob versioned hashes</a> offset</td>
                             <td class="kvValue"><span id="selectedTransactionEip6404PayloadBlobVersionedHashesOffset"></span> <span class="description">(payload data +<span id="selectedTransactionEip6404PayloadBlobVersionedHashesOffsetDescription"></span>)</span></td>
                         </tr>
+                        <tr id="selectedTransactionEip6404PayloadHasAuthorizationListOffset">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-7702" target="_blank">Authorization list</a> offset</td>
+                            <td class="kvValue"><span id="selectedTransactionEip6404PayloadAuthorizationListOffset"></span> <span class="description">(payload data +<span id="selectedTransactionEip6404PayloadAuthorizationListOffsetDescription"></span>)</span></td>
+                        </tr>
                         <tr id="selectedTransactionEip6404PayloadHasMaxFeesPerGas">
                             <td class="kvKey">Fees active fields</td>
                             <td class="kvValue"><span id="selectedTransactionEip6404PayloadMaxFeesPerGasActiveFields"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadMaxFeesPerGasActiveFieldsDescription"></span>)</span></td>
@@ -486,17 +495,17 @@
                             <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">Blob versioned hashes</a><span id="selectedTransactionEip6404PayloadBlobVersionedHashesLabel"></span></td>
                             <td class="kvValue"><span id="selectedTransactionEip6404PayloadBlobVersionedHashes"></span></td>
                         </tr>
+                        <tr id="selectedTransactionEip6404PayloadHasAuthorizationList">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-7702" target="_blank">Authorization list</a><span id="selectedTransactionEip6404PayloadAuthorizationListLabel"></span></td>
+                            <td class="kvValue"><span id="selectedTransactionEip6404PayloadAuthorizationListStart"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadAuthorizationListDescription"></span>)</span> <span id="selectedTransactionEip6404PayloadAuthorizationList"></span></td>
+                        </tr>
                         <tr>
-                            <td class="kvKey">From active fields</td>
-                            <td class="kvValue"><span id="selectedTransactionEip6404FromActiveFields"></span> <span class="description">(<span id="selectedTransactionEip6404FromActiveFieldsDescription"></span>)</span></td>
+                            <td class="kvKey">Signature active fields</td>
+                            <td class="kvValue"><span id="selectedTransactionEip6404SignatureActiveFields"></span> <span class="description">(<span id="selectedTransactionEip6404SignatureActiveFieldsDescription"></span>)</span></td>
                         </tr>
-                        <tr id="selectedTransactionEip6404FromHasAddress">
-                            <td class="kvKey">Address</td>
-                            <td class="kvValue"><span id="selectedTransactionEip6404FromAddress"></span> <span class="description">(<span id="selectedTransactionEip6404FromAddressDescription"></span>)</span></td>
-                        </tr>
-                        <tr id="selectedTransactionEip6404FromHasSecp256k1Signature">
-                            <td class="kvKey">Secp256k1 signature</td>
-                            <td class="kvValue"><span id="selectedTransactionEip6404FromSecp256k1Signature"></span></td>
+                        <tr id="selectedTransactionEip6404SignatureHasSecp256k1">
+                            <td class="kvKey">Secp256k1</td>
+                            <td class="kvValue"><span id="selectedTransactionEip6404SignatureSecp256k1"></span></td>
                         </tr>
                         <tr>
                             <td class="kvKey">&nbsp;</td>
@@ -977,7 +986,13 @@
             assert(bytes.length > 0);
             const type = bytes[0];
 
-            if (type === 0x03) {
+            if (type === 0x04) {
+                document.getElementById('selectedTransactionRlpHasType').hidden = false;
+                document.getElementById('selectedTransactionRlpType').innerText = byteToHexString(type);
+                document.getElementById('selectedTransactionRlpTypeDescription').innerHTML =
+                    '<a href="https://eips.ethereum.org/EIPS/eip-7702" target="_blank">EIP-7702</a>';
+                bytes = bytes.slice(1);
+            } else if (type === 0x03) {
                 document.getElementById('selectedTransactionRlpHasType').hidden = false;
                 document.getElementById('selectedTransactionRlpType').innerText = byteToHexString(type);
                 document.getElementById('selectedTransactionRlpTypeDescription').innerHTML =
@@ -1009,7 +1024,7 @@
             document.getElementById('selectedTransactionRlpLength').innerText = arrayToHexString(length);
             document.getElementById('selectedTransactionRlpLengthDescription').innerText = lengthInfo.dataLen + ' bytes';
 
-            if (type === 0x03 || type === 0x02 || type === 0x01) {
+            if (type === 0x04 || type === 0x03 || type === 0x02 || type === 0x01) {
                 const chainIdInfo = decodeRlpLength(bytes);
                 assert(chainIdInfo.type === 'str');
                 const chainIdLength = bytes.slice(0, chainIdInfo.offset);
@@ -1033,7 +1048,7 @@
             document.getElementById('selectedTransactionRlpNonce').innerText = arrayToHexString(nonce);
             document.getElementById('selectedTransactionRlpNonceDescription').innerText = arrayToDecString(nonce);
 
-            if (type === 0x03 || type === 0x02) {
+            if (type === 0x04 || type === 0x03 || type === 0x02) {
                 const maxPriorityFeePerGasInfo = decodeRlpLength(bytes);
                 assert(maxPriorityFeePerGasInfo.type === 'str');
                 const maxPriorityFeePerGasLength = bytes.slice(0, maxPriorityFeePerGasInfo.offset);
@@ -1109,7 +1124,7 @@
             }
             document.getElementById('selectedTransactionRlpInputDescription').innerText = toHumanReadableByteCountString(inputInfo.dataLen);
 
-            if (type === 0x03 || type === 0x02 || type === 0x01) {
+            if (type === 0x04 || type === 0x03 || type === 0x02 || type === 0x01) {
                 const accessListInfo = decodeRlpLength(bytes);
                 assert(accessListInfo.type === 'list');
                 const accessListLength = bytes.slice(0, accessListInfo.offset);
@@ -1222,6 +1237,116 @@
                 document.getElementById('selectedTransactionRlpHasBlobVersionedHashes').hidden = true;
             }
 
+            if (type === 0x04) {
+                const authorizationListInfo = decodeRlpLength(bytes);
+                assert(authorizationListInfo.type === 'list');
+                const authorizationListLength = bytes.slice(0, authorizationListInfo.offset);
+                bytes = bytes.slice(authorizationListInfo.offset);
+                let authorizationList = bytes.slice(0, authorizationListInfo.dataLen);
+                bytes = bytes.slice(authorizationListInfo.dataLen);
+                document.getElementById('selectedTransactionRlpHasAuthorizationList').hidden = false;
+                document.getElementById('selectedTransactionRlpAuthorizationListLength').innerText = arrayToHexString(authorizationListLength);
+                document.getElementById('selectedTransactionRlpAuthorizationListDescription').innerHTML = toHumanReadableByteCountString(authorizationListInfo.dataLen);
+                document.getElementById('selectedTransactionRlpAuthorizationList').innerHTML = '';
+                document.getElementById('selectedTransactionRlpAuthorizationListLabel').innerHTML = '';
+
+                let authorizationIndex = 0;
+                while (authorizationList.length) {
+                    const authorizationInfo = decodeRlpLength(authorizationList);
+                    assert(authorizationInfo.type === 'list');
+                    const authorizationLength = authorizationList.slice(0, authorizationInfo.offset);
+                    authorizationList = authorizationList.slice(authorizationInfo.offset);
+                    let authorization = authorizationList.slice(0, authorizationInfo.dataLen);
+                    authorizationList = authorizationList.slice(authorizationInfo.dataLen);
+                    document.getElementById('selectedTransactionRlpAuthorizationList').innerHTML +=
+                        '<br /><span>' + arrayToHexString(authorizationLength) + '</span> ' +
+                        '<span class="description">(' + toHumanReadableByteCountString(authorizationInfo.dataLen) + ')</span>';
+                    document.getElementById('selectedTransactionRlpAuthorizationListLabel').innerHTML +=
+                        '<br /><span>[' + authorizationIndex + ']</span>';
+
+                    const chainIdInfo = decodeRlpLength(authorization);
+                    assert(chainIdInfo.type === 'str');
+                    const chainIdLength = authorization.slice(0, chainIdInfo.offset);
+                    authorization = authorization.slice(chainIdInfo.offset);
+                    const chainId = authorization.slice(0, chainIdInfo.dataLen);
+                    authorization = authorization.slice(chainIdInfo.dataLen);
+                    document.getElementById('selectedTransactionRlpAuthorizationList').innerHTML +=
+                        '<br /><span>' + arrayToHexString(chainIdLength) + '</span> ' +
+                        '<span>' + arrayToHexString(chainId) + '</span>';
+                    document.getElementById('selectedTransactionRlpAuthorizationListLabel').innerHTML +=
+                        '<br /><span><a href="https://eips.ethereum.org/EIPS/eip-155" target="_blank">Chain ID</a></span>';
+
+                    const addressInfo = decodeRlpLength(authorization);
+                    assert(addressInfo.type === 'str');
+                    const addressLength = authorization.slice(0, addressInfo.offset);
+                    authorization = authorization.slice(addressInfo.offset);
+                    const address = authorization.slice(0, addressInfo.dataLen);
+                    authorization = authorization.slice(addressInfo.dataLen);
+                    document.getElementById('selectedTransactionRlpAuthorizationList').innerHTML +=
+                        '<br /><span>' + arrayToHexString(addressLength) + '</span> ' +
+                        '<span>' + arrayToHexString(address) + '</span>';
+                    document.getElementById('selectedTransactionRlpAuthorizationListLabel').innerHTML +=
+                        '<br /><span><a href="https://etherscan.io/address/0x' + arrayToHexString(address) + '" target="_blank">Address</a></span>';
+
+                    const nonceInfo = decodeRlpLength(authorization);
+                    assert(nonceInfo.type === 'str');
+                    const nonceLength = authorization.slice(0, nonceInfo.offset);
+                    authorization = authorization.slice(nonceInfo.offset);
+                    const nonce = authorization.slice(0, nonceInfo.dataLen);
+                    authorization = authorization.slice(nonceInfo.dataLen);
+                    document.getElementById('selectedTransactionRlpAuthorizationList').innerHTML +=
+                        '<br /><span>' + arrayToHexString(nonceLength) + '</span> ' +
+                        '<span>' + arrayToHexString(nonce) + '</span>';
+                    document.getElementById('selectedTransactionRlpAuthorizationListLabel').innerHTML +=
+                        '<br /><span>Nonce</span>';
+
+                    const yParityInfo = decodeRlpLength(authorization);
+                    assert(yParityInfo.type === 'str');
+                    const yParityLength = authorization.slice(0, yParityInfo.offset);
+                    authorization = authorization.slice(yParityInfo.offset);
+                    const yParity = authorization.slice(0, yParityInfo.dataLen);
+                    authorization = authorization.slice(yParityInfo.dataLen);
+                    document.getElementById('selectedTransactionRlpAuthorizationList').innerHTML +=
+                        '<br /><span>' + arrayToHexString(yParityLength) + '</span> ' +
+                        '<span>' + arrayToHexString(yParity) + '</span>';
+                    document.getElementById('selectedTransactionRlpAuthorizationListLabel').innerHTML +=
+                        '<br /><span>Y parity</span>';
+
+                    const rInfo = decodeRlpLength(authorization);
+                    assert(rInfo.type === 'str');
+                    const rLength = authorization.slice(0, rInfo.offset);
+                    authorization = authorization.slice(rInfo.offset);
+                    const r = authorization.slice(0, rInfo.dataLen);
+                    authorization = authorization.slice(rInfo.dataLen);
+                    document.getElementById('selectedTransactionRlpAuthorizationList').innerHTML +=
+                        '<br /><span>' + arrayToHexString(rLength) + '</span> ' +
+                        '<span>' + arrayToHexString(r) + '</span>';
+                    document.getElementById('selectedTransactionRlpAuthorizationListLabel').innerHTML +=
+                        '<br /><span>R</span>';
+
+                    const sInfo = decodeRlpLength(authorization);
+                    assert(sInfo.type === 'str');
+                    const sLength = authorization.slice(0, sInfo.offset);
+                    authorization = authorization.slice(sInfo.offset);
+                    const s = authorization.slice(0, sInfo.dataLen);
+                    authorization = authorization.slice(sInfo.dataLen);
+                    document.getElementById('selectedTransactionRlpAuthorizationList').innerHTML +=
+                        '<br /><span>' + arrayToHexString(sLength) + '</span> ' +
+                        '<span>' + arrayToHexString(s) + '</span>';
+                    document.getElementById('selectedTransactionRlpAuthorizationListLabel').innerHTML +=
+                        '<br /><span>S</span>';
+
+                    document.getElementById('selectedTransactionRlpHasChainId').hidden = false;
+                    document.getElementById('selectedTransactionRlpChainIdLength').innerText = arrayToHexString(chainIdLength);
+                    document.getElementById('selectedTransactionRlpChainId').innerText = arrayToHexString(chainId);
+
+                    assert(authorization.length === 0);
+                    authorizationIndex++;
+                }
+            } else {
+                document.getElementById('selectedTransactionRlpHasAuthorizationList').hidden = true;
+            }
+
             const vInfo = decodeRlpLength(bytes);
             assert(vInfo.type === 'str');
             const vLength = bytes.slice(0, vInfo.offset);
@@ -1232,7 +1357,7 @@
             document.getElementById('selectedTransactionRlpV').innerText = arrayToHexString(v);
             const vNumber = Number(arrayToDecString(v));
             let yParity;
-            if (type === 0x03 || type === 0x02 || type === 0x01) {
+            if (type === 0x04 || type === 0x03 || type === 0x02 || type === 0x01) {
                 assert(vNumber === 0x00 || vNumber === 0x01);
                 yParity = vNumber;
                 document.getElementById('selectedTransactionRlpVDescription').innerText =
@@ -1291,7 +1416,13 @@
             assert(bytes.length > 0);
             const type = bytes[0];
 
-            if (type === 0x03) {
+            if (type === 0x04) {
+                document.getElementById('selectedReceiptRlpHasType').hidden = false;
+                document.getElementById('selectedReceiptRlpType').innerText = byteToHexString(type);
+                document.getElementById('selectedReceiptRlpTypeDescription').innerHTML =
+                    '<a href="https://eips.ethereum.org/EIPS/eip-7702" target="_blank">EIP-7702</a>';
+                bytes = bytes.slice(1);
+            } else if (type === 0x03) {
                 document.getElementById('selectedReceiptRlpHasType').hidden = false;
                 document.getElementById('selectedReceiptRlpType').innerText = byteToHexString(type);
                 document.getElementById('selectedReceiptRlpTypeDescription').innerHTML =
@@ -1475,17 +1606,17 @@
             document.getElementById('selectedTransactionEip6404PayloadOffsetDescription').innerText = arrayToDecString(payloadOffset.reverse());
 
             assert(bytes.length >= 4);
-            const fromOffset = bytes.slice(0, 4);
+            const signatureOffset = bytes.slice(0, 4);
             bytes = bytes.slice(4);
-            document.getElementById('selectedTransactionEip6404FromOffset').innerText = arrayToHexString(fromOffset);
-            document.getElementById('selectedTransactionEip6404FromOffsetDescription').innerText = arrayToDecString(fromOffset.reverse());
+            document.getElementById('selectedTransactionEip6404SignatureOffset').innerText = arrayToHexString(signatureOffset);
+            document.getElementById('selectedTransactionEip6404SignatureOffsetDescription').innerText = arrayToDecString(signatureOffset.reverse());
 
-            const numPayloadBytes = Number(arrayToDecString(fromOffset)) - Number(arrayToDecString(payloadOffset));
+            const numPayloadBytes = Number(arrayToDecString(signatureOffset)) - Number(arrayToDecString(payloadOffset));
             let payload = bytes.slice(0, numPayloadBytes);
             bytes = bytes.slice(numPayloadBytes);
-            const numFromBytes = bytes.length;
-            let from = bytes.slice(0, numFromBytes);
-            bytes = bytes.slice(numFromBytes);
+            const numSignatureBytes = bytes.length;
+            let signature = bytes.slice(0, numSignatureBytes);
+            bytes = bytes.slice(numSignatureBytes);
             assert(bytes.length === 0);
 
             const payloadOffsets = [];
@@ -1502,7 +1633,10 @@
                 payload = payload.slice(1);
                 document.getElementById('selectedTransactionEip6404PayloadHasType').hidden = false;
                 document.getElementById('selectedTransactionEip6404PayloadType').innerText = arrayToHexString(payloadType);
-                if (payloadType[0] === 0x03) {
+                if (payloadType[0] === 0x04) {
+                    document.getElementById('selectedTransactionEip6404PayloadTypeDescription').innerHTML =
+                        '<a href="https://eips.ethereum.org/EIPS/eip-7702" target="_blank">EIP-7702</a>';
+                } else if (payloadType[0] === 0x03) {
                     document.getElementById('selectedTransactionEip6404PayloadTypeDescription').innerHTML =
                         '<a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">EIP-4844</a>';
                 } else if (payloadType[0] === 0x02) {
@@ -1522,9 +1656,9 @@
             }
 
             if (payloadActiveFields[0] & 0x02) {
-                assert(payload.length >= 32);
-                const payloadChainId = payload.slice(0, 32);
-                payload = payload.slice(32);
+                assert(payload.length >= 8);
+                const payloadChainId = payload.slice(0, 8);
+                payload = payload.slice(8);
                 document.getElementById('selectedTransactionEip6404PayloadHasChainId').hidden = false;
                 document.getElementById('selectedTransactionEip6404PayloadChainId').innerText = arrayToHexString(payloadChainId);
             } else {
@@ -1637,7 +1771,19 @@
                 document.getElementById('selectedTransactionEip6404PayloadHasBlobVersionedHashesOffset').hidden = true;
             }
 
-            assert(payloadActiveFields[1] < 0x08);
+            if (payloadActiveFields[1] & 0x08) {
+                assert(payload.length >= 4);
+                const payloadAuthorizationListOffset = payload.slice(0, 4);
+                payload = payload.slice(4);
+                document.getElementById('selectedTransactionEip6404PayloadHasAuthorizationListOffset').hidden = false;
+                document.getElementById('selectedTransactionEip6404PayloadAuthorizationListOffset').innerText = arrayToHexString(payloadAuthorizationListOffset);
+                document.getElementById('selectedTransactionEip6404PayloadAuthorizationListOffsetDescription').innerText = arrayToDecString(payloadAuthorizationListOffset.reverse());
+                payloadOffsets.push(Number(arrayToDecString(payloadAuthorizationListOffset)));
+            } else {
+                document.getElementById('selectedTransactionEip6404PayloadHasAuthorizationListOffset').hidden = true;
+            }
+
+            assert(payloadActiveFields[1] < 0x10);
             assert(payloadActiveFields[2] === 0x00);
             assert(payloadActiveFields[3] === 0x00);
 
@@ -1884,42 +2030,200 @@
                 document.getElementById('selectedTransactionEip6404PayloadHasBlobVersionedHashes').hidden = true;
             }
 
+            if (payloadActiveFields[1] & 0x08) {
+                let numPayloadAuthorizationListBytes;
+                if (payloadOffsets.length > 1) {
+                    numPayloadAuthorizationListBytes = payloadOffsets[1] - payloadOffsets[0];
+                } else {
+                    numPayloadAuthorizationListBytes = numPayloadBytes - 4 - payloadOffsets[0];
+                }
+                payloadOffsets.shift();
+                assert(payload.length >= numPayloadAuthorizationListBytes);
+                let authorizationList = payload.slice(0, numPayloadAuthorizationListBytes);
+                payload = payload.slice(numPayloadAuthorizationListBytes);
+                document.getElementById('selectedTransactionEip6404PayloadHasAuthorizationList').hidden = false;
+
+                document.getElementById('selectedTransactionEip6404PayloadAuthorizationListStart').innerHTML = '';
+                document.getElementById('selectedTransactionEip6404PayloadAuthorizationListDescription').innerHTML = '';
+                document.getElementById('selectedTransactionEip6404PayloadAuthorizationList').innerHTML = '';
+                document.getElementById('selectedTransactionEip6404PayloadAuthorizationListLabel').innerHTML = '';
+
+                if (!authorizationList.length) {
+                    document.getElementById('selectedTransactionEip6404PayloadAuthorizationListDescription').innerText = 'empty';
+                }
+
+                let numAuthorizations = 0;
+                const authorizationListOffsets = [];
+                if (authorizationList.length) {
+                    assert(authorizationList.length >= 4);
+                    const authorizationOffset = authorizationList.slice(0, 4);
+                    authorizationList = authorizationList.slice(4);
+                    document.getElementById('selectedTransactionEip6404PayloadAuthorizationListStart').innerText = arrayToHexString(authorizationOffset);
+                    document.getElementById('selectedTransactionEip6404PayloadAuthorizationListDescription').innerText = 'authorization list +' + arrayToDecString(authorizationOffset.reverse());
+                    document.getElementById('selectedTransactionEip6404PayloadAuthorizationListLabel').innerHTML =
+                        ' <span>[0] offset</span>';
+                    authorizationListOffsets.push(Number(arrayToDecString(authorizationOffset)));
+                    numAuthorizations = Number(arrayToDecString(authorizationOffset));
+                    assert(numAuthorizations % 4 === 0);
+                    numAuthorizations /= 4;
+                }
+                for (let authorizationIndex = 1; authorizationIndex < numAuthorizations; authorizationIndex++) {
+                    assert(authorizationList.length >= 4);
+                    const authorizationOffset = authorizationList.slice(0, 4);
+                    authorizationList = authorizationList.slice(4);
+                    document.getElementById('selectedTransactionEip6404PayloadAuthorizationList').innerHTML +=
+                        '<br /><span>' + arrayToHexString(authorizationOffset) + '</span> ' +
+                        '<span class="description">(authorization list +' + arrayToDecString(authorizationOffset.reverse()) +')</span>';
+                    document.getElementById('selectedTransactionEip6404PayloadAuthorizationListLabel').innerHTML +=
+                        '<br /><span>[' + authorizationIndex + '] offset</span>';
+                    authorizationListOffsets.push(Number(arrayToDecString(authorizationOffset)));
+                }
+                for (let authorizationIndex = 0; authorizationIndex < numAuthorizations; authorizationIndex++) {
+                    let numAuthorizationBytes;
+                    if (authorizationListOffsets.length > 1) {
+                        numAuthorizationBytes = authorizationListOffsets[1] - authorizationListOffsets[0];
+                    } else {
+                        numAuthorizationBytes = numPayloadAuthorizationListBytes - authorizationListOffsets[0];
+                    }
+                    authorizationListOffsets.shift();
+                    assert(authorizationList.length >= numAuthorizationBytes);
+                    let authorization = authorizationList.slice(0, numAuthorizationBytes);
+                    authorizationList = authorizationList.slice(numAuthorizationBytes);
+
+                    assert(authorization.length >= 4);
+                    const authPayloadOffset = authorization.slice(0, 4);
+                    authorization = authorization.slice(4);
+                    document.getElementById('selectedTransactionEip6404PayloadAuthorizationList').innerHTML +=
+                        '<br /><span>' + arrayToHexString(authPayloadOffset) + '</span> ' +
+                        '<span class="description">(authorization +' + arrayToDecString(authPayloadOffset.reverse()) +')</span>';
+                    document.getElementById('selectedTransactionEip6404PayloadAuthorizationListLabel').innerHTML +=
+                        '<br /><span>[' + authorizationIndex + '] Payload offset</span>';
+
+                    assert(authorization.length >= 4);
+                    const authSignatureOffset = authorization.slice(0, 4);
+                    authorization = authorization.slice(4);
+                    document.getElementById('selectedTransactionEip6404PayloadAuthorizationList').innerHTML +=
+                        '<br /><span>' + arrayToHexString(authSignatureOffset) + '</span> ' +
+                        '<span class="description">(authorization +' + arrayToDecString(authSignatureOffset.reverse()) +')</span>';
+                    document.getElementById('selectedTransactionEip6404PayloadAuthorizationListLabel').innerHTML +=
+                        '<br /><span>[' + authorizationIndex + '] Signature offset</span>';
+
+                    const numAuthPayloadBytes = Number(arrayToDecString(authSignatureOffset)) - Number(arrayToDecString(authPayloadOffset));
+                    let authPayload = authorization.slice(0, numAuthPayloadBytes);
+                    authorization = authorization.slice(numAuthPayloadBytes);
+                    const numAuthSignatureBytes = authorization.length;
+                    let authSignature = authorization.slice(0, numAuthSignatureBytes);
+                    authorization = authorization.slice(numAuthSignatureBytes);
+                    assert(authorization.length === 0);
+
+                    assert(authPayload.length >= 2);
+                    const authPayloadActiveFields = authPayload.slice(0, 2);
+                    authPayload = authPayload.slice(2);
+                    document.getElementById('selectedTransactionEip6404PayloadAuthorizationList').innerHTML +=
+                        '<br /><span>' + arrayToHexString(authPayloadActiveFields) + '</span> ' +
+                        '<span class="description">(0b' + arrayToBinString(authPayloadActiveFields) +')</span>';
+                    document.getElementById('selectedTransactionEip6404PayloadAuthorizationListLabel').innerHTML +=
+                        '<br /><span>[' + authorizationIndex + '] Payload active fields</span>';
+
+                    if (authPayloadActiveFields[0] & 0x01) {
+                        assert(authPayload.length >= 1);
+                        const magic = authPayload.slice(0, 1);
+                        authPayload = authPayload.slice(1);
+                        if (magic[0] === 0x05) {
+                            document.getElementById('selectedTransactionEip6404PayloadAuthorizationList').innerHTML +=
+                                '<br /><span>' + arrayToHexString(magic) + '</span> ' +
+                                '<span class="description">(<a href="https://eips.ethereum.org/EIPS/eip-7702" target="_blank">EIP-7702</a>)</span>';
+                        } else {
+                            assert(false);
+                        }
+                        document.getElementById('selectedTransactionEip6404PayloadAuthorizationListLabel').innerHTML +=
+                            '<br /><span>[' + authorizationIndex + '] Magic</span>';
+                    }
+
+                    if (authPayloadActiveFields[0] & 0x02) {
+                        assert(authPayload.length >= 8);
+                        const chainId = authPayload.slice(0, 8);
+                        authPayload = authPayload.slice(8);
+                        document.getElementById('selectedTransactionEip6404PayloadAuthorizationList').innerHTML +=
+                            '<br /><span>' + arrayToHexString(chainId) + '</span>';
+                        document.getElementById('selectedTransactionEip6404PayloadAuthorizationListLabel').innerHTML +=
+                            '<br /><span>[' + authorizationIndex + '] Chain ID</span>';
+                    }
+
+                    if (authPayloadActiveFields[0] & 0x04) {
+                        assert(authPayload.length >= 20);
+                        const address = authPayload.slice(0, 20);
+                        authPayload = authPayload.slice(20);
+                        document.getElementById('selectedTransactionEip6404PayloadAuthorizationList').innerHTML +=
+                            '<br /><span>' + arrayToHexString(address) + '</span>';
+                        document.getElementById('selectedTransactionEip6404PayloadAuthorizationListLabel').innerHTML +=
+                            '<br /><span>[' + authorizationIndex + '] <a href="https://etherscan.io/address/0x' + arrayToHexString(address) + '" target="_blank">Address</a></span>';
+                    }
+
+                    if (authPayloadActiveFields[0] & 0x08) {
+                        assert(authPayload.length >= 8);
+                        const nonce = authPayload.slice(0, 8);
+                        authPayload = authPayload.slice(8);
+                        document.getElementById('selectedTransactionEip6404PayloadAuthorizationList').innerHTML +=
+                            '<br /><span>' + arrayToHexString(nonce) + '</span>';
+                        document.getElementById('selectedTransactionEip6404PayloadAuthorizationListLabel').innerHTML +=
+                            '<br /><span>[' + authorizationIndex + '] Nonce</span>';
+                    }
+
+                    assert(authPayloadActiveFields[0] < 0x10);
+
+                    assert(authPayload.length === 0);
+
+                    assert(authSignature.length >= 1);
+                    const authSignatureActiveFields = authSignature.slice(0, 1);
+                    authSignature = authSignature.slice(1);
+                    document.getElementById('selectedTransactionEip6404PayloadAuthorizationList').innerHTML +=
+                        '<br /><span>' + arrayToHexString(authSignatureActiveFields) + '</span> ' +
+                        '<span class="description">(0b' + arrayToBinString(authSignatureActiveFields) +')</span>';
+                    document.getElementById('selectedTransactionEip6404PayloadAuthorizationListLabel').innerHTML +=
+                        '<br /><span>[' + authorizationIndex + '] Signature active fields</span>';
+
+                    if (authSignatureActiveFields[0] & 0x01) {
+                        assert(authSignature.length >= 65);
+                        const secp256k1 = authSignature.slice(0, 65);
+                        authSignature = authSignature.slice(65);
+                        document.getElementById('selectedTransactionEip6404PayloadAuthorizationList').innerHTML +=
+                            '<br /><span>' + (arrayToHexString(secp256k1).match(/.{1,64}/g) ?? []).join('<br />') + '</span>';
+                        document.getElementById('selectedTransactionEip6404PayloadAuthorizationListLabel').innerHTML +=
+                            '<br /><span>[' + authorizationIndex + '] Secp256k1<br />&nbsp;<br />&nbsp;</span>';
+                    }
+
+                    assert(authSignatureActiveFields[0] < 0x02);
+
+                    assert(authSignature.length === 0);
+                }
+                assert(authorizationList.length === 0);
+            } else {
+                document.getElementById('selectedTransactionEip6404PayloadHasAuthorizationList').hidden = true;
+            }
+
             assert(payload.length === 0);
 
-            assert(from.length >= 2);
-            const fromActiveFields = from.slice(0, 2);
-            from = from.slice(2);
-            document.getElementById('selectedTransactionEip6404FromActiveFields').innerText = arrayToHexString(fromActiveFields);
-            document.getElementById('selectedTransactionEip6404FromActiveFieldsDescription').innerText = '0b' + arrayToBinString(fromActiveFields);
+            assert(signature.length >= 1);
+            const signatureActiveFields = signature.slice(0, 1);
+            signature = signature.slice(1);
+            document.getElementById('selectedTransactionEip6404SignatureActiveFields').innerText = arrayToHexString(signatureActiveFields);
+            document.getElementById('selectedTransactionEip6404SignatureActiveFieldsDescription').innerText = '0b' + arrayToBinString(signatureActiveFields);
 
-            if (fromActiveFields[0] & 0x01) {
-                assert(from.length >= 20);
-                const fromAddress = from.slice(0, 20);
-                from = from.slice(20);
-                document.getElementById('selectedTransactionEip6404FromHasAddress').hidden = false;
-                document.getElementById('selectedTransactionEip6404FromAddress').innerText = arrayToHexString(fromAddress);
-                document.getElementById('selectedTransactionEip6404FromAddressDescription').innerHTML =
-                    '<a href="https://etherscan.io/address/0x' + arrayToHexString(fromAddress) + '" target="_blank">' +
-                    'Origin' + '</a>';
+            if (signatureActiveFields[0] & 0x01) {
+                assert(signature.length >= 65);
+                const signatureSecp256k1 = signature.slice(0, 65);
+                signature = signature.slice(65);
+                document.getElementById('selectedTransactionEip6404SignatureHasSecp256k1').hidden = false;
+                document.getElementById('selectedTransactionEip6404SignatureSecp256k1').innerHTML =
+                    (arrayToHexString(signatureSecp256k1).match(/.{1,64}/g) ?? []).join('<br />');
             } else {
-                document.getElementById('selectedTransactionEip6404FromHasAddress').hidden = true;
+                document.getElementById('selectedTransactionEip6404SignatureHasSecp256k1').hidden = true;
             }
 
-            if (fromActiveFields[0] & 0x02) {
-                assert(from.length >= 65);
-                const fromSecp256k1Signature = from.slice(0, 65);
-                from = from.slice(65);
-                document.getElementById('selectedTransactionEip6404FromHasSecp256k1Signature').hidden = false;
-                document.getElementById('selectedTransactionEip6404FromSecp256k1Signature').innerHTML =
-                    (arrayToHexString(fromSecp256k1Signature).match(/.{1,64}/g) ?? []).join('<br />');
-            } else {
-                document.getElementById('selectedTransactionEip6404FromHasSecp256k1Signature').hidden = true;
-            }
+            assert(signatureActiveFields[0] < 0x02);
 
-            assert(fromActiveFields[0] < 0x04);
-            assert(fromActiveFields[1] === 0);
-
-            assert(from.length === 0);
+            assert(signature.length === 0);
 
             document.getElementById('specsDetail').hidden = true;
             document.getElementById('selectedTransactionRlpDetail').hidden = true;
@@ -2344,7 +2648,7 @@
                                 '</span></td>' +
                                 '        </tr>' +
                                 '        <tr>' +
-                                '            <td colspan="4"><span class="fas fa-right-from-bracket"></span> <span style="display: inline-block; transform: scaleX(1.015); transform-origin: left;">' +
+                                '            <td colspan="4"><span class="fas fa-right-signature-bracket"></span> <span style="display: inline-block; transform: scaleX(1.015); transform-origin: left;">' +
                                 '<a href="https://etherscan.io/address/' + toHexString(transactionFrom, 20) + '" target="_blank">' +
                                 toHexString(transactionFrom, 20) + '</a>' +
                                 '</span></td>' +
