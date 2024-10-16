@@ -529,9 +529,9 @@
                             <td class="kvKey">Active fields</td>
                             <td class="kvValue"><span id="selectedReceiptEip6466ActiveFields"></span> <span class="description">(<span id="selectedReceiptEip6466ActiveFieldsDescription"></span>)</span></td>
                         </tr>
-                        <tr id="selectedReceiptEip6466HasRoot">
-                            <td class="kvKey">Root</td>
-                            <td class="kvValue"><span id="selectedReceiptEip6466Root"></span></td>
+                        <tr id="selectedReceiptEip6466HasFrom">
+                            <td class="kvKey">From</td>
+                            <td class="kvValue"><span id="selectedReceiptEip6466From"></span> <span class="description">(<span id="selectedReceiptEip6466FromDescription"></span>)</span></td>
                         </tr>
                         <tr id="selectedReceiptEip6466HasGasUsed">
                             <td class="kvKey">Gas used</td>
@@ -541,10 +541,6 @@
                             <td class="kvKey">Contract address</td>
                             <td class="kvValue"><span id="selectedReceiptEip6466ContractAddress"></span> <span class="description">(<span id="selectedReceiptEip6466ContractAddressDescription"></span>)</span></td>
                         </tr>
-                        <tr id="selectedReceiptEip6466HasLogsBloom">
-                            <td class="kvKey">Logs Bloom</td>
-                            <td class="kvValue"><span id="selectedReceiptEip6466LogsBloom"></span></td>
-                        </tr>
                         <tr id="selectedReceiptEip6466HasLogsOffset">
                             <td class="kvKey">Logs offset</td>
                             <td class="kvValue"><span id="selectedReceiptEip6466LogsOffset"></span> <span class="description">(data +<span id="selectedReceiptEip6466LogsOffsetDescription"></span>)</span></td>
@@ -553,9 +549,17 @@
                             <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-658" target="_blank">Status</a></td>
                             <td class="kvValue"><span id="selectedReceiptEip6466Status"></span> <span class="description">(<span id="selectedReceiptEip6466StatusDescription"></span>)</span></td>
                         </tr>
+                        <tr id="selectedReceiptEip6466HasAuthoritiesOffset">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-7702" target="_blank">Authorities</a> offset</td>
+                            <td class="kvValue"><span id="selectedReceiptEip6466AuthoritiesOffset"></span> <span class="description">(data +<span id="selectedReceiptEip6466AuthoritiesOffsetDescription"></span>)</span></td>
+                        </tr>
                         <tr id="selectedReceiptEip6466HasLogs">
                             <td class="kvKey">Logs<span id="selectedReceiptEip6466LogsLabel"></span></td>
                             <td class="kvValue"><span id="selectedReceiptEip6466LogsStart"></span> <span class="description">(<span id="selectedReceiptEip6466LogsDescription"></span>)</span> <span id="selectedReceiptEip6466Logs"></span></td>
+                        </tr>
+                        <tr id="selectedReceiptEip6466HasAuthorities">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-7702" target="_blank">Authorities</a><span id="selectedReceiptEip6466AuthoritiesLabel"></span></td>
+                            <td class="kvValue"><span id="selectedReceiptEip6466Authorities"></span></td>
                         </tr>
                         <tr>
                             <td class="kvKey">&nbsp;</td>
@@ -817,7 +821,7 @@
 
         let headers = initHeadersCache();
 
-        async function fetchExecutionBlock(header) {
+        async function fetchExecutionBlock(prefix, header) {
             const executionHash = Module._ETHLightClientHeaderCopyExecutionHash(header, cfg);
             try {
                 const executionHashString = toHexString(executionHash, 32);
@@ -855,6 +859,8 @@
                 for (txIndex in data.transactions) {
                     data.transactions[txIndex] = data.transactions[txIndex].hash;
                 }
+                document.getElementById(prefix + 'TransactionInfo').innerHTML =
+                    data.transactions.length + ' transactions';
 
                 const allReceiptResponseFuts = data.transactions.map((transactionHashString) =>
                     fetch(executionApiBase, {
@@ -871,14 +877,33 @@
                     }));
                 let receiptsData = [];
                 for (receiptResponseFut of allReceiptResponseFuts) {
-                    try {
-                        const receiptResponse = await receiptResponseFut;
-                        if (!receiptResponse.ok) return;
-                        const receiptResponseJson = await receiptResponse.json();
-                        if (!receiptResponseJson.result) return;
-                        receiptsData.push(receiptResponseJson.result);
-                    } catch {
-                        return;
+                    for (let i = 0; i < 20; i++) {
+                        if (i) {
+                            receiptResponseFut = fetch(executionApiBase, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    jsonrpc: '2.0',
+                                    id: 1,
+                                    method: 'eth_getTransactionReceipt',
+                                    params: [data.transactions[receiptsData.length]]
+                                })
+                            });
+                        }
+                        try {
+                            const receiptResponse = await receiptResponseFut;
+                            if (!receiptResponse.ok) continue;
+                            const receiptResponseJson = await receiptResponse.json();
+                            if (!receiptResponseJson.result) continue;
+                            receiptsData.push(receiptResponseJson.result);
+                            document.getElementById(prefix + 'ReceiptInfo').innerHTML =
+                                receiptsData.length + ' - Loading receipts&hellip;';
+                            break;
+                        } catch {
+                            continue;
+                        }
                     }
                     if (!headers.get(beaconRoot)) return;
                 }
@@ -2252,13 +2277,16 @@
             const offsets = [];
 
             if (activeFields[0] & 0x01) {
-                assert(bytes.length >= 32);
-                const root = bytes.slice(0, 32);
-                bytes = bytes.slice(32);
-                document.getElementById('selectedReceiptEip6466HasRoot').hidden = false;
-                document.getElementById('selectedReceiptEip6466Root').innerText = arrayToHexString(root);
+                assert(bytes.length >= 20);
+                const from = bytes.slice(0, 20);
+                bytes = bytes.slice(20);
+                document.getElementById('selectedReceiptEip6466HasFrom').hidden = false;
+                document.getElementById('selectedReceiptEip6466From').innerText = arrayToHexString(from);
+                document.getElementById('selectedReceiptEip6466FromDescription').innerHTML =
+                    '<a href="https://etherscan.io/address/0x' + arrayToHexString(from) + '" target="_blank">' +
+                    'Origin' + '</a>';
             } else {
-                document.getElementById('selectedReceiptEip6466HasRoot').hidden = true;
+                document.getElementById('selectedReceiptEip6466HasFrom').hidden = true;
             }
 
             if (activeFields[0] & 0x02) {
@@ -2273,9 +2301,9 @@
             }
 
             if (activeFields[0] & 0x04) {
-                assert(bytes.length >= 32);
-                const contractAddress = bytes.slice(0, 32);
-                bytes = bytes.slice(32);
+                assert(bytes.length >= 20);
+                const contractAddress = bytes.slice(0, 20);
+                bytes = bytes.slice(20);
                 document.getElementById('selectedReceiptEip6466HasContractAddress').hidden = false;
                 document.getElementById('selectedReceiptEip6466ContractAddress').innerText = arrayToHexString(contractAddress);
                 document.getElementById('selectedReceiptEip6466ContractAddressDescription').innerHTML =
@@ -2286,17 +2314,6 @@
             }
 
             if (activeFields[0] & 0x08) {
-                assert(bytes.length >= 256);
-                const logsBloom = bytes.slice(0, 256);
-                bytes = bytes.slice(256);
-                document.getElementById('selectedReceiptEip6466HasLogsBloom').hidden = false;
-                document.getElementById('selectedReceiptEip6466LogsBloom').innerHTML =
-                    (arrayToHexString(logsBloom).match(/.{1,64}/g) ?? []).join('<br />');
-            } else {
-                document.getElementById('selectedReceiptEip6466HasLogsBloom').hidden = true;
-            }
-
-            if (activeFields[0] & 0x10) {
                 assert(bytes.length >= 4);
                 const logsOffset = bytes.slice(0, 4);
                 bytes = bytes.slice(4);
@@ -2308,7 +2325,7 @@
                 document.getElementById('selectedReceiptEip6466HasLogsOffset').hidden = true;
             }
 
-            if (activeFields[0] & 0x20) {
+            if (activeFields[0] & 0x10) {
                 assert(bytes.length >= 1);
                 const status = bytes.slice(0, 1);
                 bytes = bytes.slice(1);
@@ -2319,12 +2336,24 @@
                 document.getElementById('selectedReceiptEip6466HasStatus').hidden = true;
             }
 
+            if (activeFields[0] & 0x20) {
+                assert(bytes.length >= 4);
+                const authoritiesOffset = bytes.slice(0, 4);
+                bytes = bytes.slice(4);
+                document.getElementById('selectedReceiptEip6466HasAuthoritiesOffset').hidden = false;
+                document.getElementById('selectedReceiptEip6466AuthoritiesOffset').innerText = arrayToHexString(authoritiesOffset);
+                document.getElementById('selectedReceiptEip6466AuthoritiesOffsetDescription').innerText = arrayToDecString(authoritiesOffset.reverse());
+                offsets.push(Number(arrayToDecString(authoritiesOffset)));
+            } else {
+                document.getElementById('selectedReceiptEip6466HasAuthoritiesOffset').hidden = true;
+            }
+
             assert(activeFields[0] < 0x40);
             assert(activeFields[1] === 0x00);
             assert(activeFields[2] === 0x00);
             assert(activeFields[3] === 0x00);
 
-            if (activeFields[0] & 0x10) {
+            if (activeFields[0] & 0x08) {
                 let numLogsBytes;
                 if (offsets.length > 1) {
                     numLogsBytes = offsets[1] - offsets[0];
@@ -2472,6 +2501,42 @@
                 document.getElementById('selectedReceiptEip6466HasLogs').hidden = true;
             }
 
+            if (activeFields[0] & 0x20) {
+                let numAuthoritiesBytes;
+                if (offsets.length > 1) {
+                    numAuthoritiesBytes = offsets[1] - offsets[0];
+                } else {
+                    numAuthoritiesBytes = numBytes - offsets[0];
+                }
+                offsets.shift();
+                assert(bytes.length >= numAuthoritiesBytes);
+                let authorities = bytes.slice(0, numAuthoritiesBytes);
+                bytes = bytes.slice(numAuthoritiesBytes);
+                document.getElementById('selectedReceiptEip6466HasAuthorities').hidden = false;
+
+                document.getElementById('selectedReceiptEip6466Authorities').innerHTML = '';
+                document.getElementById('selectedReceiptEip6466AuthoritiesLabel').innerHTML = '';
+
+                if (!authorities.length) {
+                    document.getElementById('selectedReceiptEip6466Authorities').innerHTML =
+                        '<span class="description">(empty)</span>';
+                }
+
+                assert(authorities.length % 20 === 0);
+                const numAuthorities = authorities.length / 20;
+                for (let authorityIndex = 0; authorityIndex < numAuthorities; authorityIndex++) {
+                    const authority = authorities.slice(0, 20);
+                    authorities = authorities.slice(20);
+                    document.getElementById('selectedReceiptEip6466Authorities').innerHTML +=
+                        '<span>' + arrayToHexString(authority) + '</span>' +
+                        ' <span class="description">(<a href="https://etherscan.io/address/0x' + arrayToHexString(authority) + '" target="_blank">Authority</a>)</span><br />';
+                    document.getElementById('selectedReceiptEip6466AuthoritiesLabel').innerHTML +=
+                        ' <span>[' + authorityIndex + ']</span><br />'
+                }
+            } else {
+                document.getElementById('selectedReceiptEip6466HasAuthorities').hidden = true;
+            }
+
             assert(bytes.length === 0);
 
             document.getElementById('specsDetail').hidden = true;
@@ -2545,12 +2610,10 @@
                     document.getElementById(prefix + 'ReceiptInfo').innerHTML = 'Loading receipts&hellip;';
                     document.getElementById(prefix + 'TransactionList').innerHTML = '';
 
-                    const executionBlockFut = fetchExecutionBlock(header);
+                    const executionBlockFut = fetchExecutionBlock(prefix, header);
                     executionBlockFut.then((executionBlock) => {
                         if (document.getElementById(prefix + 'BeaconRoot').dataset.beaconRoot !== beaconRoot) return;
                         if (!executionBlock) {
-                            document.getElementById(prefix + 'TransactionInfo').innerHTML = '';
-                            document.getElementById(prefix + 'ReceiptInfo').innerHTML = '';
                             document.getElementById(prefix + 'TransactionList').innerHTML =
                             '<div class="headerMaster">' +
                                 '   <div class="headerMasterBeaconRoot">Validation failed</div>' +
@@ -2648,7 +2711,7 @@
                                 '</span></td>' +
                                 '        </tr>' +
                                 '        <tr>' +
-                                '            <td colspan="4"><span class="fas fa-right-signature-bracket"></span> <span style="display: inline-block; transform: scaleX(1.015); transform-origin: left;">' +
+                                '            <td colspan="4"><span class="fas fa-right-from-bracket"></span> <span style="display: inline-block; transform: scaleX(1.015); transform-origin: left;">' +
                                 '<a href="https://etherscan.io/address/' + toHexString(transactionFrom, 20) + '" target="_blank">' +
                                 toHexString(transactionFrom, 20) + '</a>' +
                                 '</span></td>' +
