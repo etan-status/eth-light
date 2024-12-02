@@ -54,7 +54,7 @@ EOF
 USE_SYSTEM_NIM='' NIM_COMMIT='' BASH_VERSION='' NBS_ONLY_LOAD_ENV_VARS='' . nimbus-eth2/env.sh
 nim --version
 
-rm -rf libnimbus_lc.js libnimbus_lc.wasm libnimbus_lc.worker.js nimcache
+rm -rf libnimbus_lc.js libnimbus_lc.wasm nimcache
 nim c \
     -d:disable_libbacktrace \
     -d:disableMarchNative \
