@@ -129,7 +129,7 @@
                         <td><span class="fas fa-cogs"></span> <input id="executionApiBase" value="https://execution-api.eth-light.xyz/v1/mainnet" /></td>
                     </tr>
                     <tr>
-                        <td><span class="fas fa-shield-alt"></span> <input id="trustedBlockRoot" value="0xf2069232e8729f4b2a8a75d27a2ee8eb842d50cc66a9b3e736cc8c7d7fb5e411" /></td>
+                        <td><span class="fas fa-shield-alt"></span> <input id="trustedBlockRoot" value="0x06cbc0bf96015eeb7e4db18c6a8f3d6590dde0277af95f33956acf0ddd323a6b" /></td>
                     </tr>
                     <tr>
                         <td><input type="button" id="initButton" value="Save" disabled /></td>
@@ -163,7 +163,7 @@
                             <td colspan="4">Receipts <span id="selectedReceiptInfo" style="float: right;"></span></td>
                         </tr>
                         <tr>
-                            <td colspan="4"><input type="button" id="backButton" value="Back" /> <span style="float: right;">(SSZ with Snappy)</span></td>
+                            <td colspan="4"><input type="button" id="backButton" value="Back" /> <span style="float: right;">(All sizes with Snappy compression)</span></td>
                         </tr>
                     </table>
                 </div>
@@ -2639,9 +2639,9 @@
                         document.getElementById(prefix + 'TransactionInfo').innerHTML = '';
                         document.getElementById(prefix + 'TransactionList').innerHTML = '';
                         const numBytesPtr = Module._malloc(4);
-                        let totalTransactionRlpBytes = 0;
+                        let totalTransactionRlpSnappyBytes = 0;
                         let totalTransactionEip6404SnappyBytes = 0;
-                        let totalReceiptRlpBytes = 0;
+                        let totalReceiptRlpSnappyBytes = 0;
                         let totalReceiptEip6466SnappyBytes = 0;
                         for (let transactionIndex = 0; transactionIndex < numTransactions; transactionIndex++) {
                             const transaction = Module._ETHTransactionsGet(transactions, transactionIndex);
@@ -2662,24 +2662,26 @@
                             const transactionBytes = Module._ETHTransactionGetBytes(transaction, numBytesPtr);
                             const numTransactionBytes = Module.HEAPU32[numBytesPtr >>> 2];
                             const transactionBytesArray = toArray(transactionBytes, numTransactionBytes);
+                            const numTransactionSnappyBytes = Module._ETHTransactionGetNumSnappyBytes(transaction);
                             const transactionEip6404Root = Module._ETHTransactionGetEip6404Root(transaction);
                             const transactionEip6404RootString = toHexString(transactionEip6404Root, 32);
                             const transactionEip6404Bytes = Module._ETHTransactionGetEip6404Bytes(transaction, numBytesPtr);
-                            const numtransactionEip6404Bytes = Module.HEAPU32[numBytesPtr >>> 2];
-                            const transactionEip6404BytesArray = toArray(transactionEip6404Bytes, numtransactionEip6404Bytes);
+                            const numTransactionEip6404Bytes = Module.HEAPU32[numBytesPtr >>> 2];
+                            const transactionEip6404BytesArray = toArray(transactionEip6404Bytes, numTransactionEip6404Bytes);
                             const numTransactionEip6404SnappyBytes = Module._ETHTransactionGetNumEip6404SnappyBytes(transaction);
-                            totalTransactionRlpBytes += numTransactionBytes;
+                            totalTransactionRlpSnappyBytes += numTransactionSnappyBytes;
                             totalTransactionEip6404SnappyBytes += numTransactionEip6404SnappyBytes;
 
                             const receiptHasStatus = Module._ETHReceiptHasStatus(receipt);
                             const receiptBytes = Module._ETHReceiptGetBytes(receipt, numBytesPtr);
                             const numReceiptBytes = Module.HEAPU32[numBytesPtr >>> 2];
                             const receiptBytesArray = toArray(receiptBytes, numReceiptBytes);
+                            const numReceiptSnappyBytes = Module._ETHReceiptGetNumSnappyBytes(receipt);
                             const receiptEip6466Bytes = Module._ETHReceiptGetEip6466Bytes(receipt, numBytesPtr);
-                            const numreceiptEip6466Bytes = Module.HEAPU32[numBytesPtr >>> 2];
-                            const receiptEip6466BytesArray = toArray(receiptEip6466Bytes, numreceiptEip6466Bytes);
+                            const numReceiptEip6466Bytes = Module.HEAPU32[numBytesPtr >>> 2];
+                            const receiptEip6466BytesArray = toArray(receiptEip6466Bytes, numReceiptEip6466Bytes);
                             const numReceiptEip6466SnappyBytes = Module._ETHReceiptGetNumEip6466SnappyBytes(receipt);
-                            totalReceiptRlpBytes += numReceiptBytes;
+                            totalReceiptRlpSnappyBytes += numReceiptSnappyBytes;
                             totalReceiptEip6466SnappyBytes += numReceiptEip6466SnappyBytes;
 
                             const transactionRlpButtonId = `rlpButton_transaction_${transactionHashString}`;
@@ -2735,10 +2737,10 @@
                                 '        <tr>' +
                                 '            <td colspan="4"><input type="button" id="' +
                                 transactionRlpButtonId +
-                                '" value="RLP (' + toHumanReadableByteCountString(transactionBytesArray.length) + ')" />' +
+                                '" value="RLP (' + toHumanReadableByteCountString(numTransactionSnappyBytes) + ')" />' +
                                 '<span style="float: right;"><input type="button" id="' +
                                 receiptRlpButtonId +
-                                '" value="RLP (' + toHumanReadableByteCountString(receiptBytesArray.length) + ')" /></span></td>' +
+                                '" value="RLP (' + toHumanReadableByteCountString(numReceiptSnappyBytes) + ')" /></span></td>' +
                                 '        </tr>' +
                                 '        <tr>' +
                                 '            <td colspan="4"><input type="button" id="' +
@@ -2778,15 +2780,17 @@
                         }
                         Module._free(numBytesPtr);
 
-                        const totalTransactionBytesDiffPercentage = Math.floor((totalTransactionEip6404SnappyBytes / totalTransactionRlpBytes - 1.0) * 100.0);
+                        const totalTransactionBytesDiffPercentage = Math.floor(
+                            (totalTransactionEip6404SnappyBytes / totalTransactionRlpSnappyBytes - 1.0) * 100.0);
                         document.getElementById(prefix + 'TransactionInfo').innerHTML =
-                        'RLP ' + toHumanReadableByteCountString(totalTransactionRlpBytes) +
+                        'RLP ' + toHumanReadableByteCountString(totalTransactionRlpSnappyBytes) +
                         ' | SSZ ' + toHumanReadableByteCountString(totalTransactionEip6404SnappyBytes) +
                         ' (' + (totalTransactionBytesDiffPercentage < 0 ? '' : '+') + totalTransactionBytesDiffPercentage + '%' + ')';
 
-                        const totalReceiptBytesDiffPercentage = Math.floor((totalReceiptEip6466SnappyBytes / totalReceiptRlpBytes - 1.0) * 100.0);
+                        const totalReceiptBytesDiffPercentage = Math.floor(
+                            (totalReceiptEip6466SnappyBytes / totalReceiptRlpSnappyBytes - 1.0) * 100.0);
                         document.getElementById(prefix + 'ReceiptInfo').innerHTML =
-                            'RLP ' + toHumanReadableByteCountString(totalReceiptRlpBytes) +
+                            'RLP ' + toHumanReadableByteCountString(totalReceiptRlpSnappyBytes) +
                             ' | SSZ ' + toHumanReadableByteCountString(totalReceiptEip6466SnappyBytes) +
                             ' (' + (totalReceiptBytesDiffPercentage < 0 ? '' : '+') + totalReceiptBytesDiffPercentage + '%' + ')';
                     });
@@ -2894,15 +2898,15 @@
                     const transactionEip6404Root = Module._ETHTransactionGetEip6404Root(transaction);
                     const transactionEip6404RootString = toHexString(transactionEip6404Root, 32);
                     const transactionEip6404Bytes = Module._ETHTransactionGetEip6404Bytes(transaction, numBytesPtr);
-                    const numtransactionEip6404Bytes = Module.HEAPU32[numBytesPtr >>> 2];
-                    const transactionEip6404BytesArray = toArray(transactionEip6404Bytes, numtransactionEip6404Bytes);
+                    const numTransactionEip6404Bytes = Module.HEAPU32[numBytesPtr >>> 2];
+                    const transactionEip6404BytesArray = toArray(transactionEip6404Bytes, numTransactionEip6404Bytes);
                     visualizeTransactionEip6404(transactionEip6404RootString, transactionEip6404BytesArray);
                 } else if (document.location.hash === '#receipt/ssz') {
                     const transactionEip6404Root = Module._ETHTransactionGetEip6404Root(transaction);
                     const transactionEip6404RootString = toHexString(transactionEip6404Root, 32);
                     const receiptEip6466Bytes = Module._ETHReceiptGetEip6466Bytes(receipt, numBytesPtr);
-                    const numreceiptEip6466Bytes = Module.HEAPU32[numBytesPtr >>> 2];
-                    const receiptEip6466BytesArray = toArray(receiptEip6466Bytes, numreceiptEip6466Bytes);
+                    const numReceiptEip6466Bytes = Module.HEAPU32[numBytesPtr >>> 2];
+                    const receiptEip6466BytesArray = toArray(receiptEip6466Bytes, numReceiptEip6466Bytes);
                     visualizeReceiptEip6466(transactionEip6404RootString, receiptEip6466BytesArray);
                 }
                 Module._free(numBytesPtr);
