@@ -1141,7 +1141,15 @@
             const input = bytes.slice(0, inputInfo.dataLen);
             bytes = bytes.slice(inputInfo.dataLen);
             document.getElementById('selectedTransactionRlpInputLength').innerText = arrayToHexString(inputLength);
-            if (inputInfo.dataLen > 0) {
+            if (to.length > 0 && inputInfo.dataLen >= 4) {
+                document.getElementById('selectedTransactionRlpInput').innerHTML =
+                    '<br /><span>' + arrayToHexString(input.slice(0, 4)) + '</span> ' +
+                    '<span class="description">(<a href="https://www.4byte.directory/signatures/?bytes4_signature=0x' + arrayToHexString(input.slice(0, 4)) + '" target="_blank">Function</a>)';
+                if (inputInfo.dataLen > 4) {
+                    document.getElementById('selectedTransactionRlpInput').innerHTML +=
+                        '<br />' + (arrayToHexString(input.slice(4)).match(/.{1,64}/g) ?? []).join('<br />');
+                }
+            } else if (inputInfo.dataLen > 0) {
                 document.getElementById('selectedTransactionRlpInput').innerHTML =
                     '<br />' + (arrayToHexString(input).match(/.{1,64}/g) ?? []).join('<br />');
             } else {
@@ -1573,6 +1581,7 @@
                 document.getElementById('selectedReceiptRlpLogsLabel').innerHTML +=
                     '<br /><span>Topics</span>';
 
+                let isFirstTopic = true;
                 while (topics.length) {
                     const topicInfo = decodeRlpLength(topics);
                     assert(topicInfo.type === 'str');
@@ -1583,6 +1592,11 @@
                     document.getElementById('selectedReceiptRlpLogs').innerHTML +=
                         '<br /><span>' + arrayToHexString(topicLength) + '</span> ' +
                         '<span>' + arrayToHexString(topic) + '</span>';
+                    if (isFirstTopic) {
+                        document.getElementById('selectedReceiptRlpLogs').innerHTML +=
+                            ' <span class="description">(<a href="https://www.4byte.directory/event-signatures/?bytes_signature=0x' + arrayToHexString(topic) + '" target="_blank">Event</a>)';
+                        isFirstTopic = false;
+                    }
                     document.getElementById('selectedReceiptRlpLogsLabel').innerHTML += '<br />';
                 }
 
@@ -1871,7 +1885,15 @@
                 const payloadInput = payload.slice(0, numPayloadInputBytes);
                 payload = payload.slice(numPayloadInputBytes);
                 document.getElementById('selectedTransactionEip6404PayloadHasInput').hidden = false;
-                if (payloadInput.length > 0) {
+                if (payloadActiveFields[0] & 0x20 && payloadInput.length >= 4) {
+                    document.getElementById('selectedTransactionEip6404PayloadInput').innerHTML =
+                        '<span>' + arrayToHexString(payloadInput.slice(0, 4)) + '</span> ' +
+                        '<span class="description">(<a href="https://www.4byte.directory/signatures/?bytes4_signature=0x' + arrayToHexString(payloadInput.slice(0, 4)) + '" target="_blank">Function</a>)';
+                    if (payloadInput.length > 4) {
+                        document.getElementById('selectedTransactionEip6404PayloadInput').innerHTML +=
+                            '<br />' + (arrayToHexString(payloadInput.slice(4)).match(/.{1,64}/g) ?? []).join('<br />');
+                    }
+                } else if (payloadInput.length > 0) {
                     document.getElementById('selectedTransactionEip6404PayloadInput').innerHTML =
                         (arrayToHexString(payloadInput).match(/.{1,64}/g) ?? []).join('<br />');
                 } else {
@@ -1882,7 +1904,7 @@
                 document.getElementById('selectedTransactionEip6404PayloadHasInput').hidden = true;
             }
 
-            if (payloadActiveFields[0] & 0x01) {
+            if (payloadActiveFields[1] & 0x01) {
                 let numPayloadAccessListBytes;
                 if (payloadOffsets.length > 1) {
                     numPayloadAccessListBytes = payloadOffsets[1] - payloadOffsets[0];
@@ -2462,6 +2484,8 @@
                         document.getElementById('selectedReceiptEip6466Logs').innerHTML +=
                             '<br /><span>' + arrayToHexString(topic) + '</span>';
                         if (isFirstTopic) {
+                            document.getElementById('selectedReceiptEip6466Logs').innerHTML +=
+                                ' <span class="description">(<a href="https://www.4byte.directory/event-signatures/?bytes_signature=0x' + arrayToHexString(topic) + '" target="_blank">Event</a>)';
                             document.getElementById('selectedReceiptEip6466LogsLabel').innerHTML +=
                                 '<br /><span>[' + logIndex + '] Topics</span>';
                             isFirstTopic = false;
@@ -2874,7 +2898,7 @@
 
                 const receiptsJson = Module.stringToNewUTF8(JSON.stringify(receiptsData));
                 const receipts = Module._ETHReceiptsCreateFromJson(/* receiptsRoot: */ 0, receiptsJson, transactions);
-                Module._free(transactionsJson);
+                Module._free(receiptsJson);
                 if (!receipts) {
                     Module._ETHTransactionsDestroy(transactions);
                     return;
