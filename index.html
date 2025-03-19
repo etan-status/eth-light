@@ -1244,7 +1244,7 @@
             }
 
             if (type === 0x03) {
-                const blobVersionedHashesInfo = decodeRlpLength(accessTuple);
+                const blobVersionedHashesInfo = decodeRlpLength(bytes);
                 assert(blobVersionedHashesInfo.type === 'list');
                 const blobVersionedHashesLength = bytes.slice(0, blobVersionedHashesInfo.offset);
                 bytes = bytes.slice(blobVersionedHashesInfo.offset);
@@ -2065,9 +2065,9 @@
                 }
 
                 while (blobVersionedHashes.length) {
-                    assert(accessTuple.length >= 32);
-                    const storageKey = accessTuple.slice(0, 32);
-                    accessTuple = accessTuple.slice(32);
+                    assert(blobVersionedHashes.length >= 32);
+                    const storageKey = blobVersionedHashes.slice(0, 32);
+                    blobVersionedHashes = blobVersionedHashes.slice(32);
                     document.getElementById('selectedTransactionEip6404PayloadBlobVersionedHashes').innerHTML +=
                         '<span>' + arrayToHexString(storageKey) + '</span><br />';
                     document.getElementById('selectedTransactionEip6404PayloadBlobVersionedHashesLabel').innerHTML +=
