@@ -129,7 +129,7 @@
                         <td><span class="fas fa-cogs"></span> <input id="executionApiBase" value="https://execution-api.eth-light.xyz/v1/mainnet" /></td>
                     </tr>
                     <tr>
-                        <td><span class="fas fa-shield-alt"></span> <input id="trustedBlockRoot" value="0x06cbc0bf96015eeb7e4db18c6a8f3d6590dde0277af95f33956acf0ddd323a6b" /></td>
+                        <td><span class="fas fa-shield-alt"></span> <input id="trustedBlockRoot" value="0x2bf511541ea3d182d777e3ee4fec100bbb285e5c08ee973f25a6d33fbb019609" /></td>
                     </tr>
                     <tr>
                         <td><input type="button" id="initButton" value="Save" disabled /></td>
@@ -1695,9 +1695,9 @@
             }
 
             if (payloadActiveFields[0] & 0x02) {
-                assert(payload.length >= 8);
-                const payloadChainId = payload.slice(0, 8);
-                payload = payload.slice(8);
+                assert(payload.length >= 32);
+                const payloadChainId = payload.slice(0, 32);
+                payload = payload.slice(32);
                 document.getElementById('selectedTransactionEip6404PayloadHasChainId').hidden = false;
                 document.getElementById('selectedTransactionEip6404PayloadChainId').innerText = arrayToHexString(payloadChainId);
             } else {
@@ -2188,9 +2188,9 @@
                     }
 
                     if (authPayloadActiveFields[0] & 0x02) {
-                        assert(authPayload.length >= 8);
-                        const chainId = authPayload.slice(0, 8);
-                        authPayload = authPayload.slice(8);
+                        assert(authPayload.length >= 32);
+                        const chainId = authPayload.slice(0, 32);
+                        authPayload = authPayload.slice(32);
                         document.getElementById('selectedTransactionEip6404PayloadAuthorizationList').innerHTML +=
                             '<br /><span>' + arrayToHexString(chainId) + '</span>';
                         document.getElementById('selectedTransactionEip6404PayloadAuthorizationListLabel').innerHTML +=
