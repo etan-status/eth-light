@@ -32,19 +32,15 @@ EOF
 
 git -C nimbus-eth2 apply <<'EOF'
 diff --git a/beacon_chain/spec/eth2_apis/eth2_rest_serialization.nim b/beacon_chain/spec/eth2_apis/eth2_rest_serialization.nim
-index 17fae6cc..bbf71983 100644
+index 24a68add8..443e76f23 100644
 --- a/beacon_chain/spec/eth2_apis/eth2_rest_serialization.nim
 +++ b/beacon_chain/spec/eth2_apis/eth2_rest_serialization.nim
-@@ -3357,9 +3357,10 @@ proc decodeBytes*[T: DecodeTypes](
+@@ -949,7 +949,8 @@ proc decodeBytes*[T: DecodeTypes](
 
    if mediaType == ApplicationJsonMediaType:
      try:
--      ok RestJson.decode(value, T,
--                         requireAllFields = true,
--                         allowUnknownFields = true)
-+      let r = RestJson.decode(value, T,
-+                              requireAllFields = true,
-+                              allowUnknownFields = true)
+-      ok RestJson.decode(value, T)
++      let r = RestJson.decode(value, T)
 +      ok r
      except SerializationError as exc:
        debug "Failed to deserialize REST JSON data",
