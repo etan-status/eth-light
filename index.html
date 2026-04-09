@@ -129,7 +129,7 @@
                         <td><span class="fas fa-cogs"></span> <input id="executionApiBase" value="https://execution-api.eth-light.xyz/v1/mainnet" /></td>
                     </tr>
                     <tr>
-                        <td><span class="fas fa-shield-alt"></span> <input id="trustedBlockRoot" value="0xc0eb06a839e1e5a2cbc93ad5c01ea5ce930a05dde72a03b1395a0776283eb33b" /></td>
+                        <td><span class="fas fa-shield-alt"></span> <input id="trustedBlockRoot" value="0x03ccedca3af7fd3f0efddd4d357eba442579fb68a0b4b61ae3c6281eb679dc7c" /></td>
                     </tr>
                     <tr>
                         <td><input type="button" id="initButton" value="Save" disabled /></td>
@@ -411,8 +411,8 @@
                             <td class="kvValue"><span id="selectedTransactionEip6404SignatureOffset"></span> <span class="description">(start +<span id="selectedTransactionEip6404SignatureOffsetDescription"></span>)</span></td>
                         </tr>
                         <tr>
-                            <td class="kvKey">Payload active fields</td>
-                            <td class="kvValue"><span id="selectedTransactionEip6404PayloadActiveFields"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadActiveFieldsDescription"></span>)</span></td>
+                            <td class="kvKey">Selector</td>
+                            <td class="kvValue"><span id="selectedTransactionEip6404PayloadSelector"></span> <span class="description">(<a href="https://eips.ethereum.org/EIPS/eip-6404" target="_blank"><span id="selectedTransactionEip6404PayloadSelectorDescription"></span></a>)</span></td>
                         </tr>
                         <tr id="selectedTransactionEip6404PayloadHasType">
                             <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-2718" target="_blank">EIP-2718</a> type</td>
@@ -426,9 +426,13 @@
                             <td class="kvKey">Nonce</td>
                             <td class="kvValue"><span id="selectedTransactionEip6404PayloadNonce"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadNonceDescription"></span>)</span></td>
                         </tr>
-                        <tr id="selectedTransactionEip6404PayloadHasMaxFeesPerGasOffset">
-                            <td class="kvKey">Fees offset</td>
-                            <td class="kvValue"><span id="selectedTransactionEip6404PayloadMaxFeesPerGasOffset"></span> <span class="description">(payload data +<span id="selectedTransactionEip6404PayloadMaxFeesPerGasOffsetDescription"></span>)</span></td>
+                        <tr id="selectedTransactionEip6404PayloadHasMaxFeePerRegularGas">
+                            <td class="kvKey">Max fee per regular gas</td>
+                            <td class="kvValue"><span id="selectedTransactionEip6404PayloadMaxFeePerRegularGas"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadMaxFeePerRegularGasDescription"></span>)</span></td>
+                        </tr>
+                        <tr id="selectedTransactionEip6404PayloadHasMaxFeePerBlobGas">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">Max fee per blob gas</a></td>
+                            <td class="kvValue"><span id="selectedTransactionEip6404PayloadMaxFeePerBlobGas"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadMaxFeePerBlobGasDescription"></span>)</span></td>
                         </tr>
                         <tr id="selectedTransactionEip6404PayloadHasGas">
                             <td class="kvKey">Gas</td>
@@ -450,9 +454,9 @@
                             <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-2930" target="_blank">Access list</a> offset</td>
                             <td class="kvValue"><span id="selectedTransactionEip6404PayloadAccessListOffset"></span> <span class="description">(payload data +<span id="selectedTransactionEip6404PayloadAccessListOffsetDescription"></span>)</span></td>
                         </tr>
-                        <tr id="selectedTransactionEip6404PayloadHasMaxPriorityFeesPerGasOffset">
-                            <td class="kvKey">Priority fees offset</td>
-                            <td class="kvValue"><span id="selectedTransactionEip6404PayloadMaxPriorityFeesPerGasOffset"></span> <span class="description">(payload data +<span id="selectedTransactionEip6404PayloadMaxPriorityFeesPerGasOffsetDescription"></span>)</span></td>
+                        <tr id="selectedTransactionEip6404PayloadHasMaxPriorityFeePerRegularGas">
+                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-1559" target="_blank">Max prio fee per regular gas</a></td>
+                            <td class="kvValue"><span id="selectedTransactionEip6404PayloadMaxPriorityFeePerRegularGas"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadMaxPriorityFeePerRegularGasDescription"></span>)</span></td>
                         </tr>
                         <tr id="selectedTransactionEip6404PayloadHasBlobVersionedHashesOffset">
                             <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">Blob versioned hashes</a> offset</td>
@@ -462,18 +466,6 @@
                             <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-7702" target="_blank">Authorization list</a> offset</td>
                             <td class="kvValue"><span id="selectedTransactionEip6404PayloadAuthorizationListOffset"></span> <span class="description">(payload data +<span id="selectedTransactionEip6404PayloadAuthorizationListOffsetDescription"></span>)</span></td>
                         </tr>
-                        <tr id="selectedTransactionEip6404PayloadHasMaxFeesPerGas">
-                            <td class="kvKey">Fees active fields</td>
-                            <td class="kvValue"><span id="selectedTransactionEip6404PayloadMaxFeesPerGasActiveFields"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadMaxFeesPerGasActiveFieldsDescription"></span>)</span></td>
-                        </tr>
-                        <tr id="selectedTransactionEip6404PayloadHasMaxFeePerRegularGas">
-                            <td class="kvKey">Max fee per regular gas</td>
-                            <td class="kvValue"><span id="selectedTransactionEip6404PayloadMaxFeePerRegularGas"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadMaxFeePerRegularGasDescription"></span>)</span></td>
-                        </tr>
-                        <tr id="selectedTransactionEip6404PayloadHasMaxFeePerBlobGas">
-                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">Max fee per blob gas</a></td>
-                            <td class="kvValue"><span id="selectedTransactionEip6404PayloadMaxFeePerBlobGas"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadMaxFeePerBlobGasDescription"></span>)</span></td>
-                        </tr>
                         <tr id="selectedTransactionEip6404PayloadHasInput">
                             <td class="kvKey">Input</td>
                             <td class="kvValue"><span id="selectedTransactionEip6404PayloadInput"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadInputDescription"></span>)</span></td>
@@ -481,18 +473,6 @@
                         <tr id="selectedTransactionEip6404PayloadHasAccessList">
                             <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-2930" target="_blank">Access list</a><span id="selectedTransactionEip6404PayloadAccessListLabel"></span></td>
                             <td class="kvValue"><span id="selectedTransactionEip6404PayloadAccessListStart"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadAccessListDescription"></span>)</span> <span id="selectedTransactionEip6404PayloadAccessList"></span></td>
-                        </tr>
-                        <tr id="selectedTransactionEip6404PayloadHasMaxPriorityFeesPerGas">
-                            <td class="kvKey">Priority fees active fields</td>
-                            <td class="kvValue"><span id="selectedTransactionEip6404PayloadMaxPriorityFeesPerGasActiveFields"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadMaxPriorityFeesPerGasActiveFieldsDescription"></span>)</span></td>
-                        </tr>
-                        <tr id="selectedTransactionEip6404PayloadHasMaxPriorityFeePerRegularGas">
-                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-1559" target="_blank">Max prio fee per regular gas</a></td></td>
-                            <td class="kvValue"><span id="selectedTransactionEip6404PayloadMaxPriorityFeePerRegularGas"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadMaxPriorityFeePerRegularGasDescription"></span>)</span></td>
-                        </tr>
-                        <tr id="selectedTransactionEip6404PayloadHasMaxPriorityFeePerBlobGas">
-                            <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">Max prio fee per blob gas</a></td>
-                            <td class="kvValue"><span id="selectedTransactionEip6404PayloadMaxPriorityFeePerBlobGas"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadMaxPriorityFeePerBlobGasDescription"></span>)</span></td>
                         </tr>
                         <tr id="selectedTransactionEip6404PayloadHasBlobVersionedHashes">
                             <td class="kvKey"><a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">Blob versioned hashes</a><span id="selectedTransactionEip6404PayloadBlobVersionedHashesLabel"></span></td>
@@ -503,12 +483,8 @@
                             <td class="kvValue"><span id="selectedTransactionEip6404PayloadAuthorizationListStart"></span> <span class="description">(<span id="selectedTransactionEip6404PayloadAuthorizationListDescription"></span>)</span> <span id="selectedTransactionEip6404PayloadAuthorizationList"></span></td>
                         </tr>
                         <tr>
-                            <td class="kvKey">Signature active fields</td>
-                            <td class="kvValue"><span id="selectedTransactionEip6404SignatureActiveFields"></span> <span class="description">(<span id="selectedTransactionEip6404SignatureActiveFieldsDescription"></span>)</span></td>
-                        </tr>
-                        <tr id="selectedTransactionEip6404SignatureHasSecp256k1">
-                            <td class="kvKey">Secp256k1</td>
-                            <td class="kvValue"><span id="selectedTransactionEip6404SignatureSecp256k1"></span></td>
+                            <td class="kvKey">Signature</td>
+                            <td class="kvValue"><span id="selectedTransactionEip6404Signature"></span></td>
                         </tr>
                         <tr>
                             <td class="kvKey">&nbsp;</td>
@@ -529,8 +505,8 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="kvKey">Active fields</td>
-                            <td class="kvValue"><span id="selectedReceiptEip6466ActiveFields"></span> <span class="description">(<span id="selectedReceiptEip6466ActiveFieldsDescription"></span>)</span></td>
+                            <td class="kvKey">Selector</td>
+                            <td class="kvValue"><span id="selectedReceiptEip6466Selector"></span> <span class="description">(<a href="https://eips.ethereum.org/EIPS/eip-6466" target="_blank"><span id="selectedReceiptEip6466SelectorDescription"></span></a>)</span></td>
                         </tr>
                         <tr id="selectedReceiptEip6466HasFrom">
                             <td class="kvKey">From</td>
@@ -837,18 +813,23 @@
 
                 let data;
                 try {
-                    const executionBlockResponse = await fetch(executionApiBase, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            jsonrpc: '2.0',
-                            id: 1,
-                            method: 'eth_getBlockByHash',
-                            params: [executionHashString, /* fullTransactions: */ true]
-                        })
-                    });
+                    let executionBlockResponse;
+                    for (let i = 0; i < 20; i++) {
+                        executionBlockResponse = await fetch(executionApiBase, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                jsonrpc: '2.0',
+                                id: 1,
+                                method: 'eth_getBlockByHash',
+                                params: [executionHashString, /* fullTransactions: */ true]
+                            })
+                        });
+                        if (executionBlockResponse.ok) break;
+                        await new Promise(r => setTimeout(r, 100));
+                    }
                     if (!executionBlockResponse.ok) return;
                     const executionBlockJson = await executionBlockResponse.json();
                     if (!executionBlockJson.result) return;
@@ -897,7 +878,10 @@
                         }
                         try {
                             const receiptResponse = await receiptResponseFut;
-                            if (!receiptResponse.ok) continue;
+                            if (!receiptResponse.ok) {
+                                await new Promise(r => setTimeout(r, 100));
+                                continue;
+                            }
                             const receiptResponseJson = await receiptResponse.json();
                             if (!receiptResponseJson.result) continue;
                             receiptsData.push(receiptResponseJson.result);
@@ -1002,6 +986,7 @@
         }
 
         function visualizeTransactionRlp(transactionHash, transactionBytes) {
+            document.getElementById('copyTransactionRlpButton').value = 'Copy (' + toHumanReadableByteCountString(transactionBytes.length) + ')';
             document.getElementById('copyTransactionRlpButton').onclick = function() {
                 navigator.clipboard.writeText(arrayToHexString(transactionBytes));
             };
@@ -1440,6 +1425,7 @@
         }
 
         function visualizeReceiptRlp(transactionHash, receiptRlpBytes, receiptHasStatus) {
+            document.getElementById('copyReceiptRlpButton').value = 'Copy (' + toHumanReadableByteCountString(receiptRlpBytes.length) + ')';
             document.getElementById('copyReceiptRlpButton').onclick = function() {
                 navigator.clipboard.writeText(arrayToHexString(receiptRlpBytes));
             };
@@ -1633,6 +1619,7 @@
         }
 
         function visualizeTransactionEip6404(transactionEip6404Root, transactionEip6404Bytes) {
+            document.getElementById('copyTransactionEip6404Button').value = 'Copy (' + toHumanReadableByteCountString(transactionEip6404Bytes.length) + ')';
             document.getElementById('copyTransactionEip6404Button').onclick = function() {
                 navigator.clipboard.writeText(arrayToHexString(transactionEip6404Bytes));
             };
@@ -1661,43 +1648,76 @@
             bytes = bytes.slice(numSignatureBytes);
             assert(bytes.length === 0);
 
+            assert(payload.length >= 1);
+            const selector = payload[0];
+            payload = payload.slice(1);
+            let selectorDescription;
+            if (selector === 0x01) {
+                selectorDescription = 'RlpLegacyReplayableBasic';
+            } else if (selector === 0x02) {
+                selectorDescription = 'RlpLegacyReplayableCreate';
+            } else if (selector === 0x03) {
+                selectorDescription = 'RlpLegacyBasic';
+            } else if (selector === 0x04) {
+                selectorDescription = 'RlpLegacyCreate';
+            } else if (selector === 0x05) {
+                selectorDescription = 'RlpAccessListBasic';
+            } else if (selector === 0x06) {
+                selectorDescription = 'RlpAccessListCreate';
+            } else if (selector === 0x07) {
+                selectorDescription = 'RlpBasic';
+            } else if (selector === 0x08) {
+                selectorDescription = 'RlpCreate';
+            } else if (selector === 0x09) {
+                selectorDescription = 'RlpBlob';
+            } else if (selector === 0x0a) {
+                selectorDescription = 'RlpSetCode';
+            } else {
+                assert(false);
+            }
+            document.getElementById('selectedTransactionEip6404PayloadSelector').innerText = byteToHexString(selector);
+            document.getElementById('selectedTransactionEip6404PayloadSelectorDescription').innerText = selectorDescription;
+
             const payloadOffsets = [];
 
-            assert(payload.length >= 4);
-            const payloadActiveFields = payload.slice(0, 4);
-            payload = payload.slice(4);
-            document.getElementById('selectedTransactionEip6404PayloadActiveFields').innerText = arrayToHexString(payloadActiveFields);
-            document.getElementById('selectedTransactionEip6404PayloadActiveFieldsDescription').innerText = '0b' + arrayToBinString(payloadActiveFields);
+            const hasChainId = [0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a].includes(selector);
+            const hasNonce = true;
+            const hasMaxFeePerRegularGas = true;
+            const hasMaxFeePerBlobGas = [0x09].includes(selector);
+            const hasGas = true;
+            const hasTo = [0x01, 0x03, 0x05, 0x07, 0x09, 0x0a].includes(selector);
+            const hasValue = true;
+            const hasInput = true;
+            const hasAccessList = [0x05, 0x06, 0x07, 0x08, 0x09, 0x0a].includes(selector);
+            const hasMaxPriorityFeePerRegularGas = [0x07, 0x08, 0x09, 0x0a].includes(selector);
+            const hasBlobVersionedHashes = [0x09].includes(selector);
+            const hasAuthorizationList = [0x0a].includes(selector);
 
-            if (payloadActiveFields[0] & 0x01) {
-                assert(payload.length >= 1);
-                const payloadType = payload.slice(0, 1);
-                payload = payload.slice(1);
-                document.getElementById('selectedTransactionEip6404PayloadHasType').hidden = false;
-                document.getElementById('selectedTransactionEip6404PayloadType').innerText = arrayToHexString(payloadType);
-                if (payloadType[0] === 0x04) {
-                    document.getElementById('selectedTransactionEip6404PayloadTypeDescription').innerHTML =
-                        '<a href="https://eips.ethereum.org/EIPS/eip-7702" target="_blank">EIP-7702</a>';
-                } else if (payloadType[0] === 0x03) {
-                    document.getElementById('selectedTransactionEip6404PayloadTypeDescription').innerHTML =
-                        '<a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">EIP-4844</a>';
-                } else if (payloadType[0] === 0x02) {
-                    document.getElementById('selectedTransactionEip6404PayloadTypeDescription').innerHTML =
-                        '<a href="https://eips.ethereum.org/EIPS/eip-1559" target="_blank">EIP-1559</a>';
-                } else if (payloadType[0] === 0x01) {
-                    document.getElementById('selectedTransactionEip6404PayloadTypeDescription').innerHTML =
-                        '<a href="https://eips.ethereum.org/EIPS/eip-2930" target="_blank">EIP-2930</a>';
-                } else if (payloadType[0] === 0x00) {
-                    document.getElementById('selectedTransactionEip6404PayloadTypeDescription').innerHTML =
-                        'Legacy';
-                } else {
-                    assert(false);
-                }
+            assert(payload.length >= 1);
+            const payloadType = payload.slice(0, 1);
+            payload = payload.slice(1);
+            document.getElementById('selectedTransactionEip6404PayloadHasType').hidden = false;
+            document.getElementById('selectedTransactionEip6404PayloadType').innerText = arrayToHexString(payloadType);
+            if (payloadType[0] === 0x04) {
+                document.getElementById('selectedTransactionEip6404PayloadTypeDescription').innerHTML =
+                    '<a href="https://eips.ethereum.org/EIPS/eip-7702" target="_blank">EIP-7702</a>';
+            } else if (payloadType[0] === 0x03) {
+                document.getElementById('selectedTransactionEip6404PayloadTypeDescription').innerHTML =
+                    '<a href="https://eips.ethereum.org/EIPS/eip-4844" target="_blank">EIP-4844</a>';
+            } else if (payloadType[0] === 0x02) {
+                document.getElementById('selectedTransactionEip6404PayloadTypeDescription').innerHTML =
+                    '<a href="https://eips.ethereum.org/EIPS/eip-1559" target="_blank">EIP-1559</a>';
+            } else if (payloadType[0] === 0x01) {
+                document.getElementById('selectedTransactionEip6404PayloadTypeDescription').innerHTML =
+                    '<a href="https://eips.ethereum.org/EIPS/eip-2930" target="_blank">EIP-2930</a>';
+            } else if (payloadType[0] === 0x00) {
+                document.getElementById('selectedTransactionEip6404PayloadTypeDescription').innerHTML =
+                    'Legacy';
             } else {
-                document.getElementById('selectedTransactionEip6404PayloadHasType').hidden = true;
+                assert(false);
             }
 
-            if (payloadActiveFields[0] & 0x02) {
+            if (hasChainId) {
                 assert(payload.length >= 32);
                 const payloadChainId = payload.slice(0, 32);
                 payload = payload.slice(32);
@@ -1707,7 +1727,7 @@
                 document.getElementById('selectedTransactionEip6404PayloadHasChainId').hidden = true;
             }
 
-            if (payloadActiveFields[0] & 0x04) {
+            if (hasNonce) {
                 assert(payload.length >= 8);
                 const payloadNonce = payload.slice(0, 8);
                 payload = payload.slice(8);
@@ -1718,19 +1738,29 @@
                 document.getElementById('selectedTransactionEip6404PayloadHasNonce').hidden = true;
             }
 
-            if (payloadActiveFields[0] & 0x08) {
-                assert(payload.length >= 4);
-                const payloadMaxFeesPerGasOffset = payload.slice(0, 4);
-                payload = payload.slice(4);
-                document.getElementById('selectedTransactionEip6404PayloadHasMaxFeesPerGasOffset').hidden = false;
-                document.getElementById('selectedTransactionEip6404PayloadMaxFeesPerGasOffset').innerText = arrayToHexString(payloadMaxFeesPerGasOffset);
-                document.getElementById('selectedTransactionEip6404PayloadMaxFeesPerGasOffsetDescription').innerText = arrayToDecString(payloadMaxFeesPerGasOffset.reverse());
-                payloadOffsets.push(Number(arrayToDecString(payloadMaxFeesPerGasOffset)));
+            if (hasMaxFeePerRegularGas) {
+                assert(payload.length >= 32);
+                const maxFeePerRegularGas = payload.slice(0, 32);
+                payload = payload.slice(32);
+                document.getElementById('selectedTransactionEip6404PayloadHasMaxFeePerRegularGas').hidden = false;
+                document.getElementById('selectedTransactionEip6404PayloadMaxFeePerRegularGas').innerText = arrayToHexString(maxFeePerRegularGas);
+                document.getElementById('selectedTransactionEip6404PayloadMaxFeePerRegularGasDescription').innerText = arrayToGweiString(maxFeePerRegularGas.reverse()) + ' Gwei';
             } else {
-                document.getElementById('selectedTransactionEip6404PayloadHasMaxFeesPerGasOffset').hidden = true;
+                document.getElementById('selectedTransactionEip6404PayloadHasMaxFeePerRegularGas').hidden = true;
             }
 
-            if (payloadActiveFields[0] & 0x10) {
+            if (hasMaxFeePerBlobGas) {
+                assert(payload.length >= 32);
+                const maxFeePerBlobGas = payload.slice(0, 32);
+                payload = payload.slice(32);
+                document.getElementById('selectedTransactionEip6404PayloadHasMaxFeePerBlobGas').hidden = false;
+                document.getElementById('selectedTransactionEip6404PayloadMaxFeePerBlobGas').innerText = arrayToHexString(maxFeePerBlobGas);
+                document.getElementById('selectedTransactionEip6404PayloadMaxFeePerBlobGasDescription').innerText = arrayToGweiString(maxFeePerBlobGas.reverse()) + ' Gwei';
+            } else {
+                document.getElementById('selectedTransactionEip6404PayloadHasMaxFeePerBlobGas').hidden = true;
+            }
+
+            if (hasGas) {
                 assert(payload.length >= 8);
                 const payloadGas = payload.slice(0, 8);
                 payload = payload.slice(8);
@@ -1741,7 +1771,7 @@
                 document.getElementById('selectedTransactionEip6404PayloadHasGas').hidden = true;
             }
 
-            if (payloadActiveFields[0] & 0x20) {
+            if (hasTo) {
                 assert(payload.length >= 20);
                 const payloadTo = payload.slice(0, 20);
                 payload = payload.slice(20);
@@ -1754,7 +1784,7 @@
                 document.getElementById('selectedTransactionEip6404PayloadHasTo').hidden = true;
             }
 
-            if (payloadActiveFields[0] & 0x40) {
+            if (hasValue) {
                 assert(payload.length >= 32);
                 const payloadValue = payload.slice(0, 32);
                 payload = payload.slice(32);
@@ -1765,7 +1795,7 @@
                 document.getElementById('selectedTransactionEip6404PayloadHasValue').hidden = true;
             }
 
-            if (payloadActiveFields[0] & 0x80) {
+            if (hasInput) {
                 assert(payload.length >= 4);
                 const payloadInputOffset = payload.slice(0, 4);
                 payload = payload.slice(4);
@@ -1777,7 +1807,7 @@
                 document.getElementById('selectedTransactionEip6404PayloadHasInputOffset').hidden = true;
             }
 
-            if (payloadActiveFields[1] & 0x01) {
+            if (hasAccessList) {
                 assert(payload.length >= 4);
                 const payloadAccessListOffset = payload.slice(0, 4);
                 payload = payload.slice(4);
@@ -1789,19 +1819,18 @@
                 document.getElementById('selectedTransactionEip6404PayloadHasAccessListOffset').hidden = true;
             }
 
-            if (payloadActiveFields[1] & 0x02) {
-                assert(payload.length >= 4);
-                const payloadMaxPriorityFeesPerGasOffset = payload.slice(0, 4);
-                payload = payload.slice(4);
-                document.getElementById('selectedTransactionEip6404PayloadHasMaxPriorityFeesPerGasOffset').hidden = false;
-                document.getElementById('selectedTransactionEip6404PayloadMaxPriorityFeesPerGasOffset').innerText = arrayToHexString(payloadMaxPriorityFeesPerGasOffset);
-                document.getElementById('selectedTransactionEip6404PayloadMaxPriorityFeesPerGasOffsetDescription').innerText = arrayToDecString(payloadMaxPriorityFeesPerGasOffset.reverse());
-                payloadOffsets.push(Number(arrayToDecString(payloadMaxPriorityFeesPerGasOffset)));
+            if (hasMaxPriorityFeePerRegularGas) {
+                assert(payload.length >= 32);
+                const maxPriorityFeePerRegularGas = payload.slice(0, 32);
+                payload = payload.slice(32);
+                document.getElementById('selectedTransactionEip6404PayloadHasMaxPriorityFeePerRegularGas').hidden = false;
+                document.getElementById('selectedTransactionEip6404PayloadMaxPriorityFeePerRegularGas').innerText = arrayToHexString(maxPriorityFeePerRegularGas);
+                document.getElementById('selectedTransactionEip6404PayloadMaxPriorityFeePerRegularGasDescription').innerText = arrayToGweiString(maxPriorityFeePerRegularGas.reverse()) + ' Gwei';
             } else {
-                document.getElementById('selectedTransactionEip6404PayloadHasMaxPriorityFeesPerGasOffset').hidden = true;
+                document.getElementById('selectedTransactionEip6404PayloadHasMaxPriorityFeePerRegularGas').hidden = true;
             }
 
-            if (payloadActiveFields[1] & 0x04) {
+            if (hasBlobVersionedHashes) {
                 assert(payload.length >= 4);
                 const payloadBlobVersionedHashesOffset = payload.slice(0, 4);
                 payload = payload.slice(4);
@@ -1813,7 +1842,7 @@
                 document.getElementById('selectedTransactionEip6404PayloadHasBlobVersionedHashesOffset').hidden = true;
             }
 
-            if (payloadActiveFields[1] & 0x08) {
+            if (hasAuthorizationList) {
                 assert(payload.length >= 4);
                 const payloadAuthorizationListOffset = payload.slice(0, 4);
                 payload = payload.slice(4);
@@ -1825,70 +1854,19 @@
                 document.getElementById('selectedTransactionEip6404PayloadHasAuthorizationListOffset').hidden = true;
             }
 
-            assert(payloadActiveFields[1] < 0x10);
-            assert(payloadActiveFields[2] === 0x00);
-            assert(payloadActiveFields[3] === 0x00);
-
-            if (payloadActiveFields[0] & 0x08) {
-                let numPayloadMaxFeesPerGasBytes;
-                if (payloadOffsets.length > 1) {
-                    numPayloadMaxFeesPerGasBytes = payloadOffsets[1] - payloadOffsets[0];
-                } else {
-                    numPayloadMaxFeesPerGasBytes = numPayloadBytes - 4 - payloadOffsets[0];
-                }
-                payloadOffsets.shift();
-                assert(payload.length >= numPayloadMaxFeesPerGasBytes);
-                let maxFeesPerGas = payload.slice(0, numPayloadMaxFeesPerGasBytes);
-                payload = payload.slice(numPayloadMaxFeesPerGasBytes);
-
-                assert(maxFeesPerGas.length >= 2);
-                const maxFeesPerGasActiveFields = maxFeesPerGas.slice(0, 2);
-                maxFeesPerGas = maxFeesPerGas.slice(2);
-                document.getElementById('selectedTransactionEip6404PayloadHasMaxFeesPerGas').hidden = false;
-                document.getElementById('selectedTransactionEip6404PayloadMaxFeesPerGasActiveFields').innerText = arrayToHexString(maxFeesPerGasActiveFields);
-                document.getElementById('selectedTransactionEip6404PayloadMaxFeesPerGasActiveFieldsDescription').innerText = '0b' + arrayToBinString(maxFeesPerGasActiveFields);
-
-                if (maxFeesPerGasActiveFields[0] & 0x01) {
-                    assert(maxFeesPerGas.length >= 32);
-                    const maxFeePerRegularGas = maxFeesPerGas.slice(0, 32);
-                    maxFeesPerGas = maxFeesPerGas.slice(32);
-                    document.getElementById('selectedTransactionEip6404PayloadHasMaxFeePerRegularGas').hidden = false;
-                    document.getElementById('selectedTransactionEip6404PayloadMaxFeePerRegularGas').innerText = arrayToHexString(maxFeePerRegularGas);
-                    document.getElementById('selectedTransactionEip6404PayloadMaxFeePerRegularGasDescription').innerText = arrayToGweiString(maxFeePerRegularGas.reverse()) + ' Gwei';
-                } else {
-                    document.getElementById('selectedTransactionEip6404PayloadHasMaxFeePerRegularGas').hidden = true;
-                }
-
-                if (maxFeesPerGasActiveFields[0] & 0x02) {
-                    assert(maxFeesPerGas.length >= 32);
-                    const maxFeePerBlobGas = maxFeesPerGas.slice(0, 32);
-                    maxFeesPerGas = maxFeesPerGas.slice(32);
-                    document.getElementById('selectedTransactionEip6404PayloadHasMaxFeePerBlobGas').hidden = false;
-                    document.getElementById('selectedTransactionEip6404PayloadMaxFeePerBlobGas').innerText = arrayToHexString(maxFeePerBlobGas);
-                    document.getElementById('selectedTransactionEip6404PayloadMaxFeePerBlobGasDescription').innerText = arrayToGweiString(maxFeePerBlobGas.reverse()) + ' Gwei';
-                } else {
-                    document.getElementById('selectedTransactionEip6404PayloadHasMaxFeePerBlobGas').hidden = true;
-                }
-
-                assert(maxFeesPerGasActiveFields[0] < 0x04);
-                assert(maxFeesPerGasActiveFields[1] === 0x00);
-            } else {
-                document.getElementById('selectedTransactionEip6404PayloadHasMaxFeesPerGas').hidden = true;
-            }
-
-            if (payloadActiveFields[0] & 0x80) {
+            if (hasInput) {
                 let numPayloadInputBytes;
                 if (payloadOffsets.length > 1) {
                     numPayloadInputBytes = payloadOffsets[1] - payloadOffsets[0];
                 } else {
-                    numPayloadInputBytes = numPayloadBytes - 4 - payloadOffsets[0];
+                    numPayloadInputBytes = numPayloadBytes - 1 - payloadOffsets[0];
                 }
                 payloadOffsets.shift();
                 assert(payload.length >= numPayloadInputBytes);
                 const payloadInput = payload.slice(0, numPayloadInputBytes);
                 payload = payload.slice(numPayloadInputBytes);
                 document.getElementById('selectedTransactionEip6404PayloadHasInput').hidden = false;
-                if (payloadActiveFields[0] & 0x20 && payloadInput.length >= 4) {
+                if (hasTo && payloadInput.length >= 4) {
                     document.getElementById('selectedTransactionEip6404PayloadInput').innerHTML =
                         '<span>' + arrayToHexString(payloadInput.slice(0, 4)) + '</span> ' +
                         '<span class="description">(<a href="https://www.4byte.directory/signatures/?bytes4_signature=0x' + arrayToHexString(payloadInput.slice(0, 4)) + '" target="_blank">Function</a>)';
@@ -1907,12 +1885,12 @@
                 document.getElementById('selectedTransactionEip6404PayloadHasInput').hidden = true;
             }
 
-            if (payloadActiveFields[1] & 0x01) {
+            if (hasAccessList) {
                 let numPayloadAccessListBytes;
                 if (payloadOffsets.length > 1) {
                     numPayloadAccessListBytes = payloadOffsets[1] - payloadOffsets[0];
                 } else {
-                    numPayloadAccessListBytes = numPayloadBytes - 4 - payloadOffsets[0];
+                    numPayloadAccessListBytes = numPayloadBytes - 1 - payloadOffsets[0];
                 }
                 payloadOffsets.shift();
                 assert(payload.length >= numPayloadAccessListBytes);
@@ -1999,59 +1977,12 @@
                 document.getElementById('selectedTransactionEip6404PayloadHasAccessList').hidden = true;
             }
 
-            if (payloadActiveFields[1] & 0x02) {
-                let numPayloadMaxPriorityFeesPerGasBytes;
-                if (payloadOffsets.length > 1) {
-                    numPayloadMaxPriorityFeesPerGasBytes = payloadOffsets[1] - payloadOffsets[0];
-                } else {
-                    numPayloadMaxPriorityFeesPerGasBytes = numPayloadBytes - 4 - payloadOffsets[0];
-                }
-                payloadOffsets.shift();
-                assert(payload.length >= numPayloadMaxPriorityFeesPerGasBytes);
-                let maxPriorityFeesPerGas = payload.slice(0, numPayloadMaxPriorityFeesPerGasBytes);
-                payload = payload.slice(numPayloadMaxPriorityFeesPerGasBytes);
-
-                assert(maxPriorityFeesPerGas.length >= 2);
-                const maxPriorityFeesPerGasActiveFields = maxPriorityFeesPerGas.slice(0, 2);
-                maxPriorityFeesPerGas = maxPriorityFeesPerGas.slice(2);
-                document.getElementById('selectedTransactionEip6404PayloadHasMaxPriorityFeesPerGas').hidden = false;
-                document.getElementById('selectedTransactionEip6404PayloadMaxPriorityFeesPerGasActiveFields').innerText = arrayToHexString(maxPriorityFeesPerGasActiveFields);
-                document.getElementById('selectedTransactionEip6404PayloadMaxPriorityFeesPerGasActiveFieldsDescription').innerText = '0b' + arrayToBinString(maxPriorityFeesPerGasActiveFields);
-
-                if (maxPriorityFeesPerGasActiveFields[0] & 0x01) {
-                    assert(maxPriorityFeesPerGas.length >= 32);
-                    const maxPriorityFeePerRegularGas = maxPriorityFeesPerGas.slice(0, 32);
-                    maxPriorityFeesPerGas = maxPriorityFeesPerGas.slice(32);
-                    document.getElementById('selectedTransactionEip6404PayloadHasMaxPriorityFeePerRegularGas').hidden = false;
-                    document.getElementById('selectedTransactionEip6404PayloadMaxPriorityFeePerRegularGas').innerText = arrayToHexString(maxPriorityFeePerRegularGas);
-                    document.getElementById('selectedTransactionEip6404PayloadMaxPriorityFeePerRegularGasDescription').innerText = arrayToGweiString(maxPriorityFeePerRegularGas.reverse()) + ' Gwei';
-                } else {
-                    document.getElementById('selectedTransactionEip6404PayloadHasMaxPriorityFeePerRegularGas').hidden = true;
-                }
-
-                if (maxPriorityFeesPerGasActiveFields[0] & 0x02) {
-                    assert(maxPriorityFeesPerGas.length >= 32);
-                    const maxPriorityFeePerBlobGas = maxPriorityFeesPerGas.slice(0, 32);
-                    maxPriorityFeesPerGas = maxPriorityFeesPerGas.slice(32);
-                    document.getElementById('selectedTransactionEip6404PayloadHasMaxPriorityFeePerBlobGas').hidden = false;
-                    document.getElementById('selectedTransactionEip6404PayloadMaxPriorityFeePerBlobGas').innerText = arrayToHexString(maxPriorityFeePerBlobGas);
-                    document.getElementById('selectedTransactionEip6404PayloadMaxPriorityFeePerBlobGasDescription').innerText = arrayToGweiString(maxPriorityFeePerBlobGas.reverse()) + ' Gwei';
-                } else {
-                    document.getElementById('selectedTransactionEip6404PayloadHasMaxPriorityFeePerBlobGas').hidden = true;
-                }
-
-                assert(maxPriorityFeesPerGasActiveFields[0] < 0x04);
-                assert(maxPriorityFeesPerGasActiveFields[1] === 0x00);
-            } else {
-                document.getElementById('selectedTransactionEip6404PayloadHasMaxPriorityFeesPerGas').hidden = true;
-            }
-
-            if (payloadActiveFields[1] & 0x04) {
+            if (hasBlobVersionedHashes) {
                 let numPayloadBlobVersionedHashesBytes;
                 if (payloadOffsets.length > 1) {
                     numPayloadBlobVersionedHashesBytes = payloadOffsets[1] - payloadOffsets[0];
                 } else {
-                    numPayloadBlobVersionedHashesBytes = numPayloadBytes - 4 - payloadOffsets[0];
+                    numPayloadBlobVersionedHashesBytes = numPayloadBytes - 1 - payloadOffsets[0];
                 }
                 payloadOffsets.shift();
                 assert(payload.length >= numPayloadBlobVersionedHashesBytes);
@@ -2080,12 +2011,12 @@
                 document.getElementById('selectedTransactionEip6404PayloadHasBlobVersionedHashes').hidden = true;
             }
 
-            if (payloadActiveFields[1] & 0x08) {
+            if (hasAuthorizationList) {
                 let numPayloadAuthorizationListBytes;
                 if (payloadOffsets.length > 1) {
                     numPayloadAuthorizationListBytes = payloadOffsets[1] - payloadOffsets[0];
                 } else {
-                    numPayloadAuthorizationListBytes = numPayloadBytes - 4 - payloadOffsets[0];
+                    numPayloadAuthorizationListBytes = numPayloadBytes - 1 - payloadOffsets[0];
                 }
                 payloadOffsets.shift();
                 assert(payload.length >= numPayloadAuthorizationListBytes);
@@ -2166,16 +2097,29 @@
                     authorization = authorization.slice(numAuthSignatureBytes);
                     assert(authorization.length === 0);
 
-                    assert(authPayload.length >= 2);
-                    const authPayloadActiveFields = authPayload.slice(0, 2);
-                    authPayload = authPayload.slice(2);
+                    assert(authPayload.length >= 1);
+                    const authSelector = authPayload[0];
+                    authPayload = authPayload.slice(1);
+                    let authSelectorDescription;
+                    if (authSelector === 0x01) {
+                        authSelectorDescription = 'ReplayableBasic';
+                    } else if (authSelector === 0x02) {
+                        authSelectorDescription = 'Basic';
+                    } else {
+                        assert(false);
+                    }
                     document.getElementById('selectedTransactionEip6404PayloadAuthorizationList').innerHTML +=
-                        '<br /><span>' + arrayToHexString(authPayloadActiveFields) + '</span> ' +
-                        '<span class="description">(0b' + arrayToBinString(authPayloadActiveFields) +')</span>';
+                        '<br /><span>' + byteToHexString(authSelector) + '</span> ' +
+                        '<span class="description">(' + authSelectorDescription + ')</span>';
                     document.getElementById('selectedTransactionEip6404PayloadAuthorizationListLabel').innerHTML +=
-                        '<br /><span>[' + authorizationIndex + '] Payload active fields</span>';
+                        '<br /><span>[' + authorizationIndex + '] Payload selector</span>';
 
-                    if (authPayloadActiveFields[0] & 0x01) {
+                    const hasAuthMagic = true;
+                    const hasAuthChainId = [0x02].includes(authSelector);
+                    const hasAuthAddress = true;
+                    const hasAuthNonce = true;
+
+                    if (hasAuthMagic) {
                         assert(authPayload.length >= 1);
                         const magic = authPayload.slice(0, 1);
                         authPayload = authPayload.slice(1);
@@ -2190,7 +2134,7 @@
                             '<br /><span>[' + authorizationIndex + '] Magic</span>';
                     }
 
-                    if (authPayloadActiveFields[0] & 0x02) {
+                    if (hasAuthChainId) {
                         assert(authPayload.length >= 32);
                         const chainId = authPayload.slice(0, 32);
                         authPayload = authPayload.slice(32);
@@ -2200,7 +2144,7 @@
                             '<br /><span>[' + authorizationIndex + '] Chain ID</span>';
                     }
 
-                    if (authPayloadActiveFields[0] & 0x04) {
+                    if (hasAuthAddress) {
                         assert(authPayload.length >= 20);
                         const address = authPayload.slice(0, 20);
                         authPayload = authPayload.slice(20);
@@ -2210,7 +2154,7 @@
                             '<br /><span>[' + authorizationIndex + '] <a href="https://etherscan.io/address/0x' + arrayToHexString(address) + '" target="_blank">Address</a></span>';
                     }
 
-                    if (authPayloadActiveFields[0] & 0x08) {
+                    if (hasAuthNonce) {
                         assert(authPayload.length >= 8);
                         const nonce = authPayload.slice(0, 8);
                         authPayload = authPayload.slice(8);
@@ -2220,32 +2164,22 @@
                             '<br /><span>[' + authorizationIndex + '] Nonce</span>';
                     }
 
-                    assert(authPayloadActiveFields[0] < 0x10);
-
                     assert(authPayload.length === 0);
 
                     assert(authSignature.length >= 1);
-                    const authSignatureActiveFields = authSignature.slice(0, 1);
-                    authSignature = authSignature.slice(1);
-                    document.getElementById('selectedTransactionEip6404PayloadAuthorizationList').innerHTML +=
-                        '<br /><span>' + arrayToHexString(authSignatureActiveFields) + '</span> ' +
-                        '<span class="description">(0b' + arrayToBinString(authSignatureActiveFields) +')</span>';
-                    document.getElementById('selectedTransactionEip6404PayloadAuthorizationListLabel').innerHTML +=
-                        '<br /><span>[' + authorizationIndex + '] Signature active fields</span>';
-
-                    if (authSignatureActiveFields[0] & 0x01) {
-                        assert(authSignature.length >= 65);
-                        const secp256k1 = authSignature.slice(0, 65);
-                        authSignature = authSignature.slice(65);
-                        document.getElementById('selectedTransactionEip6404PayloadAuthorizationList').innerHTML +=
-                            '<br /><span>' + (arrayToHexString(secp256k1).match(/.{1,64}/g) ?? []).join('<br />') + '</span>';
-                        document.getElementById('selectedTransactionEip6404PayloadAuthorizationListLabel').innerHTML +=
-                            '<br /><span>[' + authorizationIndex + '] Secp256k1<br />&nbsp;<br />&nbsp;</span>';
+                    let authSignatureDescription;
+                    if (authSignature[0] === 0xff) {
+                        authSignatureDescription = '<a href="https://eips.ethereum.org/EIPS/eip-7932" target="_blank">secp256k1</a>';
+                    } else {
+                        authSignatureDescription = 'Unknown';
                     }
-
-                    assert(authSignatureActiveFields[0] < 0x02);
-
-                    assert(authSignature.length === 0);
+                    document.getElementById('selectedTransactionEip6404PayloadAuthorizationList').innerHTML +=
+                        '<br /><span>' + byteToHexString(authSignature[0]) + '</span> ' +
+                        '<span class="description">(' + authSignatureDescription + ')</span>' +
+                        '<br /><span>' + (arrayToHexString(authSignature.slice(1)).match(/.{1,64}/g) ?? []).join('<br />') + '</span>';
+                    document.getElementById('selectedTransactionEip6404PayloadAuthorizationListLabel').innerHTML +=
+                        '<br /><span>[' + authorizationIndex + '] Signature' +
+                        (arrayToHexString(authSignature).match(/.{1,64}/g) ?? []).fill('<br />&nbsp;').slice(1).join('') + '</span>';
                 }
                 assert(authorizationList.length === 0);
             } else {
@@ -2255,25 +2189,16 @@
             assert(payload.length === 0);
 
             assert(signature.length >= 1);
-            const signatureActiveFields = signature.slice(0, 1);
-            signature = signature.slice(1);
-            document.getElementById('selectedTransactionEip6404SignatureActiveFields').innerText = arrayToHexString(signatureActiveFields);
-            document.getElementById('selectedTransactionEip6404SignatureActiveFieldsDescription').innerText = '0b' + arrayToBinString(signatureActiveFields);
-
-            if (signatureActiveFields[0] & 0x01) {
-                assert(signature.length >= 65);
-                const signatureSecp256k1 = signature.slice(0, 65);
-                signature = signature.slice(65);
-                document.getElementById('selectedTransactionEip6404SignatureHasSecp256k1').hidden = false;
-                document.getElementById('selectedTransactionEip6404SignatureSecp256k1').innerHTML =
-                    (arrayToHexString(signatureSecp256k1).match(/.{1,64}/g) ?? []).join('<br />');
+            let signatureDescription;
+            if (signature[0] === 0xff) {
+                signatureDescription = '<a href="https://eips.ethereum.org/EIPS/eip-7932" target="_blank">secp256k1</a>';
             } else {
-                document.getElementById('selectedTransactionEip6404SignatureHasSecp256k1').hidden = true;
+                signatureDescription = 'Unknown';
             }
-
-            assert(signatureActiveFields[0] < 0x02);
-
-            assert(signature.length === 0);
+            document.getElementById('selectedTransactionEip6404Signature').innerHTML =
+                '<span>' + byteToHexString(signature[0]) + '</span> ' +
+                '<span class="description">(' + signatureDescription + ')</span><br />' +
+                (arrayToHexString(signature.slice(1)).match(/.{1,64}/g) ?? []).join('<br />');
 
             document.getElementById('specsDetail').hidden = true;
             document.getElementById('selectedTransactionRlpDetail').hidden = true;
@@ -2283,6 +2208,7 @@
         }
 
         function visualizeReceiptEip6466(transactionEip6404Root, receiptEip6466Bytes) {
+            document.getElementById('copyReceiptEip6466Button').value = 'Copy (' + toHumanReadableByteCountString(receiptEip6466Bytes.length) + ')';
             document.getElementById('copyReceiptEip6466Button').onclick = function() {
                 navigator.clipboard.writeText(arrayToHexString(receiptEip6466Bytes));
             };
@@ -2291,17 +2217,34 @@
 
             let bytes = receiptEip6466Bytes;
 
-            assert(bytes.length >= 4);
-            const activeFields = bytes.slice(0, 4);
-            bytes = bytes.slice(4);
-            document.getElementById('selectedReceiptEip6466ActiveFields').innerText = arrayToHexString(activeFields);
-            document.getElementById('selectedReceiptEip6466ActiveFieldsDescription').innerText = '0b' + arrayToBinString(activeFields);
+            assert(bytes.length >= 1);
+            const selector = bytes[0];
+            bytes = bytes.slice(1);
+            let selectorDescription;
+            if (selector === 0x01) {
+                selectorDescription = 'Basic';
+            } else if (selector === 0x02) {
+                selectorDescription = 'Create';
+            } else if (selector === 0x03) {
+                selectorDescription = 'SetCode';
+            } else {
+                assert(false);
+            }
+            document.getElementById('selectedReceiptEip6466Selector').innerText = byteToHexString(selector);
+            document.getElementById('selectedReceiptEip6466SelectorDescription').innerText = selectorDescription;
 
             const numBytes = bytes.length;
 
             const offsets = [];
 
-            if (activeFields[0] & 0x01) {
+            const hasFrom = true;
+            const hasGasUsed = true;
+            const hasContractAddress = [0x02].includes(selector);
+            const hasLogs = true;
+            const hasStatus = true;
+            const hasAuthorities = [0x03].includes(selector);
+
+            if (hasFrom) {
                 assert(bytes.length >= 20);
                 const from = bytes.slice(0, 20);
                 bytes = bytes.slice(20);
@@ -2314,7 +2257,7 @@
                 document.getElementById('selectedReceiptEip6466HasFrom').hidden = true;
             }
 
-            if (activeFields[0] & 0x02) {
+            if (hasGasUsed) {
                 assert(bytes.length >= 8);
                 const gasUsed = bytes.slice(0, 8);
                 bytes = bytes.slice(8);
@@ -2325,7 +2268,7 @@
                 document.getElementById('selectedReceiptEip6466HasGasUsed').hidden = true;
             }
 
-            if (activeFields[0] & 0x04) {
+            if (hasContractAddress) {
                 assert(bytes.length >= 20);
                 const contractAddress = bytes.slice(0, 20);
                 bytes = bytes.slice(20);
@@ -2338,7 +2281,7 @@
                 document.getElementById('selectedReceiptEip6466HasContractAddress').hidden = true;
             }
 
-            if (activeFields[0] & 0x08) {
+            if (hasLogs) {
                 assert(bytes.length >= 4);
                 const logsOffset = bytes.slice(0, 4);
                 bytes = bytes.slice(4);
@@ -2350,7 +2293,7 @@
                 document.getElementById('selectedReceiptEip6466HasLogsOffset').hidden = true;
             }
 
-            if (activeFields[0] & 0x10) {
+            if (hasStatus) {
                 assert(bytes.length >= 1);
                 const status = bytes.slice(0, 1);
                 bytes = bytes.slice(1);
@@ -2361,7 +2304,7 @@
                 document.getElementById('selectedReceiptEip6466HasStatus').hidden = true;
             }
 
-            if (activeFields[0] & 0x20) {
+            if (hasAuthorities) {
                 assert(bytes.length >= 4);
                 const authoritiesOffset = bytes.slice(0, 4);
                 bytes = bytes.slice(4);
@@ -2373,12 +2316,7 @@
                 document.getElementById('selectedReceiptEip6466HasAuthoritiesOffset').hidden = true;
             }
 
-            assert(activeFields[0] < 0x40);
-            assert(activeFields[1] === 0x00);
-            assert(activeFields[2] === 0x00);
-            assert(activeFields[3] === 0x00);
-
-            if (activeFields[0] & 0x08) {
+            if (hasLogs) {
                 let numLogsBytes;
                 if (offsets.length > 1) {
                     numLogsBytes = offsets[1] - offsets[0];
@@ -2528,7 +2466,7 @@
                 document.getElementById('selectedReceiptEip6466HasLogs').hidden = true;
             }
 
-            if (activeFields[0] & 0x20) {
+            if (hasAuthorities) {
                 let numAuthoritiesBytes;
                 if (offsets.length > 1) {
                     numAuthoritiesBytes = offsets[1] - offsets[0];
