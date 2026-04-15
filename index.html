@@ -129,7 +129,7 @@
                         <td><span class="fas fa-cogs"></span> <input id="executionApiBase" value="https://execution-api.eth-light.xyz/v1/mainnet" /></td>
                     </tr>
                     <tr>
-                        <td><span class="fas fa-shield-alt"></span> <input id="trustedBlockRoot" value="0x03ccedca3af7fd3f0efddd4d357eba442579fb68a0b4b61ae3c6281eb679dc7c" /></td>
+                        <td><span class="fas fa-shield-alt"></span> <input id="trustedBlockRoot" value="0x2fca8b9ca1f2099e2d32da26bb53b679a89ceca5854221ce5fd99269c88e9836" /></td>
                     </tr>
                     <tr>
                         <td><input type="button" id="initButton" value="Save" disabled /></td>
@@ -768,11 +768,12 @@
 
                         const removedExecutionBlock = executionBlocks[removedBeaconRoot];
                         if (removedExecutionBlock) {
-                            const [removedExecutionBlockHeader, removedTransactions, removedReceipts] = removedExecutionBlock;
                             delete executionBlocks[removedBeaconRoot];
-                            Module._ETHReceiptsDestroy(removedReceipts);
-                            Module._ETHTransactionsDestroy(removedTransactions);
-                            Module._ETHExecutionBlockHeaderDestroy(removedExecutionBlockHeader);
+                            if (removedExecutionBlock.length === 3) {
+                                Module._ETHReceiptsDestroy(removedExecutionBlock[2]);
+                                Module._ETHTransactionsDestroy(removedExecutionBlock[1]);
+                            }
+                            Module._ETHExecutionBlockHeaderDestroy(removedExecutionBlock[0]);
                         }
 
                         delete byRoot[removedBeaconRoot];
@@ -788,12 +789,27 @@
                     return byRoot[beaconRoot];
                 },
 
+                'setExecutionBlockHeader': function (beaconRoot, executionBlockHeader) {
+                    assert(!executionBlocks[beaconRoot]);
+                    executionBlocks[beaconRoot] = [executionBlockHeader];
+                },
+
+                'getExecutionBlockHeader': function (beaconRoot) {
+                    const entry = executionBlocks[beaconRoot];
+                    return entry ? entry[0] : undefined;
+                },
+
                 'setExecutionBlock': function (beaconRoot, executionBlock) {
+                    const entry = executionBlocks[beaconRoot];
+                    if (entry) {
+                        assert(entry.length === 1 && entry[0] === executionBlock[0]);
+                    }
                     executionBlocks[beaconRoot] = executionBlock;
                 },
 
                 'getExecutionBlock': function (beaconRoot) {
-                    return executionBlocks[beaconRoot];
+                    const entry = executionBlocks[beaconRoot];
+                    return (entry && entry.length === 3) ? entry : undefined;
                 }
             };
         }
@@ -837,6 +853,7 @@
                 } catch {
                     return;
                 }
+                if (document.getElementById(prefix + 'BeaconRoot').dataset.beaconRoot !== beaconRoot) return;
                 if (!headers.get(beaconRoot)) return;
 
                 const fullTransactions = JSON.stringify(data.transactions);
@@ -892,31 +909,31 @@
                             continue;
                         }
                     }
+                    if (document.getElementById(prefix + 'BeaconRoot').dataset.beaconRoot !== beaconRoot) return;
                     if (!headers.get(beaconRoot)) return;
                 }
 
-                const blockHeaderJson = Module.stringToNewUTF8(JSON.stringify(data));
-                const executionBlockHeader = Module._ETHExecutionBlockHeaderCreateFromJson(executionHash, blockHeaderJson);
-                Module._free(blockHeaderJson);
-                if (!executionBlockHeader) return;
+                let executionBlockHeader = headers.getExecutionBlockHeader(beaconRoot);
+                if (!executionBlockHeader) {
+                    const blockHeaderJson = Module.stringToNewUTF8(JSON.stringify(data));
+                    executionBlockHeader = Module._ETHExecutionBlockHeaderCreateFromJson(executionHash, blockHeaderJson);
+                    Module._free(blockHeaderJson);
+                    if (!executionBlockHeader) return;
+                    headers.setExecutionBlockHeader(beaconRoot, executionBlockHeader);
+                }
 
                 const executionTransactionsRoot = Module._ETHExecutionBlockHeaderGetTransactionsRoot(executionBlockHeader);
                 const transactionsJson = Module.stringToNewUTF8(fullTransactions);
                 const transactions = Module._ETHTransactionsCreateFromJson(executionTransactionsRoot, transactionsJson);
                 Module._free(transactionsJson);
-                if (!transactions) {
-                    Module._ETHExecutionBlockHeaderDestroy(executionBlockHeader);
-                    return;
-                }
+                if (!transactions) return;
 
-                const execution = Module._ETHLightClientHeaderGetExecution(header);
-                const executionReceiptsRoot = Module._ETHExecutionPayloadHeaderGetReceiptsRoot(execution);
+                const executionReceiptsRoot = Module._ETHExecutionBlockHeaderGetReceiptsRoot(executionBlockHeader);
                 const receiptsJson = Module.stringToNewUTF8(JSON.stringify(receiptsData));
                 const receipts = Module._ETHReceiptsCreateFromJson(executionReceiptsRoot, receiptsJson, transactions);
                 Module._free(receiptsJson);
                 if (!receipts) {
                     Module._ETHTransactionsDestroy(transactions);
-                    Module._ETHExecutionBlockHeaderDestroy(executionBlockHeader);
                     return;
                 }
 
@@ -2535,37 +2552,51 @@
             const executionHash = Module._ETHLightClientHeaderCopyExecutionHash(header, cfg);
             const executionHashString = toHexString(executionHash, 32);
             Module._ETHRootDestroy(executionHash);
-            const execution = Module._ETHLightClientHeaderGetExecution(header);
-            const executionParentHash = Module._ETHExecutionPayloadHeaderGetParentHash(execution);
-            const executionFeeRecipient = Module._ETHExecutionPayloadHeaderGetFeeRecipient(execution);
-            document.getElementById(prefix + 'ExecutionFeeRecipient').innerHTML =
-                '<a href="https://etherscan.io/address/' + toHexString(executionFeeRecipient, 20) + '#mine" target="_blank">' +
-                toHexString(executionFeeRecipient, 20) + '</a>';
-            const executionStateRoot = Module._ETHExecutionPayloadHeaderGetStateRoot(execution);
-            const executionReceiptsRoot = Module._ETHExecutionPayloadHeaderGetReceiptsRoot(execution);
-            const executionLogsBloom = Module._ETHExecutionPayloadHeaderGetLogsBloom(execution);
-            const executionPrevRandao = Module._ETHExecutionPayloadHeaderGetPrevRandao(execution);
-            const executionBlockNumber = Module._ETHExecutionPayloadHeaderGetBlockNumber(execution);
-            document.getElementById(prefix + 'ExecutionBlockNumber').innerHTML =
-                '<a href="https://etherscan.io/block/' + executionHashString + '" target="_blank">' +
-                executionBlockNumber + '</a>';
-            const executionGasLimit = Module._ETHExecutionPayloadHeaderGetGasLimit(execution);
-            document.getElementById(prefix + 'ExecutionGasLimit').innerText = toHumanReadableNumberString(executionGasLimit);
-            const executionGasUsed = Module._ETHExecutionPayloadHeaderGetGasUsed(execution);
-            document.getElementById(prefix + 'ExecutionGasUsed').innerText = toHumanReadableNumberString(executionGasUsed);
-            document.getElementById(prefix + 'ExecutionGasUsedPercentage').innerText = (executionGasUsed * 100 / executionGasLimit).toFixed(2) + '%';
-            const executionTimestamp = Module._ETHExecutionPayloadHeaderGetTimestamp(execution);
-            document.getElementById(prefix + 'ExecutionTimestamp').innerText = toDateString(executionTimestamp);
-            const numExecutionExtraDataBytesPtr = Module._malloc(4);
-            const executionExtraDataBytes = Module._ETHExecutionPayloadHeaderGetExtraDataBytes(execution, numExecutionExtraDataBytesPtr);
-            const numExecutionExtraDataBytes = Module.HEAPU32[numExecutionExtraDataBytesPtr >>> 2];
-            Module._free(numExecutionExtraDataBytesPtr);
-            const executionBaseFeePerGas = Module._ETHExecutionPayloadHeaderGetBaseFeePerGas(execution);
-            document.getElementById(prefix + 'ExecutionBaseFeePerGas').innerText = toGweiString(executionBaseFeePerGas, 32) + ' Gwei';
-            const executionBlobGasUsed = Module._ETHExecutionPayloadHeaderGetBlobGasUsed(execution);
-            const executionExcessBlobGas = Module._ETHExecutionPayloadHeaderGetExcessBlobGas(execution);
+
+            function displayExecutionBlockHeader(executionBlockHeader) {
+                const executionParentHash = Module._ETHExecutionBlockHeaderGetParentHash(executionBlockHeader);
+                const executionFeeRecipient = Module._ETHExecutionBlockHeaderGetFeeRecipient(executionBlockHeader);
+                document.getElementById(prefix + 'ExecutionFeeRecipient').innerHTML =
+                    '<a href="https://etherscan.io/address/' + toHexString(executionFeeRecipient, 20) + '#mine" target="_blank">' +
+                    toHexString(executionFeeRecipient, 20) + '</a>';
+                const executionStateRoot = Module._ETHExecutionBlockHeaderGetStateRoot(executionBlockHeader);
+                const executionReceiptsRoot = Module._ETHExecutionBlockHeaderGetReceiptsRoot(executionBlockHeader);
+                const executionLogsBloom = Module._ETHExecutionBlockHeaderGetLogsBloom(executionBlockHeader);
+                const executionPrevRandao = Module._ETHExecutionBlockHeaderGetPrevRandao(executionBlockHeader);
+                const executionBlockNumber = Module._ETHExecutionBlockHeaderGetBlockNumber(executionBlockHeader);
+                document.getElementById(prefix + 'ExecutionBlockNumber').innerHTML =
+                    '<a href="https://etherscan.io/block/' + executionHashString + '" target="_blank">' +
+                    executionBlockNumber + '</a>';
+                const executionGasLimit = Module._ETHExecutionBlockHeaderGetGasLimit(executionBlockHeader);
+                document.getElementById(prefix + 'ExecutionGasLimit').innerText = toHumanReadableNumberString(executionGasLimit);
+                const executionGasUsed = Module._ETHExecutionBlockHeaderGetGasUsed(executionBlockHeader);
+                document.getElementById(prefix + 'ExecutionGasUsed').innerText = toHumanReadableNumberString(executionGasUsed);
+                document.getElementById(prefix + 'ExecutionGasUsedPercentage').innerText = (executionGasUsed * 100 / executionGasLimit).toFixed(2) + '%';
+                const executionTimestamp = Module._ETHExecutionBlockHeaderGetTimestamp(executionBlockHeader);
+                document.getElementById(prefix + 'ExecutionTimestamp').innerText = toDateString(executionTimestamp);
+                const numExecutionExtraDataBytesPtr = Module._malloc(4);
+                const executionExtraDataBytes = Module._ETHExecutionBlockHeaderGetExtraDataBytes(executionBlockHeader, numExecutionExtraDataBytesPtr);
+                const numExecutionExtraDataBytes = Module.HEAPU32[numExecutionExtraDataBytesPtr >>> 2];
+                Module._free(numExecutionExtraDataBytesPtr);
+                const executionBaseFeePerGas = Module._ETHExecutionBlockHeaderGetBaseFeePerGas(executionBlockHeader);
+                document.getElementById(prefix + 'ExecutionBaseFeePerGas').innerText = toGweiString(executionBaseFeePerGas, 32) + ' Gwei';
+                const executionBlobGasUsed = Module._ETHExecutionBlockHeaderGetBlobGasUsed(executionBlockHeader);
+                const executionExcessBlobGas = Module._ETHExecutionBlockHeaderGetExcessBlobGas(executionBlockHeader);
+            }
 
             function fillExecutionInfo() {
+                const executionBlockHeader = headers.getExecutionBlockHeader(beaconRoot);
+                if (executionBlockHeader) {
+                    displayExecutionBlockHeader(executionBlockHeader);
+                } else {
+                    document.getElementById(prefix + 'ExecutionFeeRecipient').innerHTML = '';
+                    document.getElementById(prefix + 'ExecutionBlockNumber').innerHTML = '';
+                    document.getElementById(prefix + 'ExecutionGasLimit').innerText = '';
+                    document.getElementById(prefix + 'ExecutionGasUsed').innerText = '';
+                    document.getElementById(prefix + 'ExecutionGasUsedPercentage').innerText = '';
+                    document.getElementById(prefix + 'ExecutionTimestamp').innerText = '';
+                    document.getElementById(prefix + 'ExecutionBaseFeePerGas').innerText = '';
+                }
                 if (executionHash == zeroHash) {
                     document.getElementById(prefix + 'TransactionInfo').innerHTML = '';
                     document.getElementById(prefix + 'ReceiptInfo').innerHTML = '';
@@ -2597,8 +2628,7 @@
                         }
 
                         const [executionBlockHeader, transactions, receipts] = executionBlock;
-                        const executionTransactionsRoot = Module._ETHExecutionBlockHeaderGetTransactionsRoot(executionBlockHeader);
-                        const executionWithdrawalsRoot = Module._ETHExecutionBlockHeaderGetWithdrawalsRoot(executionBlockHeader);
+                        displayExecutionBlockHeader(executionBlockHeader);
 
                         const numTransactions = Module._ETHTransactionsGetCount(transactions);
                         document.getElementById(prefix + 'TransactionInfo').innerHTML = '';
@@ -2903,7 +2933,7 @@
             document.getElementById('specsDetail').hidden = false;
         };
 
-        function cacheHeaders(store, cfg) {
+        async function cacheHeadersImpl(store, cfg) {
             const finalizedRoot = getBeaconRoot(Module._ETHLightClientStoreGetFinalizedHeader(store));
             document.getElementById('trustedBlockRoot').value = finalizedRoot;
             localStorage.setItem('trustedBlockRoot', finalizedRoot);
@@ -2913,6 +2943,54 @@
 
             const newHeaders = headers.getAll();
             const oldHeaderDivs = Array.from(headerList.children);
+            const oldHeaderDivRoots = new Set(oldHeaderDivs.map(d => d.dataset.beaconRoot));
+
+            await Promise.all(newHeaders.map(async (newHeader) => {
+                const beaconRoot = getBeaconRoot(newHeader);
+                if (oldHeaderDivRoots.has(beaconRoot)) return;
+                if (headers.getExecutionBlockHeader(beaconRoot)) return;
+                const executionHash = Module._ETHLightClientHeaderCopyExecutionHash(newHeader, cfg);
+                try {
+                    const executionHashString = toHexString(executionHash, 32);
+                    let data;
+                    try {
+                        let executionBlockResponse;
+                        for (let k = 0; k < 20; k++) {
+                            executionBlockResponse = await fetch(executionApiBase, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    jsonrpc: '2.0',
+                                    id: 1,
+                                    method: 'eth_getBlockByHash',
+                                    params: [executionHashString, /* fullTransactions: */ false]
+                                })
+                            });
+                            if (executionBlockResponse.ok) break;
+                            await new Promise(r => setTimeout(r, 100));
+                        }
+                        if (!executionBlockResponse.ok) return;
+                        const executionBlockJson = await executionBlockResponse.json();
+                        if (!executionBlockJson.result) return;
+                        data = executionBlockJson.result;
+                    } catch {
+                        return;
+                    }
+                    const blockHeaderJson = Module.stringToNewUTF8(JSON.stringify(data));
+                    const executionBlockHeader = Module._ETHExecutionBlockHeaderCreateFromJson(executionHash, blockHeaderJson);
+                    Module._free(blockHeaderJson);
+                    if (!executionBlockHeader) return;
+                    if (!headers.get(beaconRoot) || headers.getExecutionBlockHeader(beaconRoot)) {
+                        Module._ETHExecutionBlockHeaderDestroy(executionBlockHeader);
+                        return;
+                    }
+                    headers.setExecutionBlockHeader(beaconRoot, executionBlockHeader);
+                } finally {
+                    Module._ETHRootDestroy(executionHash);
+                }
+            }));
 
             let i = 0;
             let j = 0;
@@ -2935,18 +3013,23 @@
                     (beaconSlot == oldHeaderDiv.dataset.beaconSlot &&
                     beaconRoot < oldHeaderDiv.dataset.beaconRoot)))
                 {
+                    const executionBlockHeader = headers.getExecutionBlockHeader(beaconRoot);
+                    if (!executionBlockHeader) {
+                        i++;
+                        continue;
+                    }
+
                     const beacon = Module._ETHLightClientHeaderGetBeacon(newHeader);
                     const beaconProposerIndex = Module._ETHBeaconBlockHeaderGetProposerIndex(beacon);
                     const executionHash = Module._ETHLightClientHeaderCopyExecutionHash(newHeader, cfg);
                     const executionHashString = toHexString(executionHash, 32);
                     Module._ETHRootDestroy(executionHash);
-                    const execution = Module._ETHLightClientHeaderGetExecution(newHeader);
-                    const executionFeeRecipient = Module._ETHExecutionPayloadHeaderGetFeeRecipient(execution);
-                    const executionBlockNumber = Module._ETHExecutionPayloadHeaderGetBlockNumber(execution);
-                    const executionGasLimit = Module._ETHExecutionPayloadHeaderGetGasLimit(execution);
-                    const executionGasUsed = Module._ETHExecutionPayloadHeaderGetGasUsed(execution);
-                    const executionTimestamp = Module._ETHExecutionPayloadHeaderGetTimestamp(execution);
-                    const executionBaseFeePerGas = Module._ETHExecutionPayloadHeaderGetBaseFeePerGas(execution);
+                    const executionFeeRecipient = Module._ETHExecutionBlockHeaderGetFeeRecipient(executionBlockHeader);
+                    const executionBlockNumber = Module._ETHExecutionBlockHeaderGetBlockNumber(executionBlockHeader);
+                    const executionGasLimit = Module._ETHExecutionBlockHeaderGetGasLimit(executionBlockHeader);
+                    const executionGasUsed = Module._ETHExecutionBlockHeaderGetGasUsed(executionBlockHeader);
+                    const executionTimestamp = Module._ETHExecutionBlockHeaderGetTimestamp(executionBlockHeader);
+                    const executionBaseFeePerGas = Module._ETHExecutionBlockHeaderGetBaseFeePerGas(executionBlockHeader);
 
                     const transactionsButtonId = `transactionsButton_header_${beaconRoot}`;
                     let headerDiv = document.createElement('div');
@@ -3021,6 +3104,22 @@
                     j++;
                 }
             }
+        }
+
+        let cacheHeadersPromise = undefined;
+        let cacheHeadersQueued = false;
+        function cacheHeaders(store, cfg) {
+            cacheHeadersQueued = true;
+            if (cacheHeadersPromise) return;
+            cacheHeadersPromise = (async () => {
+                while (cacheHeadersQueued) {
+                    cacheHeadersQueued = false;
+                    try {
+                        await cacheHeadersImpl(store, cfg);
+                    } catch {}
+                }
+                cacheHeadersPromise = undefined;
+            })();
         }
 
         let rng = undefined;
