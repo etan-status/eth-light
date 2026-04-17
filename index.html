@@ -742,7 +742,35 @@
             let entries = [];
             let byRoot = {};
 
+            function addEntry(entry) {
+                const {beaconRoot, beaconSlot} = entry;
+                assert(!byRoot[beaconRoot]);
+                const i = entries.findIndex(x => (beaconSlot > x.beaconSlot) ||
+                    (beaconSlot == x.beaconSlot && beaconRoot < x.beaconRoot));
+                entries.splice(i >= 0 ? i : entries.length, 0, entry);
+                byRoot[beaconRoot] = entry;
+            }
+
+            function removeEntry(entry) {
+                assert(byRoot[entry.beaconRoot] === entry);
+                if (entry.receipts) {
+                    Module._ETHReceiptsDestroy(entry.receipts);
+                }
+                if (entry.transactions) {
+                    Module._ETHTransactionsDestroy(entry.transactions);
+                }
+                if (entry.executionBlockHeader) {
+                    Module._ETHExecutionBlockHeaderDestroy(entry.executionBlockHeader);
+                }
+                Module._ETHBeaconBlockHeaderDestroy(entry.beacon);
+                delete byRoot[entry.beaconRoot];
+                entries.splice(entries.indexOf(entry), 1);
+            }
+
             return {
+                'addEntry': addEntry,
+                'removeEntry': removeEntry,
+
                 'add': function (header, cfg) {
                     const beaconRoot = getBeaconRoot(header);
                     if (byRoot[beaconRoot]) {
@@ -755,25 +783,10 @@
                     const executionHashString = toHexString(executionHash, 32);
                     Module._ETHRootDestroy(executionHash);
 
-                    const entry = {beaconRoot, beaconSlot, beacon, executionHashString};
-                    const i = entries.findIndex(x => (beaconSlot > x.beaconSlot) ||
-                        (beaconSlot == x.beaconSlot && beaconRoot < x.beaconRoot));
-                    entries.splice(i >= 0 ? i : entries.length, 0, entry);
-                    byRoot[beaconRoot] = entry;
+                    addEntry({beaconRoot, beaconSlot, beacon, executionHashString});
 
                     if (entries.length > 128) {
-                        const removedEntry = entries.pop();
-                        if (removedEntry.receipts) {
-                            Module._ETHReceiptsDestroy(removedEntry.receipts);
-                        }
-                        if (removedEntry.transactions) {
-                            Module._ETHTransactionsDestroy(removedEntry.transactions);
-                        }
-                        if (removedEntry.executionBlockHeader) {
-                            Module._ETHExecutionBlockHeaderDestroy(removedEntry.executionBlockHeader);
-                        }
-                        Module._ETHBeaconBlockHeaderDestroy(removedEntry.beacon);
-                        delete byRoot[removedEntry.beaconRoot];
+                        removeEntry(entries[entries.length - 1]);
                     }
                 },
 
@@ -818,16 +831,29 @@
 
         let headers = initHeadersCache();
 
-        async function fetchExecutionBlock(prefix, entry) {
-            const executionHashString = entry.executionHashString;
-            if (executionHashString == zeroHash) return;
-            const beaconRoot = entry.beaconRoot;
-            let executionBlock = headers.getExecutionBlock(beaconRoot);
-            if (executionBlock) {
-                return executionBlock;
+        async function fetchBeaconHeaderJson(beaconRoot) {
+            try {
+                let response;
+                for (let i = 0; i < 20; i++) {
+                    response = await fetch(beaconApiBase + '/eth/v1/beacon/headers/' + beaconRoot);
+                    if (response.ok) {
+                        break;
+                    }
+                    if (response.status === 404) {
+                        return;
+                    }
+                    await new Promise(r => setTimeout(r, 100));
+                }
+                if (!response.ok) {
+                    return;
+                }
+                return await response.json();
+            } catch {
+                return;
             }
+        }
 
-            let data;
+        async function fetchExecutionBlockJson(executionHashString, fullTransactions) {
             try {
                 let executionBlockResponse;
                 for (let i = 0; i < 20; i++) {
@@ -840,17 +866,35 @@
                             jsonrpc: '2.0',
                             id: 1,
                             method: 'eth_getBlockByHash',
-                            params: [executionHashString, /* fullTransactions: */ true]
+                            params: [executionHashString, fullTransactions]
                         })
                     });
-                    if (executionBlockResponse.ok) break;
+                    if (executionBlockResponse.ok) {
+                        break;
+                    }
                     await new Promise(r => setTimeout(r, 100));
                 }
-                if (!executionBlockResponse.ok) return;
+                if (!executionBlockResponse.ok) {
+                    return;
+                }
                 const executionBlockJson = await executionBlockResponse.json();
-                if (!executionBlockJson.result) return;
-                data = executionBlockJson.result;
+                return executionBlockJson.result;
             } catch {
+                return;
+            }
+        }
+
+        async function fetchExecutionBlock(prefix, entry) {
+            const executionHashString = entry.executionHashString;
+            if (executionHashString == zeroHash) return;
+            const beaconRoot = entry.beaconRoot;
+            let executionBlock = headers.getExecutionBlock(beaconRoot);
+            if (executionBlock) {
+                return executionBlock;
+            }
+
+            const data = await fetchExecutionBlockJson(executionHashString, /* fullTransactions: */ true);
+            if (!data) {
                 return;
             }
             if (document.getElementById(prefix + 'BeaconRoot').dataset.beaconRoot !== beaconRoot) return;
@@ -2935,70 +2979,11 @@
             document.getElementById('specsDetail').hidden = false;
         };
 
-        async function cacheHeadersImpl(store, cfg) {
-            const finalizedRoot = getBeaconRoot(Module._ETHLightClientStoreGetFinalizedHeader(store));
-            document.getElementById('trustedBlockRoot').value = finalizedRoot;
-            localStorage.setItem('trustedBlockRoot', finalizedRoot);
-
-            headers.add(Module._ETHLightClientStoreGetOptimisticHeader(store), cfg);
-            headers.add(Module._ETHLightClientStoreGetFinalizedHeader(store), cfg);
-
+        function displayHeaders() {
             const newHeaders = headers.getAll();
             const oldHeaderDivs = Array.from(headerList.children);
-            const oldHeaderDivRoots = new Set(oldHeaderDivs.map(d => d.dataset.beaconRoot));
-
-            await Promise.all(newHeaders.map(async (newEntry) => {
-                const beaconRoot = newEntry.beaconRoot;
-                if (oldHeaderDivRoots.has(beaconRoot)) return;
-                if (headers.getExecutionBlockHeader(beaconRoot)) return;
-                const executionHashString = newEntry.executionHashString;
-                let data;
-                try {
-                    let executionBlockResponse;
-                    for (let k = 0; k < 20; k++) {
-                        executionBlockResponse = await fetch(executionApiBase, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                jsonrpc: '2.0',
-                                id: 1,
-                                method: 'eth_getBlockByHash',
-                                params: [executionHashString, /* fullTransactions: */ false]
-                            })
-                        });
-                        if (executionBlockResponse.ok) break;
-                        await new Promise(r => setTimeout(r, 100));
-                    }
-                    if (!executionBlockResponse.ok) return;
-                    const executionBlockJson = await executionBlockResponse.json();
-                    if (!executionBlockJson.result) return;
-                    data = executionBlockJson.result;
-                } catch {
-                    return;
-                }
-                const executionHashBytes = new Uint8Array(32);
-                for (let k = 0; k < executionHashBytes.length; k++) {
-                    executionHashBytes[k] = parseInt(executionHashString.substr(k * 2 + 2, 2), 16);
-                }
-                const executionHash = Module._malloc(executionHashBytes.length);
-                Module.HEAPU8.set(executionHashBytes, executionHash);
-                const blockHeaderJson = Module.stringToNewUTF8(JSON.stringify(data));
-                const executionBlockHeader = Module._ETHExecutionBlockHeaderCreateFromJson(executionHash, blockHeaderJson);
-                Module._free(blockHeaderJson);
-                Module._free(executionHash);
-                if (!executionBlockHeader) return;
-                if (!headers.get(beaconRoot) || headers.getExecutionBlockHeader(beaconRoot)) {
-                    Module._ETHExecutionBlockHeaderDestroy(executionBlockHeader);
-                    return;
-                }
-                headers.setExecutionBlockHeader(beaconRoot, executionBlockHeader);
-            }));
-
             let i = 0;
             let j = 0;
-
             while (i < newHeaders.length || j < oldHeaderDivs.length) {
                 const newEntry = newHeaders[i];
                 let beaconRoot = undefined;
@@ -3105,6 +3090,104 @@
                     j++;
                 }
             }
+        }
+
+        async function cacheHeadersImpl(store, cfg) {
+            const optimisticHeader = Module._ETHLightClientStoreGetOptimisticHeader(store);
+            const optimisticBeaconRoot = getBeaconRoot(optimisticHeader);
+            const finalizedHeader = Module._ETHLightClientStoreGetFinalizedHeader(store);
+            const finalizedBeaconRoot = getBeaconRoot(finalizedHeader);
+            document.getElementById('trustedBlockRoot').value = finalizedBeaconRoot;
+            localStorage.setItem('trustedBlockRoot', finalizedBeaconRoot);
+
+            headers.add(optimisticHeader, cfg);
+            headers.add(finalizedHeader, cfg);
+
+            const newHeaders = headers.getAll();
+            const oldHeaderDivRoots = new Set(Array.from(headerList.children).map(d => d.dataset.beaconRoot));
+
+            await Promise.all(newHeaders.map(async (newEntry) => {
+                const beaconRoot = newEntry.beaconRoot;
+                if (oldHeaderDivRoots.has(beaconRoot)) return;
+                if (headers.getExecutionBlockHeader(beaconRoot)) return;
+                const executionHashString = newEntry.executionHashString;
+                const data = await fetchExecutionBlockJson(executionHashString, /* fullTransactions: */ false);
+                if (!data) {
+                    return;
+                }
+                const executionHashBytes = new Uint8Array(32);
+                for (let k = 0; k < executionHashBytes.length; k++) {
+                    executionHashBytes[k] = parseInt(executionHashString.substr(k * 2 + 2, 2), 16);
+                }
+                const executionHash = Module._malloc(executionHashBytes.length);
+                Module.HEAPU8.set(executionHashBytes, executionHash);
+                const blockHeaderJson = Module.stringToNewUTF8(JSON.stringify(data));
+                const executionBlockHeader = Module._ETHExecutionBlockHeaderCreateFromJson(executionHash, blockHeaderJson);
+                Module._free(blockHeaderJson);
+                Module._free(executionHash);
+                if (!executionBlockHeader) return;
+                if (!headers.get(beaconRoot) || headers.getExecutionBlockHeader(beaconRoot)) {
+                    Module._ETHExecutionBlockHeaderDestroy(executionBlockHeader);
+                    return;
+                }
+                headers.setExecutionBlockHeader(beaconRoot, executionBlockHeader);
+            }));
+            displayHeaders();
+
+            const seen = new Set([optimisticBeaconRoot]);
+            const currentSlot = Module._ETHBeaconClockGetSlot(beaconClock);
+            const minSlot = Math.max(currentSlot, 64) - 64;
+            let entry = headers.get(optimisticBeaconRoot);
+            while (entry && entry.executionBlockHeader && entry.beaconSlot > minSlot) {
+                const parentHash = Module._ETHExecutionBlockHeaderGetParentHash(entry.executionBlockHeader);
+                const parentHashString = toHexString(parentHash, 32);
+                const parentBeaconBlockRoot = Module._ETHExecutionBlockHeaderGetParentBeaconBlockRoot(entry.executionBlockHeader);
+                const parentBeaconBlockRootString = toHexString(parentBeaconBlockRoot, 32);
+                const existing = headers.get(parentBeaconBlockRootString);
+                if (existing) {
+                    seen.add(parentBeaconBlockRootString);
+                    entry = existing;
+                    continue;
+                }
+                const [beaconData, executionData] = await Promise.all([
+                    fetchBeaconHeaderJson(parentBeaconBlockRootString),
+                    fetchExecutionBlockJson(parentHashString, /* fullTransactions: */ false),
+                ]);
+                if (!beaconData || !executionData) {
+                    break;
+                }
+                const beaconJson = Module.stringToNewUTF8(JSON.stringify(beaconData));
+                const beacon = Module._ETHBeaconBlockHeaderCreateFromJson(parentBeaconBlockRoot, beaconJson);
+                Module._free(beaconJson);
+                if (!beacon) {
+                    break;
+                }
+                const executionJson = Module.stringToNewUTF8(JSON.stringify(executionData));
+                const executionBlockHeader = Module._ETHExecutionBlockHeaderCreateFromJson(parentHash, executionJson);
+                Module._free(executionJson);
+                if (!executionBlockHeader) {
+                    Module._ETHBeaconBlockHeaderDestroy(beacon);
+                    break;
+                }
+                headers.addEntry({
+                    beaconRoot: parentBeaconBlockRootString,
+                    beaconSlot: Module._ETHBeaconBlockHeaderGetSlot(beacon),
+                    beacon,
+                    executionHashString: parentHashString,
+                    executionBlockHeader,
+                });
+                seen.add(parentBeaconBlockRootString);
+                entry = headers.get(parentBeaconBlockRootString);
+                displayHeaders();
+            }
+            const allEntries = headers.getAll();
+            for (let k = allEntries.length - 1; k >= 0; k--) {
+                const isNotAncestor = (seen.size > 1 || (entry && entry.beaconSlot <= minSlot)) && !seen.has(allEntries[k].beaconRoot);
+                if (isNotAncestor || allEntries.length > 128) {
+                    headers.removeEntry(allEntries[k]);
+                }
+            }
+            displayHeaders();
         }
 
         let cacheHeadersPromise = undefined;
@@ -3306,7 +3389,7 @@
             const genesisState = await loadGenesis(cfg);
             genesisValRoot = Module._ETHBeaconStateCopyGenesisValidatorsRoot(genesisState);
             forkDigests = Module._ETHForkDigestsCreateFromState(cfg, genesisState);
-            beaconClock = Module._ETHBeaconClockCreateFromState(genesisState);
+            beaconClock = Module._ETHBeaconClockCreateFromState(cfg, genesisState);
             Module._ETHBeaconStateDestroy(genesisState);
 
             document.getElementById('initButton').addEventListener('click', async function() {
